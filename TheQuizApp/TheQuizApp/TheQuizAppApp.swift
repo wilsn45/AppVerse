@@ -21,6 +21,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
 @main
 struct TheQuizAppApp: App {
+	@StateObject private var riddleData = RiddleData()
 	@UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 	
     var sharedModelContainer: ModelContainer = {
@@ -39,6 +40,7 @@ struct TheQuizAppApp: App {
     var body: some Scene {
         WindowGroup {
 			HomeView()
+				.environmentObject(riddleData)
         }
         .modelContainer(sharedModelContainer)
     }

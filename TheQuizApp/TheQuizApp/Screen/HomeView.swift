@@ -18,10 +18,12 @@ struct HomeView: View {
 				OptionButton(type: .math) {
 					navigate = true
 					riddleData.riddleType = .math
+					logCategorySelectEvent(type: .math)
 				}
 				OptionButton(type: .english) {
 					navigate = true
 					riddleData.riddleType = .english
+					logCategorySelectEvent(type: .english)
 				}
 			}
 
@@ -29,10 +31,12 @@ struct HomeView: View {
 				OptionButton(type: .logical) {
 					navigate = true
 					riddleData.riddleType = .logical
+					logCategorySelectEvent(type: .logical)
 				}
 				OptionButton(type: .crypto)  {
 					navigate = true
 					riddleData.riddleType = .crypto
+					logCategorySelectEvent(type: .crypto)
 				}
 			}
 		}
@@ -40,6 +44,11 @@ struct HomeView: View {
 			TimerSelectionView()
 		}
     }
+
+	private func logCategorySelectEvent(type: RiddleType) {
+		let event = Event(name: "home", category: .home, type: .click)
+		Analytics.log(event: event, data: ["riddletype": type.title])
+	}
 }
 
 //#Preview {

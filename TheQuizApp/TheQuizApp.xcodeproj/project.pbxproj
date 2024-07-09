@@ -29,6 +29,7 @@
 		BCD467602C3D2D8300501300 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = BCD4675F2C3D2D8300501300 /* FirebaseAppCheck */; };
 		BCD467622C3D2EC600501300 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BCD467612C3D2EC600501300 /* GoogleService-Info.plist */; };
 		BCD467662C3D344700501300 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = BCD467652C3D344700501300 /* FirebaseCrashlytics */; };
+		BCD467692C3D3FF700501300 /* Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD467682C3D3FF700501300 /* Analytics.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 		BCD4674B2C3D2CD300501300 /* RulesScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RulesScreen.swift; sourceTree = "<group>"; };
 		BCD4674C2C3D2CD300501300 /* TimerSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimerSelectionView.swift; sourceTree = "<group>"; };
 		BCD467612C3D2EC600501300 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BCD467682C3D3FF700501300 /* Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analytics.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 		BCD467142C3D2C8600501300 /* TheQuizApp */ = {
 			isa = PBXGroup;
 			children = (
+				BCD467672C3D3FEB00501300 /* Analytics */,
 				BCD467472C3D2CD300501300 /* CustomUI */,
 				BCD467422C3D2CD300501300 /* Data */,
 				BCD4674D2C3D2CD300501300 /* Screen */,
@@ -198,6 +201,14 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BCD467672C3D3FEB00501300 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				BCD467682C3D3FF700501300 /* Analytics.swift */,
+			);
+			path = Analytics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -345,8 +356,8 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
 				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
 				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
 				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
@@ -358,7 +369,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\n";
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -368,6 +379,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BCD467532C3D2CD300501300 /* HomeView.swift in Sources */,
+				BCD467692C3D3FF700501300 /* Analytics.swift in Sources */,
 				BCD4674F2C3D2CD300501300 /* OptionButton.swift in Sources */,
 				BCD467552C3D2CD300501300 /* RiddleScreen.swift in Sources */,
 				BCD467562C3D2CD300501300 /* RulesScreen.swift in Sources */,
