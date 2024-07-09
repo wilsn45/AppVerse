@@ -24,10 +24,11 @@
 		BCD467552C3D2CD300501300 /* RiddleScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD4674A2C3D2CD300501300 /* RiddleScreen.swift */; };
 		BCD467562C3D2CD300501300 /* RulesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD4674B2C3D2CD300501300 /* RulesScreen.swift */; };
 		BCD467572C3D2CD300501300 /* TimerSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD4674C2C3D2CD300501300 /* TimerSelectionView.swift */; };
-		BCD467592C3D2CDC00501300 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BCD467582C3D2CDC00501300 /* GoogleService-Info.plist */; };
 		BCD4675C2C3D2D8300501300 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = BCD4675B2C3D2D8300501300 /* FirebaseAnalyticsSwift */; };
 		BCD4675E2C3D2D8300501300 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = BCD4675D2C3D2D8300501300 /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		BCD467602C3D2D8300501300 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = BCD4675F2C3D2D8300501300 /* FirebaseAppCheck */; };
+		BCD467622C3D2EC600501300 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BCD467612C3D2EC600501300 /* GoogleService-Info.plist */; };
+		BCD467662C3D344700501300 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = BCD467652C3D344700501300 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,7 +69,7 @@
 		BCD4674A2C3D2CD300501300 /* RiddleScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RiddleScreen.swift; sourceTree = "<group>"; };
 		BCD4674B2C3D2CD300501300 /* RulesScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RulesScreen.swift; sourceTree = "<group>"; };
 		BCD4674C2C3D2CD300501300 /* TimerSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimerSelectionView.swift; sourceTree = "<group>"; };
-		BCD467582C3D2CDC00501300 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		BCD467612C3D2EC600501300 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +78,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BCD4675C2C3D2D8300501300 /* FirebaseAnalyticsSwift in Frameworks */,
+				BCD467662C3D344700501300 /* FirebaseCrashlytics in Frameworks */,
 				BCD467602C3D2D8300501300 /* FirebaseAppCheck in Frameworks */,
 				BCD4675E2C3D2D8300501300 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 			);
@@ -106,6 +108,7 @@
 				BCD467272C3D2C8700501300 /* TheQuizAppTests */,
 				BCD467312C3D2C8700501300 /* TheQuizAppUITests */,
 				BCD467132C3D2C8600501300 /* Products */,
+				BCD467642C3D344700501300 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,7 +131,7 @@
 				BCD467152C3D2C8600501300 /* TheQuizAppApp.swift */,
 				BCD467192C3D2C8600501300 /* Item.swift */,
 				BCD4671B2C3D2C8700501300 /* Assets.xcassets */,
-				BCD467582C3D2CDC00501300 /* GoogleService-Info.plist */,
+				BCD467612C3D2EC600501300 /* GoogleService-Info.plist */,
 				BCD4671D2C3D2C8700501300 /* Preview Content */,
 			);
 			path = TheQuizApp;
@@ -190,6 +193,13 @@
 			path = Screen;
 			sourceTree = "<group>";
 		};
+		BCD467642C3D344700501300 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -200,6 +210,7 @@
 				BCD4670E2C3D2C8600501300 /* Sources */,
 				BCD4670F2C3D2C8600501300 /* Frameworks */,
 				BCD467102C3D2C8600501300 /* Resources */,
+				BCD467632C3D30AE00501300 /* Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -210,6 +221,7 @@
 				BCD4675B2C3D2D8300501300 /* FirebaseAnalyticsSwift */,
 				BCD4675D2C3D2D8300501300 /* FirebaseAnalyticsWithoutAdIdSupport */,
 				BCD4675F2C3D2D8300501300 /* FirebaseAppCheck */,
+				BCD467652C3D344700501300 /* FirebaseCrashlytics */,
 			);
 			productName = TheQuizApp;
 			productReference = BCD467122C3D2C8600501300 /* TheQuizApp.app */;
@@ -304,7 +316,7 @@
 			files = (
 				BCD4671F2C3D2C8700501300 /* Preview Assets.xcassets in Resources */,
 				BCD4671C2C3D2C8700501300 /* Assets.xcassets in Resources */,
-				BCD467592C3D2CDC00501300 /* GoogleService-Info.plist in Resources */,
+				BCD467622C3D2EC600501300 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +335,32 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		BCD467632C3D30AE00501300 /* Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = Crashlytics;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BCD4670E2C3D2C8600501300 /* Sources */ = {
@@ -503,20 +541,24 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"TheQuizApp/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = TheQuizApp;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.trivia-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.TheQuizApp.TheQuizApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.TheQuizApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -534,17 +576,20 @@
 				DEVELOPMENT_ASSET_PATHS = "\"TheQuizApp/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = TheQuizApp;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.trivia-games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.TheQuizApp.TheQuizApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.TheQuizApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -691,6 +736,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BCD4675A2C3D2D8300501300 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAppCheck;
+		};
+		BCD467652C3D344700501300 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BCD4675A2C3D2D8300501300 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
