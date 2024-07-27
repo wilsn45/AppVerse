@@ -14,7 +14,6 @@ struct OptionButton: View {
 
 	var body: some View {
 		Button(action: {
-			//fatalError("Crash was triggered")
 			action()
 		}) {
 			Text(type.title)
