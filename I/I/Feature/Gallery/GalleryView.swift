@@ -14,6 +14,7 @@ struct GalleryView: View {
 	var body: some View {
 
 		VStack {
+			Text("GalleryView")
 //			HStack {
 //				NavigationLink(destination: SecondView()) {
 //					FeatureOptionView(type: .gallery)

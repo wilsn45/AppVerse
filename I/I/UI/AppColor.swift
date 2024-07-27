@@ -11,4 +11,5 @@ import SwiftUI
 struct AppColor {
 	static let backgroundGrey = Color("BackgroundGrey")
 	static let backgroundWhite = Color("BackgroundWhite")
+	static let borderGrey = Color.gray.opacity(0.3)
 }

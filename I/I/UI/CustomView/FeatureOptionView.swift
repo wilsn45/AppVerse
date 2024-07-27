@@ -10,29 +10,32 @@ import SwiftUI
 
 struct FeatureOptionView: View {
 	let type: FeatureType
+	let action: (() -> Void)
 
 	var body: some View {
 		Button(action: {
-
+			action()
+			print("Button inside NavigationLink tapped")
 		}) {
-			Text(type.title)
-				.frame(width: 100, height: 100)
-		}.background(Color.clear)
-			.overlay(
-				RoundedRectangle(cornerRadius: 10)
-					.stroke(Color.blue, lineWidth: 2)
-			)
-			.background(AppColor.backgroundWhite)
+			VStack {
+				Text("Feature Icon")
+				Text(type.title)
+			}
+			.frame(width: 100, height: 100)
+		}.background(AppColor.backgroundWhite)
+		.clipShape(RoundedRectangle(cornerRadius: 15))
+		.shadow(color: AppColor.borderGrey, radius: 10, x: 0, y: 5)
 	}
 
 }
 
 
-enum FeatureType {
+enum FeatureType: String {
 	case gallery
 	case notes
 	case password
 	case finance
+	case links
 
 	var title: String {
 		switch self {
@@ -44,6 +47,8 @@ enum FeatureType {
 				return "Password"
 			case .finance:
 				return "Finance"
+			case .links:
+				return "Links"
 		}
 	}
 }

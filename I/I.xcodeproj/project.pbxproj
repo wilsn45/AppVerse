@@ -20,6 +20,7 @@
 		BCD1128B2C5563FE00C9177C /* FinanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD1128A2C5563FE00C9177C /* FinanceView.swift */; };
 		BCD1128D2C55642700C9177C /* PasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD1128C2C55642700C9177C /* PasswordView.swift */; };
 		BCD112902C556D8800C9177C /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD1128F2C556D8800C9177C /* AppColor.swift */; };
+		BCD112932C5581B800C9177C /* LinksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112922C5581B800C9177C /* LinksView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 		BCD1128A2C5563FE00C9177C /* FinanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinanceView.swift; sourceTree = "<group>"; };
 		BCD1128C2C55642700C9177C /* PasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordView.swift; sourceTree = "<group>"; };
 		BCD1128F2C556D8800C9177C /* AppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColor.swift; sourceTree = "<group>"; };
+		BCD112922C5581B800C9177C /* LinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinksView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +158,7 @@
 				BCD112832C55632400C9177C /* Notes */,
 				BCD112842C55633100C9177C /* Finance Manager */,
 				BCD112852C55635600C9177C /* PasswordManager */,
+				BCD112912C55819A00C9177C /* LInks */,
 			);
 			path = Feature;
 			sourceTree = "<group>";
@@ -199,6 +202,14 @@
 				BCD1128F2C556D8800C9177C /* AppColor.swift */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		BCD112912C55819A00C9177C /* LInks */ = {
+			isa = PBXGroup;
+			children = (
+				BCD112922C5581B800C9177C /* LinksView.swift */,
+			);
+			path = LInks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -338,6 +349,7 @@
 				BCD112802C55610C00C9177C /* FeatureOptionView.swift in Sources */,
 				BCD112902C556D8800C9177C /* AppColor.swift in Sources */,
 				BCD112522C555E2E00C9177C /* IApp.swift in Sources */,
+				BCD112932C5581B800C9177C /* LinksView.swift in Sources */,
 				BCD112872C5563A300C9177C /* GalleryView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -509,7 +521,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -538,7 +550,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
