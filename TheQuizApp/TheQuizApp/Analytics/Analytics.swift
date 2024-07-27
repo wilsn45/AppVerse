@@ -13,8 +13,8 @@ class Analytics {
 	static func log(event: Event, data: [String: Any]?) {
 		let name = event.name
 		var parameter = data ?? [String: Any]()
-		parameter["category"] = event.category
-		parameter["type"] = event.type
+		parameter["category"] = event.category.rawValue
+		parameter["type"] = event.type.rawValue
 		parameter["timestamp"] = event.timestamp
 		FirebaseAnalytics.Analytics.logEvent(name, parameters: parameter)
 	}
@@ -32,7 +32,7 @@ struct Event {
 	}
 }
 
-enum EventCategory {
+enum EventCategory: String {
 	case home
 	case quiz
 	case leaderboard

@@ -46,7 +46,7 @@ struct HomeView: View {
     }
 
 	private func logCategorySelectEvent(type: RiddleType) {
-		let event = Event(name: "home", category: .home, type: .click)
+		let event = Event(name: "home_category_clicked", category: .home, type: .click)
 		Analytics.log(event: event, data: ["riddletype": type.title])
 	}
 }
