@@ -11,7 +11,7 @@ import SwiftData
 
 struct PasswordView: View {
 	@State private var selectedItem: String? = nil
-	let items = ["Item 1", "Item 2", "Item 3", "Item 4","Item 1", "Item 2", "Item 3", "Item 4","Item 1", "Item 2", "Item 3", "Item 4"]
+	let items = ["Item 1", "Item 2", "Item 3"]
 	@State private var isSheetPresented: Bool = false
 	@State private var showPasswordDetailView: Bool = false
 	@State private var showAddPasswordView: Bool = false
@@ -25,7 +25,7 @@ struct PasswordView: View {
 						showPasswordDetailView = true
 					}
 			}
-			
+
 			NewItemView(action: {
 				showAddPasswordView = true
 			})

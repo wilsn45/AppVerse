@@ -8,5 +8,6 @@
 import Foundation
 
 class NavigationModel: ObservableObject {
-	@Published var path: [String] = []
+	@Published var featurePath: [FeatureType] = []
+	@Published var NotesPath: [NotesNavigationType] = []
 }

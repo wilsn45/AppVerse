@@ -10,27 +10,22 @@ import SwiftUI
 
 struct FeatureOptionView: View {
 	let type: FeatureType
-	let action: (() -> Void)
 
 	var body: some View {
-		Button(action: {
-			action()
-			print("Button inside NavigationLink tapped")
-		}) {
-			VStack {
+		VStack {
 				Text("Feature Icon")
 				Text(type.title)
 			}
 			.frame(width: (UIScreen.main.bounds.width / 2) - 40, height: 150)
-		}.background(AppColor.backgroundWhite)
-		.clipShape(RoundedRectangle(cornerRadius: 15))
-		.shadow(color: AppColor.borderGrey, radius: 10, x: 0, y: 5)
+			.background(AppColor.backgroundWhite)
+			.clipShape(RoundedRectangle(cornerRadius: 15))
+			.shadow(color: AppColor.borderGrey, radius: 10, x: 0, y: 5)
 	}
 
 }
 
 
-enum FeatureType: String {
+enum FeatureType: String, Hashable {
 	case gallery
 	case notes
 	case password

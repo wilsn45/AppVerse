@@ -9,15 +9,20 @@ import Foundation
 import SwiftUI
 import SwiftData
 
+enum NotesNavigationType: Hashable {
+	case new
+	case edit
+}
+
 struct NotesView: View {
 	let NEW_NOTE = "NewNote"
 	let EDIT_NOTE = "EditNote"
 	let items = Array(1...100).map { "Item \($0)" }
+	
 	@EnvironmentObject var navigationModel: NavigationModel
 
-
 	var body: some View {
-		NavigationStack(path: $navigationModel.path)  {
+		NavigationStack(path: $navigationModel.NotesPath)  {
 			ZStack {
 				let columns = [
 					GridItem(.flexible()),
@@ -29,7 +34,7 @@ struct NotesView: View {
 						ForEach(items, id: \.self) { item in
 							NotesItemView(item: item)
 								.onTapGesture {
-									navigationModel.path.append(EDIT_NOTE)
+									navigationModel.NotesPath.append(.edit)
 								}
 						}
 					}
@@ -37,20 +42,20 @@ struct NotesView: View {
 				}
 
 				NewItemView(action: {
-					navigationModel.path.append(NEW_NOTE)
+					navigationModel.NotesPath.append(.new)
 				})
 
 			}
 			.navigationTitle("Notes")
-			.navigationDestination(for: String.self) { view in
+			.navigationDestination(for: NotesNavigationType.self) { view in
 				navigationView(for: view)
 			}
 		}
 
 	}
 
-	private func navigationView(for type: String) -> some View {
-		let isNewNote = type == NEW_NOTE
+	private func navigationView(for type: NotesNavigationType) -> some View {
+		let isNewNote = type ==  NotesNavigationType.new
 		return EditNoteView(isNewNote: isNewNote)
 	}
 }

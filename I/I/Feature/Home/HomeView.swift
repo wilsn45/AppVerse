@@ -14,7 +14,7 @@ struct HomeView: View {
 	let featureList: [FeatureType] = [.gallery, .notes, .finance, .password, .links]
 
 	var body: some View {
-		NavigationStack(path: $navigationModel.path)  {
+		NavigationStack(path: $navigationModel.featurePath)  {
 			VStack {
 				VStack {
 					VStack(spacing: 20) {
@@ -63,8 +63,8 @@ struct HomeView: View {
 						ScrollView {
 							LazyVGrid(columns: columns, spacing: 16) {
 								ForEach(featureList, id: \.self) { item in
-									FeatureOptionView(type: item) {
-										navigationModel.path.append(item.rawValue)
+									NavigationLink(value: item) {
+										FeatureOptionView(type: item)
 									}
 								}
 							}
@@ -77,25 +77,24 @@ struct HomeView: View {
 				.padding(.trailing, 20)
 
 			}.background(AppColor.backgroundGrey)
-				.navigationDestination(for: String.self) { view in
+				.navigationDestination(for: FeatureType.self) { view in
 					navigationView(for: view)
 				}
 		}
 	}
 
-	private func navigationView(for feature: String) -> some View {
+	private func navigationView(for feature: FeatureType) -> some View {
 		switch feature {
-			case FeatureType.gallery.rawValue:
+			case FeatureType.gallery:
 				return AnyView(GalleryView())
-			case FeatureType.notes.rawValue:
+			case FeatureType.notes:
 				return AnyView(NotesView())
-			case FeatureType.finance.rawValue:
+			case FeatureType.finance:
 				return AnyView(FinanceView())
-			case FeatureType.password.rawValue:
+			case FeatureType.password:
 				return AnyView(PasswordView())
-			case FeatureType.links.rawValue:
+			case FeatureType.links:
 				return AnyView(LinksView())
-			default: return AnyView(Text("Unknown feature"))
 		}
 	}
 
