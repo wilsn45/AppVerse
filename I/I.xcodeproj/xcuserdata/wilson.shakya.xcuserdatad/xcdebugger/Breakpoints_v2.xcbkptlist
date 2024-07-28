@@ -32,8 +32,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "103"
             endingLineNumber = "103"
-            landmarkName = "HomeView"
-            landmarkType = "14">
+            landmarkName = "navigationView(for:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -48,38 +48,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "102"
             endingLineNumber = "102"
-            landmarkName = "body"
-            landmarkType = "24">
-            <Locations>
-               <Location
-                  uuid = "3769A587-4E4C-4D1F-8C1F-1575E7A8598E - d7335d13661c6742"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "I.HomeView.body.getter : some"
-                  moduleName = "I"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/wilson.shakya/Documents/GitHub/AppVerse/I/I/HomeView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "102"
-                  endingLineNumber = "102">
-               </Location>
-               <Location
-                  uuid = "3769A587-4E4C-4D1F-8C1F-1575E7A8598E - 10e916cf51f603f2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "I.HomeView.navigationView(for: Swift.String) -&gt; some"
-                  moduleName = "I"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/wilson.shakya/Documents/GitHub/AppVerse/I/I/HomeView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "102"
-                  endingLineNumber = "102">
-               </Location>
-            </Locations>
+            landmarkName = "navigationView(for:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
