@@ -1,15 +1,13 @@
 //
-//  PasswordItemView.swift
+//  NotesItemView.swift
 //  I
 //
 //  Created by Wilson.Shakya on 28/07/24.
 //
 
-import Foundation
 import SwiftUI
-import SwiftData
 
-struct PasswordItemView: View {
+struct NotesItemView: View {
 
 	let item: String
 
@@ -27,5 +25,5 @@ struct PasswordItemView: View {
 
 
 #Preview {
-	PasswordItemView(item: "Password A")
+	PasswordItemView(item: "Note A")
 }

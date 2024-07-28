@@ -10,11 +10,12 @@ import SwiftUI
 @main
 
 struct IApp: App {
-	
+	@StateObject private var navigationModel = NavigationModel()
+
 	var body: some Scene {
 		WindowGroup {
 			HomeView()
-
+				.environmentObject(navigationModel)
 		}
 	}
 }

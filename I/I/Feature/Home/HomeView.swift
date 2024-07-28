@@ -9,10 +9,12 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-	@State private var path = NavigationPath()
+	@EnvironmentObject var navigationModel: NavigationModel
+
+	let featureList: [FeatureType] = [.gallery, .notes, .finance, .password, .links]
 
 	var body: some View {
-		NavigationStack(path: $path)  {
+		NavigationStack(path: $navigationModel.path)  {
 			VStack {
 				VStack {
 					VStack(spacing: 20) {
@@ -45,6 +47,7 @@ struct HomeView: View {
 									}
 								}
 							}
+							.frame(width:  (UIScreen.main.bounds.width - 100))
 							.padding(.horizontal, 20)
 							.padding(.vertical, 10)
 						}
@@ -52,38 +55,20 @@ struct HomeView: View {
 						.clipShape(RoundedRectangle(cornerRadius: 15))
 						.shadow(color: AppColor.borderGrey, radius: 10, x: 0, y: 5)
 
-						VStack(spacing: 50) {
-							HStack {
-								FeatureOptionView(type: .gallery) {
-									path.append(FeatureType.gallery.rawValue)
-								}
-								Spacer()
-								FeatureOptionView(type: .notes) {
-									path.append(FeatureType.notes.rawValue)
-								}
-								Spacer()
-							}
+						let columns = [
+							GridItem(.flexible()),
+							GridItem(.flexible())
+						]
 
-							HStack {
-								FeatureOptionView(type: .finance) {
-									path.append(FeatureType.finance.rawValue)
+						ScrollView {
+							LazyVGrid(columns: columns, spacing: 16) {
+								ForEach(featureList, id: \.self) { item in
+									FeatureOptionView(type: item) {
+										navigationModel.path.append(item.rawValue)
+									}
 								}
-
-								Spacer()
-								FeatureOptionView(type: .password) {
-									path.append(FeatureType.password.rawValue)
-								}
-								Spacer()
 							}
-
-							HStack {
-								FeatureOptionView(type: .links)  {
-									path.append(FeatureType.links.rawValue)
-								}
-								Spacer()
-							}
-						}
-						.padding(20)
+						}.scrollIndicators(.hidden)
 					}
 					Spacer()
 				}

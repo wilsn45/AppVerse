@@ -24,6 +24,10 @@
 		BCD112CD2C56315000C9177C /* PasswordItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112CC2C56315000C9177C /* PasswordItemView.swift */; };
 		BCD112CF2C5631BE00C9177C /* PasswordSeeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112CE2C5631BE00C9177C /* PasswordSeeView.swift */; };
 		BCD112D12C56378100C9177C /* PasswordAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112D02C56378100C9177C /* PasswordAddView.swift */; };
+		BCD112D32C56434900C9177C /* NotesItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112D22C56434900C9177C /* NotesItemView.swift */; };
+		BCD112D52C56447D00C9177C /* NewItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112D42C56447D00C9177C /* NewItemView.swift */; };
+		BCD112D82C5653B300C9177C /* NavigationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112D72C5653B300C9177C /* NavigationModel.swift */; };
+		BCD112DB2C56578700C9177C /* EditNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112DA2C56578700C9177C /* EditNoteView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +68,10 @@
 		BCD112CC2C56315000C9177C /* PasswordItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordItemView.swift; sourceTree = "<group>"; };
 		BCD112CE2C5631BE00C9177C /* PasswordSeeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordSeeView.swift; sourceTree = "<group>"; };
 		BCD112D02C56378100C9177C /* PasswordAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordAddView.swift; sourceTree = "<group>"; };
+		BCD112D22C56434900C9177C /* NotesItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesItemView.swift; sourceTree = "<group>"; };
+		BCD112D42C56447D00C9177C /* NewItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewItemView.swift; sourceTree = "<group>"; };
+		BCD112D72C5653B300C9177C /* NavigationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationModel.swift; sourceTree = "<group>"; };
+		BCD112DA2C56578700C9177C /* EditNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditNoteView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,7 +125,6 @@
 				BCD1128E2C556D7200C9177C /* UI */,
 				BCD112812C55631400C9177C /* Feature */,
 				BCD112512C555E2E00C9177C /* IApp.swift */,
-				BCD112532C555E2E00C9177C /* HomeView.swift */,
 				BCD112572C555E3000C9177C /* Assets.xcassets */,
 				BCD112592C555E3000C9177C /* Preview Content */,
 			);
@@ -152,7 +159,7 @@
 		BCD1127E2C5560E100C9177C /* CustomView */ = {
 			isa = PBXGroup;
 			children = (
-				BCD1127F2C55610C00C9177C /* FeatureOptionView.swift */,
+				BCD112D42C56447D00C9177C /* NewItemView.swift */,
 			);
 			path = CustomView;
 			sourceTree = "<group>";
@@ -160,6 +167,7 @@
 		BCD112812C55631400C9177C /* Feature */ = {
 			isa = PBXGroup;
 			children = (
+				BCD112D92C5655E900C9177C /* Home */,
 				BCD112822C55631B00C9177C /* Gallery */,
 				BCD112832C55632400C9177C /* Notes */,
 				BCD112842C55633100C9177C /* Finance Manager */,
@@ -181,6 +189,8 @@
 			isa = PBXGroup;
 			children = (
 				BCD112882C5563BD00C9177C /* NotesView.swift */,
+				BCD112D22C56434900C9177C /* NotesItemView.swift */,
+				BCD112DA2C56578700C9177C /* EditNoteView.swift */,
 			);
 			path = Notes;
 			sourceTree = "<group>";
@@ -209,6 +219,7 @@
 			children = (
 				BCD1127E2C5560E100C9177C /* CustomView */,
 				BCD1128F2C556D8800C9177C /* AppColor.swift */,
+				BCD112D72C5653B300C9177C /* NavigationModel.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -219,6 +230,15 @@
 				BCD112922C5581B800C9177C /* LinksView.swift */,
 			);
 			path = LInks;
+			sourceTree = "<group>";
+		};
+		BCD112D92C5655E900C9177C /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				BCD112532C555E2E00C9177C /* HomeView.swift */,
+				BCD1127F2C55610C00C9177C /* FeatureOptionView.swift */,
+			);
+			path = Home;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -353,9 +373,13 @@
 			files = (
 				BCD112542C555E2E00C9177C /* HomeView.swift in Sources */,
 				BCD112892C5563BD00C9177C /* NotesView.swift in Sources */,
+				BCD112D82C5653B300C9177C /* NavigationModel.swift in Sources */,
+				BCD112D52C56447D00C9177C /* NewItemView.swift in Sources */,
 				BCD1128D2C55642700C9177C /* PasswordView.swift in Sources */,
 				BCD1128B2C5563FE00C9177C /* FinanceView.swift in Sources */,
 				BCD112802C55610C00C9177C /* FeatureOptionView.swift in Sources */,
+				BCD112DB2C56578700C9177C /* EditNoteView.swift in Sources */,
+				BCD112D32C56434900C9177C /* NotesItemView.swift in Sources */,
 				BCD112902C556D8800C9177C /* AppColor.swift in Sources */,
 				BCD112CF2C5631BE00C9177C /* PasswordSeeView.swift in Sources */,
 				BCD112522C555E2E00C9177C /* IApp.swift in Sources */,

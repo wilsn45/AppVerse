@@ -1,5 +1,5 @@
 //
-//  PasswordItemView.swift
+//  EditNoteView.swift
 //  I
 //
 //  Created by Wilson.Shakya on 28/07/24.
@@ -7,25 +7,19 @@
 
 import Foundation
 import SwiftUI
-import SwiftData
 
-struct PasswordItemView: View {
-
-	let item: String
+struct EditNoteView: View {
+	let isNewNote: Bool
 
 	var body: some View {
 		HStack {
-			Text(item)
+			Text("Your Note")
 				.font(.headline)
 			Spacer()
 		}
+		.navigationTitle(isNewNote ? "Write New Note": "Edit Note")
 		.padding()
 		.background(Color.gray.opacity(0.1))
 		.cornerRadius(8)
 	}
-}
-
-
-#Preview {
-	PasswordItemView(item: "Password A")
 }

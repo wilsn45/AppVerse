@@ -21,7 +21,7 @@ struct FeatureOptionView: View {
 				Text("Feature Icon")
 				Text(type.title)
 			}
-			.frame(width: 100, height: 100)
+			.frame(width: (UIScreen.main.bounds.width / 2) - 40, height: 150)
 		}.background(AppColor.backgroundWhite)
 		.clipShape(RoundedRectangle(cornerRadius: 15))
 		.shadow(color: AppColor.borderGrey, radius: 10, x: 0, y: 5)
