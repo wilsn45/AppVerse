@@ -28,6 +28,11 @@
 		BCD112D52C56447D00C9177C /* NewItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112D42C56447D00C9177C /* NewItemView.swift */; };
 		BCD112D82C5653B300C9177C /* NavigationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112D72C5653B300C9177C /* NavigationModel.swift */; };
 		BCD112DB2C56578700C9177C /* EditNoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112DA2C56578700C9177C /* EditNoteView.swift */; };
+		BCD112DE2C567D6A00C9177C /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112DD2C567D6A00C9177C /* CoreDataManager.swift */; };
+		BCD112E12C567EDA00C9177C /* iAppDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BCD112DF2C567EDA00C9177C /* iAppDataModel.xcdatamodeld */; };
+		BCD112E42C567F5400C9177C /* NotesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112E32C567F5400C9177C /* NotesViewModel.swift */; };
+		BCD112E92C56810600C9177C /* TextEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112E82C56810600C9177C /* TextEditorView.swift */; };
+		BCD112EC2C56815400C9177C /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD112EB2C56815400C9177C /* View+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,6 +77,11 @@
 		BCD112D42C56447D00C9177C /* NewItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewItemView.swift; sourceTree = "<group>"; };
 		BCD112D72C5653B300C9177C /* NavigationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationModel.swift; sourceTree = "<group>"; };
 		BCD112DA2C56578700C9177C /* EditNoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditNoteView.swift; sourceTree = "<group>"; };
+		BCD112DD2C567D6A00C9177C /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		BCD112E02C567EDA00C9177C /* iAppDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = iAppDataModel.xcdatamodel; sourceTree = "<group>"; };
+		BCD112E32C567F5400C9177C /* NotesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesViewModel.swift; sourceTree = "<group>"; };
+		BCD112E82C56810600C9177C /* TextEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorView.swift; sourceTree = "<group>"; };
+		BCD112EB2C56815400C9177C /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +132,8 @@
 		BCD112502C555E2E00C9177C /* I */ = {
 			isa = PBXGroup;
 			children = (
+				BCD112EA2C56814200C9177C /* Extension */,
+				BCD112DC2C567D3200C9177C /* CoreData */,
 				BCD1128E2C556D7200C9177C /* UI */,
 				BCD112812C55631400C9177C /* Feature */,
 				BCD112512C555E2E00C9177C /* IApp.swift */,
@@ -188,9 +200,12 @@
 		BCD112832C55632400C9177C /* Notes */ = {
 			isa = PBXGroup;
 			children = (
+				BCD112E52C567FB700C9177C /* DataModel */,
+				BCD112E22C567F4400C9177C /* ViewModel */,
 				BCD112882C5563BD00C9177C /* NotesView.swift */,
 				BCD112D22C56434900C9177C /* NotesItemView.swift */,
 				BCD112DA2C56578700C9177C /* EditNoteView.swift */,
+				BCD112E82C56810600C9177C /* TextEditorView.swift */,
 			);
 			path = Notes;
 			sourceTree = "<group>";
@@ -239,6 +254,38 @@
 				BCD1127F2C55610C00C9177C /* FeatureOptionView.swift */,
 			);
 			path = Home;
+			sourceTree = "<group>";
+		};
+		BCD112DC2C567D3200C9177C /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				BCD112DF2C567EDA00C9177C /* iAppDataModel.xcdatamodeld */,
+				BCD112DD2C567D6A00C9177C /* CoreDataManager.swift */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
+		BCD112E22C567F4400C9177C /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				BCD112E32C567F5400C9177C /* NotesViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		BCD112E52C567FB700C9177C /* DataModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DataModel;
+			sourceTree = "<group>";
+		};
+		BCD112EA2C56814200C9177C /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				BCD112EB2C56815400C9177C /* View+Extension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -375,15 +422,20 @@
 				BCD112892C5563BD00C9177C /* NotesView.swift in Sources */,
 				BCD112D82C5653B300C9177C /* NavigationModel.swift in Sources */,
 				BCD112D52C56447D00C9177C /* NewItemView.swift in Sources */,
+				BCD112DE2C567D6A00C9177C /* CoreDataManager.swift in Sources */,
+				BCD112E92C56810600C9177C /* TextEditorView.swift in Sources */,
+				BCD112E42C567F5400C9177C /* NotesViewModel.swift in Sources */,
 				BCD1128D2C55642700C9177C /* PasswordView.swift in Sources */,
 				BCD1128B2C5563FE00C9177C /* FinanceView.swift in Sources */,
 				BCD112802C55610C00C9177C /* FeatureOptionView.swift in Sources */,
 				BCD112DB2C56578700C9177C /* EditNoteView.swift in Sources */,
 				BCD112D32C56434900C9177C /* NotesItemView.swift in Sources */,
 				BCD112902C556D8800C9177C /* AppColor.swift in Sources */,
+				BCD112E12C567EDA00C9177C /* iAppDataModel.xcdatamodeld in Sources */,
 				BCD112CF2C5631BE00C9177C /* PasswordSeeView.swift in Sources */,
 				BCD112522C555E2E00C9177C /* IApp.swift in Sources */,
 				BCD112932C5581B800C9177C /* LinksView.swift in Sources */,
+				BCD112EC2C56815400C9177C /* View+Extension.swift in Sources */,
 				BCD112CD2C56315000C9177C /* PasswordItemView.swift in Sources */,
 				BCD112872C5563A300C9177C /* GalleryView.swift in Sources */,
 				BCD112D12C56378100C9177C /* PasswordAddView.swift in Sources */,
@@ -712,6 +764,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		BCD112DF2C567EDA00C9177C /* iAppDataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				BCD112E02C567EDA00C9177C /* iAppDataModel.xcdatamodel */,
+			);
+			currentVersion = BCD112E02C567EDA00C9177C /* iAppDataModel.xcdatamodel */;
+			path = iAppDataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = BCD112462C555E2E00C9177C /* Project object */;
 }

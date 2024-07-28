@@ -12,10 +12,16 @@ import SwiftUI
 struct IApp: App {
 	@StateObject private var navigationModel = NavigationModel()
 
+	init() {
+		CoreDataManager.shared.loadContainer()
+	}
+
+	
 	var body: some Scene {
 		WindowGroup {
 			HomeView()
 				.environmentObject(navigationModel)
+				//.environmentObject(coreDataManager)
 		}
 	}
 }

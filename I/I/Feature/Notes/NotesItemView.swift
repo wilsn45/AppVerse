@@ -9,13 +9,17 @@ import SwiftUI
 
 struct NotesItemView: View {
 
-	let item: String
+	let note: NoteEntity
 
 	var body: some View {
 		HStack {
-			Text(item)
-				.font(.headline)
-			Spacer()
+			Text(note.title ?? "New Note")
+				.lineLimit(1)
+				.font(.title3)
+				.fontWeight(.bold)
+			Text(note.content ?? "No context available")
+				.lineLimit(1)
+				.fontWeight(.light)
 		}
 		.padding()
 		.background(Color.gray.opacity(0.1))

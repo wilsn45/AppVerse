@@ -9,57 +9,118 @@ import Foundation
 import SwiftUI
 import SwiftData
 
-enum NotesNavigationType: Hashable {
-	case new
-	case edit
-}
 
 struct NotesView: View {
-	let NEW_NOTE = "NewNote"
-	let EDIT_NOTE = "EditNote"
-	let items = Array(1...100).map { "Item \($0)" }
-	
-	@EnvironmentObject var navigationModel: NavigationModel
 
-	var body: some View {
-		NavigationStack(path: $navigationModel.NotesPath)  {
-			ZStack {
-				let columns = [
-					GridItem(.flexible()),
-					GridItem(.flexible())
-				]
+	var vm: NotesViewModel = NotesViewModel()
+	@State var showConfirmationDialogue: Bool = false
+	@State var showOverlay: Bool = false
+	@State private var searchText = ""
 
-				ScrollView {
-					LazyVGrid(columns: columns, spacing: 16) {
-						ForEach(items, id: \.self) { item in
-							NotesItemView(item: item)
-								.onTapGesture {
-									navigationModel.NotesPath.append(.edit)
-								}
-						}
-					}
-					.padding(.horizontal)
-				}
+	@State private var selectedNote: NoteEntity?
 
-				NewItemView(action: {
-					navigationModel.NotesPath.append(.new)
-				})
-
-			}
-			.navigationTitle("Notes")
-			.navigationDestination(for: NotesNavigationType.self) { view in
-				navigationView(for: view)
-			}
+	var groupedByDate: [Date: [NoteEntity]] {
+		let calendar = Calendar.current
+		return Dictionary(grouping: vm.notes) { noteEntity in
+			let dateComponents = calendar.dateComponents([.year, .month, .day], from: noteEntity.timestamp!)
+			return calendar.date(from: dateComponents) ?? Date()
 		}
-
 	}
 
-	private func navigationView(for type: NotesNavigationType) -> some View {
-		let isNewNote = type ==  NotesNavigationType.new
-		return EditNoteView(isNewNote: isNewNote)
+	var headers: [Date] {
+		groupedByDate.map { $0.key }.sorted(by: { $0 > $1 })
+	}
+
+	var body: some View {
+
+		NavigationSplitView {
+			// sidebar
+			List(selection: $selectedNote) {
+				ForEach(headers, id: \.self) { header in
+					Section(header: Text(header, style: .date)) {
+						ForEach(groupedByDate[header]!) { note in
+							NavigationLink(value: note) {
+								ListCellView(note: note)
+
+							}
+						}
+
+						.onDelete(perform: { indexSet in
+							deleteNote(in: header, at: indexSet)
+						})
+					}
+				}
+			}
+			.id(UUID())
+			.navigationTitle("Notes")
+			.searchable(text: $searchText)
+//			.onChange(of: searchText) {
+//				// MARK: Core Data Operations
+//				vm.searchNotes(with: searchText)
+//			}
+			.toolbar {
+				ToolbarItem(placement: .navigationBarTrailing) {
+
+					Button {
+						// Create a new empty note here:
+						createNewNote()
+
+					} label: {
+						Image(systemName: "note.text.badge.plus")
+							.foregroundColor(Color(UIColor.systemOrange))
+					}
+				}
+			}
+
+		} detail: {
+			// item details
+			if let selectedNote {
+				EditNotesView(note: selectedNote)
+					.id(selectedNote)
+			} else {
+				Text("Select a Note.")
+			}
+
+		}
+	}
+
+	// MARK: Core Data Operations
+
+	private func createNewNote() {
+		selectedNote = nil
+		selectedNote = vm.createNote()
+	}
+
+	private func deleteNote(in header: Date, at offsets: IndexSet) {
+		offsets.forEach { index in
+			if let noteToDelete = groupedByDate[header]?[index] {
+
+				if noteToDelete == selectedNote {
+					selectedNote = nil
+				}
+
+				vm.deleteNote(noteToDelete)
+			}
+		}
 	}
 }
 
 #Preview {
 	NotesView()
+}
+
+struct ListCellView: View {
+	var note: NoteEntity
+
+	var body: some View {
+		VStack(alignment: .leading, spacing: 5) {
+			Text(note.title ?? "New Note")
+				.lineLimit(1)
+				.font(.title3)
+				.fontWeight(.bold)
+			Text(note.content ?? "No context available")
+				.lineLimit(1)
+				.fontWeight(.light)
+		}
+	}
 }
