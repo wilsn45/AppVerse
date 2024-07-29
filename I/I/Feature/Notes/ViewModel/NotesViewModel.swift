@@ -29,15 +29,7 @@ class NotesViewModel: ObservableObject {
 		}
 
 		do {
-			notes = try dataManager.fetch(request).filter({  item in
-				if let title = item.title, !title.isEmpty {
-					return true
-				}
-				if let content = item.content, !content.isEmpty {
-					return true
-				}
-				return false
-			})
+			notes = try dataManager.fetch(request)
 		} catch {
 			print("Error fetching notes: \(error)")
 		}
