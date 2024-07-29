@@ -29,7 +29,15 @@ class NotesViewModel: ObservableObject {
 		}
 
 		do {
-			notes = try dataManager.fetch(request)
+			notes = try dataManager.fetch(request).filter({  item in
+				if let title = item.title, !title.isEmpty {
+					return true
+				}
+				if let content = item.content, !content.isEmpty {
+					return true
+				}
+				return false
+			})
 		} catch {
 			print("Error fetching notes: \(error)")
 		}
@@ -52,6 +60,7 @@ class NotesViewModel: ObservableObject {
 	}
 
 	func updateNote(_ note: NoteEntity, title: String, content: String) {
+		guard !title.isEmpty || !content.isEmpty else { return }
 		note.title = title
 		note.content = content
 		dataManager.saveContext()

@@ -6,7 +6,8 @@
 //
 
 import Foundation
+import SwiftUI
 
-class NavigationModel: ObservableObject {
-	@Published var featurePath: [FeatureType] = []
+class NavigationManager: ObservableObject {
+	@Published var path = NavigationPath()
 }

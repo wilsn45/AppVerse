@@ -45,8 +45,8 @@ struct ListCellView: View {
 
 	var body: some View {
 		VStack() {
-			Text(note.title ?? "New Note")
-			Text(note.content ?? "No context available")
+			Text(note.title ?? "")
+			Text(note.content ?? "")
 		}
 		.padding()
 		.background(AppColor.backgroundWhite)

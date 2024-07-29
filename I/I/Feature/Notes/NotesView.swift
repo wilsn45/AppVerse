@@ -11,7 +11,7 @@ import SwiftData
 
 
 struct NotesView: View {
-
+	@EnvironmentObject var navigationManager: NavigationManager
 	@State var viewModel: NotesViewModel = NotesViewModel()
 	@State var showConfirmationDialogue: Bool = false
 	@State var showOverlay: Bool = false
@@ -33,34 +33,42 @@ struct NotesView: View {
 
 	var body: some View {
 		VStack {
-			// Add the search bar at the top
-			VStack {
-			  TextField("Search", text: $searchText)
-					.padding(.horizontal)
-			}
-			.frame(maxHeight: 40)
-			.background(Color(.systemGray5))
-			.cornerRadius(4)
-			.padding()
+				VStack {
+					TextField("Search", text: $searchText)
+						.padding(.horizontal)
+				}
+				.frame(maxHeight: 40)
+				.background(Color(.systemGray5))
+				.cornerRadius(4)
+				.padding()
 
-			ZStack {
-				ScrollView() {
-					ForEach(headers, id: \.self) { header in
-						if let notes = groupedByDate[header] {
-							NotesItemView(date: header, notes: notes)
-								.padding(.vertical, 10)
+				ZStack {
+					ScrollView() {
+						ForEach(headers, id: \.self) { header in
+							if let notes = groupedByDate[header] {
+								NavigationLink(value: NotesNavigation.editNote) {
+									NotesItemView(date: header, notes: notes)
+										.padding(.vertical, 10)
+								}
+							}
 						}
-					}
-				}.scrollIndicators(.hidden)
+					}.scrollIndicators(.hidden)
 
-				NewItemView(action: {
-					createNewNote()
-					//EditNotesView(vm: $viewModel, note: selectedNote)
-				})
+					NewItemView(action: {
+						createNewNote()
+					})
+				}
+				.background(Color.backgroundGrey)
+				.navigationTitle("Notes")
 			}
-			.background(Color.backgroundGrey)
-			.navigationTitle("Notes")
-		}
+			.navigationDestination(for: NotesNavigation.self, destination: {
+			value in
+			switch value {
+				case .editNote: EditNotesView(vm: $viewModel, note: selectedNote)
+				case .newNote: EditNotesView(vm: $viewModel, note: nil)
+			}
+		})
+
 	}
 
 	// MARK: Core Data Operations
@@ -68,6 +76,7 @@ struct NotesView: View {
 	private func createNewNote() {
 		selectedNote = nil
 		selectedNote = viewModel.createNote()
+		navigationManager.path.append(NotesNavigation.editNote)
 	}
 
 	private func deleteNote(in header: Date, at offsets: IndexSet) {
@@ -89,3 +98,7 @@ struct NotesView: View {
 }
 
 
+enum NotesNavigation: Hashable {
+	case editNote
+	case newNote
+}

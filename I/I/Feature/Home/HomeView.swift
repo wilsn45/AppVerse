@@ -9,12 +9,12 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-	@EnvironmentObject var navigationModel: NavigationModel
+	@EnvironmentObject var navigationManager: NavigationManager
 
 	let featureList: [FeatureType] = [.gallery, .notes, .finance, .password, .links]
 
 	var body: some View {
-		NavigationStack(path: $navigationModel.featurePath)  {
+		NavigationStack(path: $navigationManager.path)  {
 			VStack {
 				VStack {
 					VStack(spacing: 20) {
@@ -103,3 +103,67 @@ struct HomeView: View {
 //#Preview {
 //	HomeView()
 //}
+
+
+
+
+struct ScreenA: View {
+	@EnvironmentObject var navigationManager: NavigationManager
+
+	var body: some View {
+		NavigationStack(path: $navigationManager.path) {
+			VStack {
+				Text("This is Screen A")
+				Button("Go to Screen B") {
+					navigationManager.path.append(ScreenIdentifier.screenB)
+				}
+			}
+			.navigationDestination(for: ScreenIdentifier.self) { screen in
+				switch screen {
+					case .screenB:
+						ScreenB()
+					default:
+						EmptyView()
+				}
+			}
+			.navigationTitle("Screen A")
+		}
+	}
+}
+
+enum ScreenIdentifier: Hashable {
+	case screenA
+	case screenB
+	case screenC
+}
+
+
+struct ScreenB: View {
+	@EnvironmentObject var navigationManager: NavigationManager
+
+	var body: some View {
+		VStack {
+			Text("This is Screen B")
+			Button("Go to Screen C") {
+				navigationManager.path.append(ScreenIdentifier.screenC)
+			}
+		}
+		.navigationDestination(for: ScreenIdentifier.self) { screen in
+			switch screen {
+				case .screenC:
+					ScreenC()
+				default:
+					EmptyView()
+			}
+		}
+		.navigationTitle("Screen B")
+	}
+}
+
+
+struct ScreenC: View {
+	var body: some View {
+		Text("This is Screen C")
+			.navigationTitle("Screen C")
+	}
+}
