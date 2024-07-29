@@ -8,21 +8,28 @@
 import SwiftUI
 
 struct NotesItemView: View {
-
-	let note: NoteEntity
+	let date: Date
+	let notes: [NoteEntity]
 
 	var body: some View {
-		HStack {
-			Text(note.title ?? "New Note")
-				.lineLimit(1)
-				.font(.title3)
-				.fontWeight(.bold)
-			Text(note.content ?? "No context available")
-				.lineLimit(1)
-				.fontWeight(.light)
+		VStack(alignment: .leading) {
+			Text(date, style: .date)
+				.background(AppColor.backgroundGrey)
+
+			let columns = [
+				GridItem(.flexible()),
+				GridItem(.flexible())
+			]
+
+			LazyVGrid(columns: columns, spacing: 16) {
+				ForEach(notes, id: \.self) { item in
+					NavigationLink(value: item) {
+						ListCellView(note: item)
+					}
+				}
+			}
 		}
 		.padding()
-		.background(Color.gray.opacity(0.1))
 		.cornerRadius(8)
 	}
 }
@@ -30,4 +37,20 @@ struct NotesItemView: View {
 
 #Preview {
 	PasswordItemView(item: "Note A")
+}
+
+
+struct ListCellView: View {
+	var note: NoteEntity
+
+	var body: some View {
+		VStack() {
+			Text(note.title ?? "New Note")
+			Text(note.content ?? "No context available")
+		}
+		.padding()
+		.background(AppColor.backgroundWhite)
+		.clipShape(RoundedRectangle(cornerRadius: 15))
+		.shadow(color: AppColor.borderGrey, radius: 10, x: 0, y: 5)
+	}
 }

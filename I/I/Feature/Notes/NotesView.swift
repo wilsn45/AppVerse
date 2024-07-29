@@ -32,55 +32,35 @@ struct NotesView: View {
 	}
 
 	var body: some View {
+		VStack {
+			// Add the search bar at the top
+			VStack {
+			  TextField("Search", text: $searchText)
+					.padding(.horizontal)
+			}
+			.frame(maxHeight: 40)
+			.background(Color(.systemGray5))
+			.cornerRadius(4)
+			.padding()
 
-		NavigationSplitView {
-			// sidebar
-			List(selection: $selectedNote) {
-				ForEach(headers, id: \.self) { header in
-					Section(header: Text(header, style: .date)) {
-						ForEach(groupedByDate[header]!) { note in
-							NavigationLink(value: note) {
-								ListCellView(note: note)
-
-							}
+			ZStack {
+				ScrollView() {
+					ForEach(headers, id: \.self) { header in
+						if let notes = groupedByDate[header] {
+							NotesItemView(date: header, notes: notes)
+								.padding(.vertical, 10)
 						}
-
-						.onDelete(perform: { indexSet in
-							deleteNote(in: header, at: indexSet)
-						})
 					}
-				}
+				}.scrollIndicators(.hidden)
+
+				NewItemView(action: {
+					createNewNote()
+					//EditNotesView(vm: $viewModel, note: selectedNote)
+				})
 			}
-			.id(UUID())
+			.background(Color.backgroundGrey)
 			.navigationTitle("Notes")
-			.searchable(text: $searchText)
-//			.onChange(of: searchText) {
-//				// MARK: Core Data Operations
-//				vm.searchNotes(with: searchText)
-//			}
-			.toolbar {
-				ToolbarItem(placement: .navigationBarTrailing) {
-
-					Button {
-						// Create a new empty note here:
-						createNewNote()
-
-					} label: {
-						Image(systemName: "note.text.badge.plus")
-							.foregroundColor(Color(UIColor.systemOrange))
-					}
-				}
-			}
-
-		} detail: {
-			if let selectedNote {
-				EditNotesView(vm: $viewModel, note: selectedNote)
-					.id(selectedNote)
-			} else {
-				Text("Select a Note.")
-			}
-
-		}.navigationTitle("Notes")
+		}
 	}
 
 	// MARK: Core Data Operations
@@ -108,18 +88,4 @@ struct NotesView: View {
 	NotesView()
 }
 
-struct ListCellView: View {
-	var note: NoteEntity
 
-	var body: some View {
-		VStack(alignment: .leading, spacing: 5) {
-			Text(note.title ?? "New Note")
-				.lineLimit(1)
-				.font(.title3)
-				.fontWeight(.bold)
-			Text(note.content ?? "No context available")
-				.lineLimit(1)
-				.fontWeight(.light)
-		}
-	}
-}

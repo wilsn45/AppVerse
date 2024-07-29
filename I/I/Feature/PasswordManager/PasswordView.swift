@@ -25,6 +25,7 @@ struct PasswordView: View {
 						showPasswordDetailView = true
 					}
 			}
+			.background(Color.backgroundGrey)
 
 			NewItemView(action: {
 				showAddPasswordView = true
@@ -58,7 +59,9 @@ struct PasswordView: View {
 					.zIndex(1)
 
 			}
-		}.navigationTitle("Password Manager")
+		}
+		.navigationTitle("Password Manager")
+
 	}
 }
 
