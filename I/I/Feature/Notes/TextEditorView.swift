@@ -30,7 +30,6 @@ struct TextEditorView: View {
 				.border(.clear)
 
 			if string.isEmpty {
-
 				Text("Content")
 					.font(.title3)
 					.foregroundColor(.gray)
@@ -38,6 +37,7 @@ struct TextEditorView: View {
 					.opacity(0.6)
 					.padding([.top, .leading], 4)
 			}
+
 
 		}.onPreferenceChange(ViewHeightKey.self) { textEditorHeight = $0 }
 	}

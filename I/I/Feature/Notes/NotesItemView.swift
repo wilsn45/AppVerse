@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct NotesItemView: View {
+	@EnvironmentObject var navigationManager: NavigationManager
+	@Binding var selectedNote: NoteEntity?
 	let date: Date
 	let notes: [NoteEntity]
 
@@ -23,9 +25,11 @@ struct NotesItemView: View {
 
 			LazyVGrid(columns: columns, spacing: 16) {
 				ForEach(notes, id: \.self) { item in
-					NavigationLink(value: item) {
-						ListCellView(note: item)
-					}
+					ListCellView(note: item)
+						.onTapGesture {
+							selectedNote = item
+							navigationManager.path.append(NotesNavigation.editNote)
+						}
 				}
 			}
 		}

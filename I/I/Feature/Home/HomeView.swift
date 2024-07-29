@@ -14,7 +14,7 @@ struct HomeView: View {
 	let featureList: [FeatureType] = [.gallery, .notes, .finance, .password, .links]
 
 	var body: some View {
-		NavigationStack(path: $navigationManager.path)  {
+		NavigationStack(path: $navigationManager.path) {
 			VStack {
 				VStack {
 					VStack(spacing: 20) {
@@ -63,9 +63,10 @@ struct HomeView: View {
 						ScrollView {
 							LazyVGrid(columns: columns, spacing: 16) {
 								ForEach(featureList, id: \.self) { item in
-									NavigationLink(value: item) {
-										FeatureOptionView(type: item)
-									}
+									FeatureOptionView(type: item)
+										.onTapGesture {
+											navigationManager.path.append(item)
+										}
 								}
 							}
 						}.scrollIndicators(.hidden)
@@ -76,10 +77,17 @@ struct HomeView: View {
 				.padding(.leading, 20)
 				.padding(.trailing, 20)
 
-			}.background(AppColor.backgroundGrey)
-				.navigationDestination(for: FeatureType.self) { view in
-					navigationView(for: view)
+				.navigationDestination(for: FeatureType.self) { screen in
+					switch screen {
+						case .notes:
+							NotesView()
+						default:
+							EmptyView()
+					}
 				}
+				.navigationTitle("Home")
+			}
+
 		}
 	}
 
@@ -115,12 +123,12 @@ struct ScreenA: View {
 			VStack {
 				Text("This is Screen A")
 				Button("Go to Screen B") {
-					navigationManager.path.append(ScreenIdentifier.screenB)
+					navigationManager.path.append(FeatureType.notes)
 				}
 			}
-			.navigationDestination(for: ScreenIdentifier.self) { screen in
+			.navigationDestination(for: FeatureType.self) { screen in
 				switch screen {
-					case .screenB:
+					case .notes:
 						ScreenB()
 					default:
 						EmptyView()
@@ -137,20 +145,27 @@ enum ScreenIdentifier: Hashable {
 	case screenC
 }
 
+enum SubScreenIdentifier: Hashable {
+	case screenC
+}
+
 
 struct ScreenB: View {
 	@EnvironmentObject var navigationManager: NavigationManager
+	init() {
+		print("Text")
+	}
 
 	var body: some View {
 		VStack {
 			Text("This is Screen B")
 			Button("Go to Screen C") {
-				navigationManager.path.append(ScreenIdentifier.screenC)
+				navigationManager.path.append(NotesNavigation.newNote)
 			}
 		}
-		.navigationDestination(for: ScreenIdentifier.self) { screen in
+		.navigationDestination(for: NotesNavigation.self) { screen in
 			switch screen {
-				case .screenC:
+				case .newNote:
 					ScreenC()
 				default:
 					EmptyView()

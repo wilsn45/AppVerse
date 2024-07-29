@@ -30,6 +30,7 @@ class NotesViewModel: ObservableObject {
 
 		do {
 			notes = try dataManager.fetch(request)
+			print("Notes: \(notes)")
 		} catch {
 			print("Error fetching notes: \(error)")
 		}

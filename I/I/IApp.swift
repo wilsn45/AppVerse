@@ -21,6 +21,8 @@ struct IApp: App {
 		WindowGroup {
 //			ScreenA()
 //				.environmentObject(navigationManager)
+
+
 			HomeView()
 				.environmentObject(navigationManager)
 		}

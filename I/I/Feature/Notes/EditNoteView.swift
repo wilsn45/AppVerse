@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 struct EditNotesView: View {
 
@@ -14,6 +15,8 @@ struct EditNotesView: View {
 	@State var note: NoteEntity?
 	@State private var title: String = ""
 	@State private var content: String = ""
+
+	private let titlePublisher = PassthroughSubject<String, Never>()
 
 	@FocusState private var contentEditorInFocus: Bool
 
@@ -25,13 +28,16 @@ struct EditNotesView: View {
 				TextField("Title", text: $title, axis: .vertical)
 					.font(.title.bold())
 					.submitLabel(.next)
-//					.onChange(of: title, {
-//						guard let newValueLastChar = title.last else { return }
-//						if newValueLastChar == "\n" {
-//							title.removeLast()
-//							contentEditorInFocus = true
-//						}
-//					})
+					.onChange(of: title) { newValue in
+						titlePublisher.send(newValue)
+					}
+					.onReceive(titlePublisher) { newValue in
+						guard let newValueLastChar = newValue.last else { return }
+						if newValueLastChar == "\n" {
+							title.removeLast()
+							contentEditorInFocus = true
+						}
+					}
 
 				TextEditorView(string: $content)
 					.scrollDisabled(true)
