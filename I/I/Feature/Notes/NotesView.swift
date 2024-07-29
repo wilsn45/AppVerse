@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 import SwiftData
+import Combine
+
 
 
 struct NotesView: View {
@@ -16,6 +18,7 @@ struct NotesView: View {
 	@State var showConfirmationDialogue: Bool = false
 	@State var showOverlay: Bool = false
 	@State private var searchText = ""
+	private let searchPublisher = PassthroughSubject<String, Never>()
 
 	@State var selectedNote: NoteEntity?
 
@@ -36,38 +39,32 @@ struct NotesView: View {
 	}
 
 	var body: some View {
+		ZStack {
+			ScrollView() {
+				ForEach(headers, id: \.self) { header in
+					if let notes = groupedByDate[header] {
+						NotesItemView(selectedNote: $selectedNote, date: header, notes: notes)
+							.padding(.vertical, 10)
 
-		VStack {
-			VStack {
-				TextField("Search", text: $searchText)
-					.padding(.horizontal)
-			}
-			.frame(maxHeight: 40)
-			.background(Color(.systemGray5))
-			.cornerRadius(4)
-			.padding()
-
-			ZStack {
-				ScrollView() {
-					ForEach(headers, id: \.self) { header in
-						if let notes = groupedByDate[header] {
-							NotesItemView(selectedNote: $selectedNote, date: header, notes: notes)
-								.padding(.vertical, 10)
-
-						}
 					}
-				}.scrollIndicators(.hidden)
+				}
+			}.scrollIndicators(.hidden)
 
-				NewItemView(action: {
-					createNewNote()
-				})
-			}
-			.background(Color.backgroundGrey)
+			NewItemView(action: {
+				createNewNote()
+			})
+		}
+		.background(Color.backgroundGrey)
+		.searchable(text: $searchText)
+		.onChange(of: searchText) { newValue in
+			searchPublisher.send(newValue)
+		}
+		.onReceive(searchPublisher) { newValue in
+			viewModel.searchNotes(with: searchText)
 		}
 		.navigationDestination(for: NotesNavigation.self) { screen in
 			EditNotesView(vm: $viewModel, note: selectedNote)
 		}
-		.navigationTitle("Notes")
 	}
 
 	// MARK: Core Data Operations
