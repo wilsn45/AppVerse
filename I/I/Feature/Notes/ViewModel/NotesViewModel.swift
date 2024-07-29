@@ -16,6 +16,10 @@ class NotesViewModel: ObservableObject {
 
 	let dataManager = CoreDataManager.shared
 
+	init() {
+		fetchNotes()
+	}
+
 	func fetchNotes(with searchText: String = "")  {
 		let request: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
 		request.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]

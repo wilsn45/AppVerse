@@ -10,8 +10,7 @@ import SwiftUI
 
 struct EditNotesView: View {
 
-	@EnvironmentObject var vm: NotesViewModel
-
+	@Binding var vm: NotesViewModel
 	@State var note: NoteEntity?
 	@State private var title: String = ""
 	@State private var content: String = ""
@@ -50,14 +49,12 @@ struct EditNotesView: View {
 					Spacer()
 					Button("Done") {
 						self.hideKeyboard()
-						// Save to Core Data
 						self.updateNote(title: title, content: content)
 					}
 				}
 			}
 		}
 		.onAppear {
-
 			if let note = note {
 				self.title = note.title ?? ""
 				self.content = note.content ?? ""
@@ -69,11 +66,9 @@ struct EditNotesView: View {
 	// MARK: Core Data Operations
 
 	func updateNote(title: String, content: String) {
-
 		if (title.isEmpty) && (content.isEmpty) {
 			return
 		}
-
 		guard let note = note else { return }
 
 		vm.updateNote(note, title: title, content: content)

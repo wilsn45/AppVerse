@@ -12,7 +12,7 @@ import SwiftData
 
 struct NotesView: View {
 
-	var vm: NotesViewModel = NotesViewModel()
+	@State var viewModel: NotesViewModel = NotesViewModel()
 	@State var showConfirmationDialogue: Bool = false
 	@State var showOverlay: Bool = false
 	@State private var searchText = ""
@@ -21,7 +21,7 @@ struct NotesView: View {
 
 	var groupedByDate: [Date: [NoteEntity]] {
 		let calendar = Calendar.current
-		return Dictionary(grouping: vm.notes) { noteEntity in
+		return Dictionary(grouping: viewModel.notes) { noteEntity in
 			let dateComponents = calendar.dateComponents([.year, .month, .day], from: noteEntity.timestamp!)
 			return calendar.date(from: dateComponents) ?? Date()
 		}
@@ -73,22 +73,21 @@ struct NotesView: View {
 			}
 
 		} detail: {
-			// item details
 			if let selectedNote {
-				EditNotesView(note: selectedNote)
+				EditNotesView(vm: $viewModel, note: selectedNote)
 					.id(selectedNote)
 			} else {
 				Text("Select a Note.")
 			}
 
-		}
+		}.navigationTitle("Notes")
 	}
 
 	// MARK: Core Data Operations
 
 	private func createNewNote() {
 		selectedNote = nil
-		selectedNote = vm.createNote()
+		selectedNote = viewModel.createNote()
 	}
 
 	private func deleteNote(in header: Date, at offsets: IndexSet) {
@@ -99,7 +98,7 @@ struct NotesView: View {
 					selectedNote = nil
 				}
 
-				vm.deleteNote(noteToDelete)
+				viewModel.deleteNote(noteToDelete)
 			}
 		}
 	}
