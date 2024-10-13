@@ -1,6 +1,6 @@
 //
 //  Persistence.swift
-//  Grow: Daily Tips and Quotes
+//  Grow
 //
 //  Created by Wilson.Shakya on 13/10/24.
 //
@@ -31,7 +31,7 @@ struct PersistenceController {
     let container: NSPersistentContainer
 
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "Grow__Daily_Tips_and_Quotes")
+        container = NSPersistentContainer(name: "Grow")
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }

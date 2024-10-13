@@ -7,65 +7,65 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BC8A883A2CBBC34A00DD8FC1 /* Grow__Daily_Tips_and_QuotesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A88392CBBC34A00DD8FC1 /* Grow__Daily_Tips_and_QuotesApp.swift */; };
-		BC8A883C2CBBC34A00DD8FC1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A883B2CBBC34A00DD8FC1 /* ContentView.swift */; };
-		BC8A883E2CBBC34C00DD8FC1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC8A883D2CBBC34C00DD8FC1 /* Assets.xcassets */; };
-		BC8A88412CBBC34C00DD8FC1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC8A88402CBBC34C00DD8FC1 /* Preview Assets.xcassets */; };
-		BC8A88432CBBC34C00DD8FC1 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A88422CBBC34C00DD8FC1 /* Persistence.swift */; };
-		BC8A88462CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_Quotes.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BC8A88442CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_Quotes.xcdatamodeld */; };
-		BC8A88502CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A884F2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesTests.swift */; };
-		BC8A885A2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A88592CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITests.swift */; };
-		BC8A885C2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A885B2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITestsLaunchTests.swift */; };
+		BC8A88752CBBC63900DD8FC1 /* GrowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A88742CBBC63900DD8FC1 /* GrowApp.swift */; };
+		BC8A88772CBBC63900DD8FC1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A88762CBBC63900DD8FC1 /* ContentView.swift */; };
+		BC8A88792CBBC63B00DD8FC1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC8A88782CBBC63B00DD8FC1 /* Assets.xcassets */; };
+		BC8A887C2CBBC63B00DD8FC1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BC8A887B2CBBC63B00DD8FC1 /* Preview Assets.xcassets */; };
+		BC8A887E2CBBC63B00DD8FC1 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A887D2CBBC63B00DD8FC1 /* Persistence.swift */; };
+		BC8A88812CBBC63B00DD8FC1 /* Grow.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BC8A887F2CBBC63B00DD8FC1 /* Grow.xcdatamodeld */; };
+		BC8A888B2CBBC63B00DD8FC1 /* GrowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A888A2CBBC63B00DD8FC1 /* GrowTests.swift */; };
+		BC8A88952CBBC63C00DD8FC1 /* GrowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A88942CBBC63C00DD8FC1 /* GrowUITests.swift */; };
+		BC8A88972CBBC63C00DD8FC1 /* GrowUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC8A88962CBBC63C00DD8FC1 /* GrowUITestsLaunchTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		BC8A884C2CBBC34C00DD8FC1 /* PBXContainerItemProxy */ = {
+		BC8A88872CBBC63B00DD8FC1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BC8A882E2CBBC34A00DD8FC1 /* Project object */;
+			containerPortal = BC8A88692CBBC63900DD8FC1 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = BC8A88352CBBC34A00DD8FC1;
-			remoteInfo = "Grow: Daily Tips and Quotes";
+			remoteGlobalIDString = BC8A88702CBBC63900DD8FC1;
+			remoteInfo = Grow;
 		};
-		BC8A88562CBBC34C00DD8FC1 /* PBXContainerItemProxy */ = {
+		BC8A88912CBBC63C00DD8FC1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = BC8A882E2CBBC34A00DD8FC1 /* Project object */;
+			containerPortal = BC8A88692CBBC63900DD8FC1 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = BC8A88352CBBC34A00DD8FC1;
-			remoteInfo = "Grow: Daily Tips and Quotes";
+			remoteGlobalIDString = BC8A88702CBBC63900DD8FC1;
+			remoteInfo = Grow;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		BC8A88362CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Grow: Daily Tips and Quotes.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BC8A88392CBBC34A00DD8FC1 /* Grow__Daily_Tips_and_QuotesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grow__Daily_Tips_and_QuotesApp.swift; sourceTree = "<group>"; };
-		BC8A883B2CBBC34A00DD8FC1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		BC8A883D2CBBC34C00DD8FC1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		BC8A88402CBBC34C00DD8FC1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		BC8A88422CBBC34C00DD8FC1 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		BC8A88452CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_Quotes.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Grow__Daily_Tips_and_Quotes.xcdatamodel; sourceTree = "<group>"; };
-		BC8A884B2CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Grow: Daily Tips and QuotesTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BC8A884F2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grow__Daily_Tips_and_QuotesTests.swift; sourceTree = "<group>"; };
-		BC8A88552CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Grow: Daily Tips and QuotesUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BC8A88592CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grow__Daily_Tips_and_QuotesUITests.swift; sourceTree = "<group>"; };
-		BC8A885B2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grow__Daily_Tips_and_QuotesUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		BC8A88712CBBC63900DD8FC1 /* Grow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Grow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC8A88742CBBC63900DD8FC1 /* GrowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowApp.swift; sourceTree = "<group>"; };
+		BC8A88762CBBC63900DD8FC1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BC8A88782CBBC63B00DD8FC1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BC8A887B2CBBC63B00DD8FC1 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		BC8A887D2CBBC63B00DD8FC1 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
+		BC8A88802CBBC63B00DD8FC1 /* Grow.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Grow.xcdatamodel; sourceTree = "<group>"; };
+		BC8A88862CBBC63B00DD8FC1 /* GrowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GrowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC8A888A2CBBC63B00DD8FC1 /* GrowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowTests.swift; sourceTree = "<group>"; };
+		BC8A88902CBBC63C00DD8FC1 /* GrowUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GrowUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BC8A88942CBBC63C00DD8FC1 /* GrowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowUITests.swift; sourceTree = "<group>"; };
+		BC8A88962CBBC63C00DD8FC1 /* GrowUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrowUITestsLaunchTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		BC8A88332CBBC34A00DD8FC1 /* Frameworks */ = {
+		BC8A886E2CBBC63900DD8FC1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC8A88482CBBC34C00DD8FC1 /* Frameworks */ = {
+		BC8A88832CBBC63B00DD8FC1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC8A88522CBBC34C00DD8FC1 /* Frameworks */ = {
+		BC8A888D2CBBC63C00DD8FC1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -75,144 +75,144 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		BC8A882D2CBBC34A00DD8FC1 = {
+		BC8A88682CBBC63900DD8FC1 = {
 			isa = PBXGroup;
 			children = (
-				BC8A88382CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes */,
-				BC8A884E2CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesTests */,
-				BC8A88582CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesUITests */,
-				BC8A88372CBBC34A00DD8FC1 /* Products */,
+				BC8A88732CBBC63900DD8FC1 /* Grow */,
+				BC8A88892CBBC63B00DD8FC1 /* GrowTests */,
+				BC8A88932CBBC63C00DD8FC1 /* GrowUITests */,
+				BC8A88722CBBC63900DD8FC1 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		BC8A88372CBBC34A00DD8FC1 /* Products */ = {
+		BC8A88722CBBC63900DD8FC1 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BC8A88362CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes.app */,
-				BC8A884B2CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesTests.xctest */,
-				BC8A88552CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesUITests.xctest */,
+				BC8A88712CBBC63900DD8FC1 /* Grow.app */,
+				BC8A88862CBBC63B00DD8FC1 /* GrowTests.xctest */,
+				BC8A88902CBBC63C00DD8FC1 /* GrowUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BC8A88382CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes */ = {
+		BC8A88732CBBC63900DD8FC1 /* Grow */ = {
 			isa = PBXGroup;
 			children = (
-				BC8A88392CBBC34A00DD8FC1 /* Grow__Daily_Tips_and_QuotesApp.swift */,
-				BC8A883B2CBBC34A00DD8FC1 /* ContentView.swift */,
-				BC8A883D2CBBC34C00DD8FC1 /* Assets.xcassets */,
-				BC8A88422CBBC34C00DD8FC1 /* Persistence.swift */,
-				BC8A88442CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_Quotes.xcdatamodeld */,
-				BC8A883F2CBBC34C00DD8FC1 /* Preview Content */,
+				BC8A88742CBBC63900DD8FC1 /* GrowApp.swift */,
+				BC8A88762CBBC63900DD8FC1 /* ContentView.swift */,
+				BC8A88782CBBC63B00DD8FC1 /* Assets.xcassets */,
+				BC8A887D2CBBC63B00DD8FC1 /* Persistence.swift */,
+				BC8A887F2CBBC63B00DD8FC1 /* Grow.xcdatamodeld */,
+				BC8A887A2CBBC63B00DD8FC1 /* Preview Content */,
 			);
-			path = "Grow: Daily Tips and Quotes";
+			path = Grow;
 			sourceTree = "<group>";
 		};
-		BC8A883F2CBBC34C00DD8FC1 /* Preview Content */ = {
+		BC8A887A2CBBC63B00DD8FC1 /* Preview Content */ = {
 			isa = PBXGroup;
 			children = (
-				BC8A88402CBBC34C00DD8FC1 /* Preview Assets.xcassets */,
+				BC8A887B2CBBC63B00DD8FC1 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		BC8A884E2CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesTests */ = {
+		BC8A88892CBBC63B00DD8FC1 /* GrowTests */ = {
 			isa = PBXGroup;
 			children = (
-				BC8A884F2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesTests.swift */,
+				BC8A888A2CBBC63B00DD8FC1 /* GrowTests.swift */,
 			);
-			path = "Grow: Daily Tips and QuotesTests";
+			path = GrowTests;
 			sourceTree = "<group>";
 		};
-		BC8A88582CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesUITests */ = {
+		BC8A88932CBBC63C00DD8FC1 /* GrowUITests */ = {
 			isa = PBXGroup;
 			children = (
-				BC8A88592CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITests.swift */,
-				BC8A885B2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITestsLaunchTests.swift */,
+				BC8A88942CBBC63C00DD8FC1 /* GrowUITests.swift */,
+				BC8A88962CBBC63C00DD8FC1 /* GrowUITestsLaunchTests.swift */,
 			);
-			path = "Grow: Daily Tips and QuotesUITests";
+			path = GrowUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		BC8A88352CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes */ = {
+		BC8A88702CBBC63900DD8FC1 /* Grow */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BC8A885F2CBBC34C00DD8FC1 /* Build configuration list for PBXNativeTarget "Grow: Daily Tips and Quotes" */;
+			buildConfigurationList = BC8A889A2CBBC63C00DD8FC1 /* Build configuration list for PBXNativeTarget "Grow" */;
 			buildPhases = (
-				BC8A88322CBBC34A00DD8FC1 /* Sources */,
-				BC8A88332CBBC34A00DD8FC1 /* Frameworks */,
-				BC8A88342CBBC34A00DD8FC1 /* Resources */,
+				BC8A886D2CBBC63900DD8FC1 /* Sources */,
+				BC8A886E2CBBC63900DD8FC1 /* Frameworks */,
+				BC8A886F2CBBC63900DD8FC1 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "Grow: Daily Tips and Quotes";
-			productName = "Grow: Daily Tips and Quotes";
-			productReference = BC8A88362CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes.app */;
+			name = Grow;
+			productName = Grow;
+			productReference = BC8A88712CBBC63900DD8FC1 /* Grow.app */;
 			productType = "com.apple.product-type.application";
 		};
-		BC8A884A2CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesTests */ = {
+		BC8A88852CBBC63B00DD8FC1 /* GrowTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BC8A88622CBBC34C00DD8FC1 /* Build configuration list for PBXNativeTarget "Grow: Daily Tips and QuotesTests" */;
+			buildConfigurationList = BC8A889D2CBBC63C00DD8FC1 /* Build configuration list for PBXNativeTarget "GrowTests" */;
 			buildPhases = (
-				BC8A88472CBBC34C00DD8FC1 /* Sources */,
-				BC8A88482CBBC34C00DD8FC1 /* Frameworks */,
-				BC8A88492CBBC34C00DD8FC1 /* Resources */,
+				BC8A88822CBBC63B00DD8FC1 /* Sources */,
+				BC8A88832CBBC63B00DD8FC1 /* Frameworks */,
+				BC8A88842CBBC63B00DD8FC1 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				BC8A884D2CBBC34C00DD8FC1 /* PBXTargetDependency */,
+				BC8A88882CBBC63B00DD8FC1 /* PBXTargetDependency */,
 			);
-			name = "Grow: Daily Tips and QuotesTests";
-			productName = "Grow: Daily Tips and QuotesTests";
-			productReference = BC8A884B2CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesTests.xctest */;
+			name = GrowTests;
+			productName = GrowTests;
+			productReference = BC8A88862CBBC63B00DD8FC1 /* GrowTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		BC8A88542CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesUITests */ = {
+		BC8A888F2CBBC63C00DD8FC1 /* GrowUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = BC8A88652CBBC34C00DD8FC1 /* Build configuration list for PBXNativeTarget "Grow: Daily Tips and QuotesUITests" */;
+			buildConfigurationList = BC8A88A02CBBC63C00DD8FC1 /* Build configuration list for PBXNativeTarget "GrowUITests" */;
 			buildPhases = (
-				BC8A88512CBBC34C00DD8FC1 /* Sources */,
-				BC8A88522CBBC34C00DD8FC1 /* Frameworks */,
-				BC8A88532CBBC34C00DD8FC1 /* Resources */,
+				BC8A888C2CBBC63C00DD8FC1 /* Sources */,
+				BC8A888D2CBBC63C00DD8FC1 /* Frameworks */,
+				BC8A888E2CBBC63C00DD8FC1 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				BC8A88572CBBC34C00DD8FC1 /* PBXTargetDependency */,
+				BC8A88922CBBC63C00DD8FC1 /* PBXTargetDependency */,
 			);
-			name = "Grow: Daily Tips and QuotesUITests";
-			productName = "Grow: Daily Tips and QuotesUITests";
-			productReference = BC8A88552CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesUITests.xctest */;
+			name = GrowUITests;
+			productName = GrowUITests;
+			productReference = BC8A88902CBBC63C00DD8FC1 /* GrowUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		BC8A882E2CBBC34A00DD8FC1 /* Project object */ = {
+		BC8A88692CBBC63900DD8FC1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1530;
 				LastUpgradeCheck = 1530;
 				TargetAttributes = {
-					BC8A88352CBBC34A00DD8FC1 = {
+					BC8A88702CBBC63900DD8FC1 = {
 						CreatedOnToolsVersion = 15.3;
 					};
-					BC8A884A2CBBC34C00DD8FC1 = {
+					BC8A88852CBBC63B00DD8FC1 = {
 						CreatedOnToolsVersion = 15.3;
-						TestTargetID = BC8A88352CBBC34A00DD8FC1;
+						TestTargetID = BC8A88702CBBC63900DD8FC1;
 					};
-					BC8A88542CBBC34C00DD8FC1 = {
+					BC8A888F2CBBC63C00DD8FC1 = {
 						CreatedOnToolsVersion = 15.3;
-						TestTargetID = BC8A88352CBBC34A00DD8FC1;
+						TestTargetID = BC8A88702CBBC63900DD8FC1;
 					};
 				};
 			};
-			buildConfigurationList = BC8A88312CBBC34A00DD8FC1 /* Build configuration list for PBXProject "Grow: Daily Tips and Quotes" */;
+			buildConfigurationList = BC8A886C2CBBC63900DD8FC1 /* Build configuration list for PBXProject "Grow" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -220,36 +220,36 @@
 				en,
 				Base,
 			);
-			mainGroup = BC8A882D2CBBC34A00DD8FC1;
-			productRefGroup = BC8A88372CBBC34A00DD8FC1 /* Products */;
+			mainGroup = BC8A88682CBBC63900DD8FC1;
+			productRefGroup = BC8A88722CBBC63900DD8FC1 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				BC8A88352CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes */,
-				BC8A884A2CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesTests */,
-				BC8A88542CBBC34C00DD8FC1 /* Grow: Daily Tips and QuotesUITests */,
+				BC8A88702CBBC63900DD8FC1 /* Grow */,
+				BC8A88852CBBC63B00DD8FC1 /* GrowTests */,
+				BC8A888F2CBBC63C00DD8FC1 /* GrowUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		BC8A88342CBBC34A00DD8FC1 /* Resources */ = {
+		BC8A886F2CBBC63900DD8FC1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC8A88412CBBC34C00DD8FC1 /* Preview Assets.xcassets in Resources */,
-				BC8A883E2CBBC34C00DD8FC1 /* Assets.xcassets in Resources */,
+				BC8A887C2CBBC63B00DD8FC1 /* Preview Assets.xcassets in Resources */,
+				BC8A88792CBBC63B00DD8FC1 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC8A88492CBBC34C00DD8FC1 /* Resources */ = {
+		BC8A88842CBBC63B00DD8FC1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC8A88532CBBC34C00DD8FC1 /* Resources */ = {
+		BC8A888E2CBBC63C00DD8FC1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -259,51 +259,51 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		BC8A88322CBBC34A00DD8FC1 /* Sources */ = {
+		BC8A886D2CBBC63900DD8FC1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC8A88432CBBC34C00DD8FC1 /* Persistence.swift in Sources */,
-				BC8A88462CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_Quotes.xcdatamodeld in Sources */,
-				BC8A883C2CBBC34A00DD8FC1 /* ContentView.swift in Sources */,
-				BC8A883A2CBBC34A00DD8FC1 /* Grow__Daily_Tips_and_QuotesApp.swift in Sources */,
+				BC8A88812CBBC63B00DD8FC1 /* Grow.xcdatamodeld in Sources */,
+				BC8A887E2CBBC63B00DD8FC1 /* Persistence.swift in Sources */,
+				BC8A88772CBBC63900DD8FC1 /* ContentView.swift in Sources */,
+				BC8A88752CBBC63900DD8FC1 /* GrowApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC8A88472CBBC34C00DD8FC1 /* Sources */ = {
+		BC8A88822CBBC63B00DD8FC1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC8A88502CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesTests.swift in Sources */,
+				BC8A888B2CBBC63B00DD8FC1 /* GrowTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BC8A88512CBBC34C00DD8FC1 /* Sources */ = {
+		BC8A888C2CBBC63C00DD8FC1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BC8A885C2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITestsLaunchTests.swift in Sources */,
-				BC8A885A2CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_QuotesUITests.swift in Sources */,
+				BC8A88952CBBC63C00DD8FC1 /* GrowUITests.swift in Sources */,
+				BC8A88972CBBC63C00DD8FC1 /* GrowUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		BC8A884D2CBBC34C00DD8FC1 /* PBXTargetDependency */ = {
+		BC8A88882CBBC63B00DD8FC1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BC8A88352CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes */;
-			targetProxy = BC8A884C2CBBC34C00DD8FC1 /* PBXContainerItemProxy */;
+			target = BC8A88702CBBC63900DD8FC1 /* Grow */;
+			targetProxy = BC8A88872CBBC63B00DD8FC1 /* PBXContainerItemProxy */;
 		};
-		BC8A88572CBBC34C00DD8FC1 /* PBXTargetDependency */ = {
+		BC8A88922CBBC63C00DD8FC1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = BC8A88352CBBC34A00DD8FC1 /* Grow: Daily Tips and Quotes */;
-			targetProxy = BC8A88562CBBC34C00DD8FC1 /* PBXContainerItemProxy */;
+			target = BC8A88702CBBC63900DD8FC1 /* Grow */;
+			targetProxy = BC8A88912CBBC63C00DD8FC1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		BC8A885D2CBBC34C00DD8FC1 /* Debug */ = {
+		BC8A88982CBBC63C00DD8FC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -366,7 +366,7 @@
 			};
 			name = Debug;
 		};
-		BC8A885E2CBBC34C00DD8FC1 /* Release */ = {
+		BC8A88992CBBC63C00DD8FC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -422,14 +422,14 @@
 			};
 			name = Release;
 		};
-		BC8A88602CBBC34C00DD8FC1 /* Debug */ = {
+		BC8A889B2CBBC63C00DD8FC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Grow: Daily Tips and Quotes/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Grow/Preview Content\"";
 				DEVELOPMENT_TEAM = VV37X996D4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -443,7 +443,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Appverse.Grow.Grow--Daily-Tips-and-Quotes";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.Grow.Grow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -451,14 +451,14 @@
 			};
 			name = Debug;
 		};
-		BC8A88612CBBC34C00DD8FC1 /* Release */ = {
+		BC8A889C2CBBC63C00DD8FC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Grow: Daily Tips and Quotes/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Grow/Preview Content\"";
 				DEVELOPMENT_TEAM = VV37X996D4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -472,7 +472,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Appverse.Grow.Grow--Daily-Tips-and-Quotes";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.Grow.Grow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -480,7 +480,7 @@
 			};
 			name = Release;
 		};
-		BC8A88632CBBC34C00DD8FC1 /* Debug */ = {
+		BC8A889E2CBBC63C00DD8FC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -491,16 +491,16 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Appverse.Grow.Grow--Daily-Tips-and-QuotesTests";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.Grow.GrowTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Grow: Daily Tips and Quotes.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Grow: Daily Tips and Quotes";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Grow.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Grow";
 			};
 			name = Debug;
 		};
-		BC8A88642CBBC34C00DD8FC1 /* Release */ = {
+		BC8A889F2CBBC63C00DD8FC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -511,16 +511,16 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Appverse.Grow.Grow--Daily-Tips-and-QuotesTests";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.Grow.GrowTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Grow: Daily Tips and Quotes.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Grow: Daily Tips and Quotes";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Grow.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Grow";
 			};
 			name = Release;
 		};
-		BC8A88662CBBC34C00DD8FC1 /* Debug */ = {
+		BC8A88A12CBBC63C00DD8FC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -529,16 +529,16 @@
 				DEVELOPMENT_TEAM = VV37X996D4;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Appverse.Grow.Grow--Daily-Tips-and-QuotesUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.Grow.GrowUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "Grow: Daily Tips and Quotes";
+				TEST_TARGET_NAME = Grow;
 			};
 			name = Debug;
 		};
-		BC8A88672CBBC34C00DD8FC1 /* Release */ = {
+		BC8A88A22CBBC63C00DD8FC1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
@@ -547,50 +547,50 @@
 				DEVELOPMENT_TEAM = VV37X996D4;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.Appverse.Grow.Grow--Daily-Tips-and-QuotesUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = com.Appverse.Grow.GrowUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = "Grow: Daily Tips and Quotes";
+				TEST_TARGET_NAME = Grow;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BC8A88312CBBC34A00DD8FC1 /* Build configuration list for PBXProject "Grow: Daily Tips and Quotes" */ = {
+		BC8A886C2CBBC63900DD8FC1 /* Build configuration list for PBXProject "Grow" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC8A885D2CBBC34C00DD8FC1 /* Debug */,
-				BC8A885E2CBBC34C00DD8FC1 /* Release */,
+				BC8A88982CBBC63C00DD8FC1 /* Debug */,
+				BC8A88992CBBC63C00DD8FC1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BC8A885F2CBBC34C00DD8FC1 /* Build configuration list for PBXNativeTarget "Grow: Daily Tips and Quotes" */ = {
+		BC8A889A2CBBC63C00DD8FC1 /* Build configuration list for PBXNativeTarget "Grow" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC8A88602CBBC34C00DD8FC1 /* Debug */,
-				BC8A88612CBBC34C00DD8FC1 /* Release */,
+				BC8A889B2CBBC63C00DD8FC1 /* Debug */,
+				BC8A889C2CBBC63C00DD8FC1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BC8A88622CBBC34C00DD8FC1 /* Build configuration list for PBXNativeTarget "Grow: Daily Tips and QuotesTests" */ = {
+		BC8A889D2CBBC63C00DD8FC1 /* Build configuration list for PBXNativeTarget "GrowTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC8A88632CBBC34C00DD8FC1 /* Debug */,
-				BC8A88642CBBC34C00DD8FC1 /* Release */,
+				BC8A889E2CBBC63C00DD8FC1 /* Debug */,
+				BC8A889F2CBBC63C00DD8FC1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		BC8A88652CBBC34C00DD8FC1 /* Build configuration list for PBXNativeTarget "Grow: Daily Tips and QuotesUITests" */ = {
+		BC8A88A02CBBC63C00DD8FC1 /* Build configuration list for PBXNativeTarget "GrowUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				BC8A88662CBBC34C00DD8FC1 /* Debug */,
-				BC8A88672CBBC34C00DD8FC1 /* Release */,
+				BC8A88A12CBBC63C00DD8FC1 /* Debug */,
+				BC8A88A22CBBC63C00DD8FC1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -598,17 +598,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		BC8A88442CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_Quotes.xcdatamodeld */ = {
+		BC8A887F2CBBC63B00DD8FC1 /* Grow.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				BC8A88452CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_Quotes.xcdatamodel */,
+				BC8A88802CBBC63B00DD8FC1 /* Grow.xcdatamodel */,
 			);
-			currentVersion = BC8A88452CBBC34C00DD8FC1 /* Grow__Daily_Tips_and_Quotes.xcdatamodel */;
-			path = Grow__Daily_Tips_and_Quotes.xcdatamodeld;
+			currentVersion = BC8A88802CBBC63B00DD8FC1 /* Grow.xcdatamodel */;
+			path = Grow.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
 /* End XCVersionGroup section */
 	};
-	rootObject = BC8A882E2CBBC34A00DD8FC1 /* Project object */;
+	rootObject = BC8A88692CBBC63900DD8FC1 /* Project object */;
 }

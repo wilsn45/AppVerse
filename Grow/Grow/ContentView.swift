@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  Grow: Daily Tips and Quotes
+//  Grow
 //
 //  Created by Wilson.Shakya on 13/10/24.
 //
