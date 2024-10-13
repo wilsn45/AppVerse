@@ -16,10 +16,6 @@ class NotesViewModel: ObservableObject {
 
 	let dataManager = CoreDataManager.shared
 
-	init() {
-		fetchNotes()
-	}
-
 	func fetchNotes(with searchText: String = "")  {
 		let request: NSFetchRequest<NoteEntity> = NoteEntity.fetchRequest()
 		request.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
@@ -53,11 +49,19 @@ class NotesViewModel: ObservableObject {
 	}
 
 	func updateNote(_ note: NoteEntity, title: String, content: String) {
-		guard !title.isEmpty || !content.isEmpty else { return }
+		guard !title.isEmpty || !content.isEmpty else { 
+			delete(note)
+			fetchNotes() 
+			return }
 		note.title = title
 		note.content = content
 		dataManager.saveContext()
 		fetchNotes()
+	}
+
+	func delete(_ note: NoteEntity) {
+		dataManager.delete(entity: note)
+		dataManager.saveContext()
 	}
 
 	func searchNotes(with searchText: String) {

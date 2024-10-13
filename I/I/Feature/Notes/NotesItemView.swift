@@ -39,10 +39,6 @@ struct NotesItemView: View {
 }
 
 
-#Preview {
-	PasswordItemView(item: "Note A")
-}
-
 
 struct ListCellView: View {
 	var note: NoteEntity

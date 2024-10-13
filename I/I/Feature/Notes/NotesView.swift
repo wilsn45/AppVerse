@@ -11,7 +11,6 @@ import SwiftData
 import Combine
 
 
-
 struct NotesView: View {
 	@EnvironmentObject var navigationManager: NavigationManager
 	@State var viewModel: NotesViewModel = NotesViewModel()
@@ -21,9 +20,10 @@ struct NotesView: View {
 	private let searchPublisher = PassthroughSubject<String, Never>()
 
 	@State var selectedNote: NoteEntity?
+	@State private var reloadToggle = false
 
 	init() {
-		print("")
+		viewModel.fetchNotes()
 	}
 
 	var groupedByDate: [Date: [NoteEntity]] {
@@ -49,6 +49,7 @@ struct NotesView: View {
 					}
 				}
 			}.scrollIndicators(.hidden)
+				.id(reloadToggle)
 
 			NewItemView(action: {
 				createNewNote()
@@ -64,6 +65,8 @@ struct NotesView: View {
 		}
 		.navigationDestination(for: NotesNavigation.self) { screen in
 			EditNotesView(vm: $viewModel, note: selectedNote)
+		}.onAppear {
+			reloadToggle.toggle()
 		}
 	}
 
@@ -82,7 +85,6 @@ struct NotesView: View {
 				if noteToDelete == selectedNote {
 					selectedNote = nil
 				}
-
 				viewModel.deleteNote(noteToDelete)
 			}
 		}

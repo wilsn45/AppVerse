@@ -17,10 +17,20 @@ struct EditNotesView: View {
 	@State private var content: String = ""
 
 	private let titlePublisher = PassthroughSubject<String, Never>()
+	@EnvironmentObject var navigationManager: NavigationManager
 
 	@FocusState private var contentEditorInFocus: Bool
 
 	var body: some View {
+
+		Button("Back") {
+			self.hideKeyboard()
+			self.updateNote(title: title, content: content)
+			DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+				self.navigationManager.path.removeLast()
+			}
+
+		}
 
 		ScrollView {
 			VStack(alignment: .leading, spacing: 20) {
@@ -65,6 +75,8 @@ struct EditNotesView: View {
 				self.title = note.title ?? ""
 				self.content = note.content ?? ""
 			}
+		}.onDisappear {
+			self.updateNote(title: title, content: content)
 		}
 
 	}
@@ -72,11 +84,7 @@ struct EditNotesView: View {
 	// MARK: Core Data Operations
 
 	func updateNote(title: String, content: String) {
-		if (title.isEmpty) && (content.isEmpty) {
-			return
-		}
 		guard let note = note else { return }
-
 		vm.updateNote(note, title: title, content: content)
 	}
 }
