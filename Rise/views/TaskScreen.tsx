@@ -30,6 +30,7 @@ const TaskScreen = () => {
 
   // Dropdown options for task types
   const taskTypeOptions = [
+    { label: 'All', value: 0 },
     ...taskType.map((task) => ({
       label: task.title,
       value: task.id,
