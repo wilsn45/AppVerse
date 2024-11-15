@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 import { useFocusEffect } from '@react-navigation/native';
 import { categories } from '../Data/CategoryData';
 import { SaveHandler } from '../Handlers/SaveHandler';
 
 const SaveScreen = () => {
-  const [selectedCategory, setSelectedCategory] = useState(0); // Default category is 'All' with ID 0
+  const [selectedCategory, setSelectedCategory] = useState(0);
   const [allSavedCards, setAllSavedCards] = useState([]);
   const [filteredCards, setFilteredCards] = useState([]);
+  const navigation = useNavigation(); // Hook for navigation
 
+  // Fetch saved cards from the SaveHandler
   const fetchSavedCards = async () => {
     try {
       const savedCards = await SaveHandler.getSavedCards();
@@ -20,12 +23,14 @@ const SaveScreen = () => {
     }
   };
 
+  // Re-fetch saved cards on screen focus
   useFocusEffect(
     React.useCallback(() => {
       fetchSavedCards();
     }, [])
   );
 
+  // Update filtered cards when category or saved cards change
   useEffect(() => {
     const updatedCards = allSavedCards.filter(
       (card) => selectedCategory === 0 || card.categoryId === selectedCategory.toString()
@@ -33,19 +38,27 @@ const SaveScreen = () => {
     setFilteredCards(updatedCards);
   }, [selectedCategory, allSavedCards]);
 
+  // Handle category change
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
   };
 
+  // Handle card removal
   const handleRemoveCard = async (categoryId, contentId) => {
     try {
       await SaveHandler.removeSave(categoryId, contentId);
-      fetchSavedCards(); // Refresh the saved cards after removal
+      fetchSavedCards(); // Re-fetch saved cards after removal
     } catch (error) {
       console.error('Error removing card:', error);
     }
   };
 
+  // Navigate to content detail page on cell click
+  const handleCardPress = (itemTitle, itemId) => {
+    navigation.navigate('ContentDetailScreen', { itemTitle, itemId }); // Pass itemTitle and itemId to the ContentDetailScreen
+  };
+
+  // Dropdown options for category filtering
   const categoryOptions = [
     { label: 'All', value: 0 },
     ...categories.map((category) => ({
@@ -77,12 +90,15 @@ const SaveScreen = () => {
         />
       </View>
 
-      {/* Content */}
+      {/* FlatList displaying the saved cards */}
       <FlatList
         data={filteredCards}
         keyExtractor={(item) => item.contentId}
         renderItem={({ item }) => (
-          <View style={[styles.cardContainer, { width: deviceWidth - 20 }]}>
+          <TouchableOpacity
+            style={[styles.cardContainer, { width: deviceWidth - 20 }]}
+            onPress={() => handleCardPress(item.contentTitle, item.contentId)} // Pass the content title and ID
+          >
             <Text style={styles.cardTitle}>{item.contentTitle}</Text>
             <TouchableOpacity
               onPress={() => handleRemoveCard(item.categoryId, item.contentId)}
@@ -90,8 +106,9 @@ const SaveScreen = () => {
             >
               <Ionicons name="close" size={24} color="white" />
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={styles.flatListContainer}
       />
     </SafeAreaView>
@@ -130,7 +147,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   dropdownContainer: {
-    marginTop: 20,
+    marginTop: 10, // 10px padding at the top
     alignSelf: 'flex-end',
     marginBottom: 20,
   },
@@ -142,12 +159,14 @@ const styles = StyleSheet.create({
   flatListContainer: {
     paddingBottom: 20,
   },
+  separator: {
+    height: 10, // Space between items
+  },
   cardContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    marginVertical: 5,
     borderWidth: 1,
     borderColor: 'grey',
     borderRadius: 8,
@@ -158,7 +177,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     flex: 1,
-    flexWrap: 'wrap', // Allow text to wrap
+    flexWrap: 'wrap',
   },
   removeButton: {
     marginLeft: 10,
