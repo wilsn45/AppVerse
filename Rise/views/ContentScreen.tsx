@@ -14,9 +14,8 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import RNPickerSelect from 'react-native-picker-select';
+import Slider from '@react-native-community/slider';
 import { SaveHandler } from '../Handlers/SaveHandler';
-import { taskType } from '../Data/TaskData'; // TaskData with taskType array
 
 const { height } = Dimensions.get('window');
 
@@ -110,15 +109,19 @@ const ContentScreen = () => {
     }
   };
 
-  const handleCardPress = (item: { id: string, title: string }) => {
-    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title });
+  const handleTaskTypeChange = (value: number) => {
+    setSelectedTaskType(value);
   };
 
   const handleShare = (itemId: string) => {
     
   };
 
-  const handleAddTask = (itemId: string) => {
+  const handleCardPress = (item: { id: string, title: string }) => {
+    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title });
+  };
+
+  const handleAddTask = () => {
     setModalVisible(true);
   };
 
@@ -132,11 +135,6 @@ const ContentScreen = () => {
     setSelectedTaskType(0); // Reset to default
     setModalVisible(false);
   };
-
-  const taskTypeOptions = taskType.map((type) => ({
-    label: type.title,
-    value: type.id,
-  }));
 
   return (
     <View style={styles.container}>
@@ -156,22 +154,15 @@ const ContentScreen = () => {
                   color={savedCards.get(item.id) ? 'red' : 'white'}
                 />
               </TouchableOpacity>
-               
-               <TouchableOpacity style={styles.iconButton} onPress={() => handleShare(item.id)}>
+              <TouchableOpacity style={styles.iconButton} onPress={() => handleShare(item.id)}>
                 <Ionicons name="share-outline" size={24} color="white" />
               </TouchableOpacity>
-
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item.id)}>
+              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask()}>
                 <MaterialIcons name="add-task" size={24} color="white" />
               </TouchableOpacity>
             </View>
           </View>
         )}
-        pagingEnabled
-        snapToInterval={height * 0.8 + 20}
-        snapToAlignment="center"
-        decelerationRate="fast"
-        showsVerticalScrollIndicator={false}
       />
 
       {/* Task Modal */}
@@ -186,13 +177,23 @@ const ContentScreen = () => {
               value={taskName}
               onChangeText={setTaskName}
             />
-            <RNPickerSelect
-              onValueChange={(value) => setSelectedTaskType(value)}
-              items={taskTypeOptions}
-              value={selectedTaskType}
-              style={pickerStyles}
-              placeholder={{ label: 'Select Task Type', value: 0 }}
-            />
+
+            <View style={styles.sliderContainer}>
+              <Text style={styles.sliderLabel}>Routine</Text>
+              <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={1}
+                step={1}
+                value={selectedTaskType}
+                onValueChange={handleTaskTypeChange}
+                minimumTrackTintColor="#FF6347"
+                maximumTrackTintColor="#00BFFF"
+                thumbTintColor="#FFD700"
+              />
+              <Text style={styles.sliderLabel}>Target</Text>
+            </View>
+
             <Button title="Add Task" onPress={handleSubmitTask} />
             <Button title="Cancel" color="red" onPress={() => setModalVisible(false)} />
           </View>
@@ -263,29 +264,22 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
   },
+  sliderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 5,
+  },
+  sliderLabel: {
+    fontSize: 16,
+    color: '#333',
+    width: 80, // Ensure labels have space
+    textAlign: 'center',
+  },
+  slider: {
+    width: 80, // Adjusted width for better size
+    height: 30,
+  },
 });
-
-const pickerStyles = {
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    color: 'black',
-    marginBottom: 20,
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 4,
-    color: 'black',
-    marginBottom: 20,
-  },
-};
 
 export default ContentScreen;
