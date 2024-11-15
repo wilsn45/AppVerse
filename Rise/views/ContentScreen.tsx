@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  Button,
+  Alert,
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import RNPickerSelect from 'react-native-picker-select';
 import { SaveHandler } from '../Handlers/SaveHandler';
+import { taskType } from '../Data/TaskData'; // TaskData with taskType array
 
 const { height } = Dimensions.get('window');
 
@@ -42,6 +55,9 @@ const ContentScreen = () => {
   const { tileType, categoryId } = route.params;
   const [contentList, setContentList] = useState<any[]>([]);
   const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [taskName, setTaskName] = useState('');
+  const [selectedTaskType, setSelectedTaskType] = useState(0); // Default to "All"
 
   useEffect(() => {
     // Set content list based on tileType
@@ -64,18 +80,15 @@ const ContentScreen = () => {
   }, [tileType]);
 
   useEffect(() => {
-    // Dynamically set the header title based on the category
     navigation.setOptions({
-      title: tileType, // Set title to the category name (Finance, Focus, etc.)
+      title: tileType,
     });
-    
-    // Check if cards are saved and update button state
+
     const loadSavedCards = async () => {
       const savedItems = await SaveHandler.getSaves();
       const savedContentIds = savedItems[categoryId] || [];
       const updatedSavedCards = new Map();
       contentList.forEach((item) => {
-        // Use both contentId and contentTitle to check if the card is saved
         updatedSavedCards.set(item.id, savedContentIds.some((savedCard) => savedCard.contentId === item.id));
       });
       setSavedCards(updatedSavedCards);
@@ -89,11 +102,9 @@ const ContentScreen = () => {
   const handleSave = async (itemId: string, itemTitle: string) => {
     const isSaved = savedCards.get(itemId);
     if (isSaved) {
-      // If already saved, remove save
       await SaveHandler.removeSave(categoryId, itemId);
       setSavedCards((prev) => new Map(prev).set(itemId, false));
     } else {
-      // If not saved, add save with contentTitle
       await SaveHandler.addSave(categoryId, itemId, itemTitle);
       setSavedCards((prev) => new Map(prev).set(itemId, true));
     }
@@ -104,12 +115,28 @@ const ContentScreen = () => {
   };
 
   const handleShare = (itemId: string) => {
-    console.log(`Shared item with ID: ${itemId}`);
+    
   };
 
   const handleAddTask = (itemId: string) => {
-    console.log(`Added item with ID: ${itemId} to tasks`);
+    setModalVisible(true);
   };
+
+  const handleSubmitTask = () => {
+    if (!taskName.trim() || selectedTaskType === 0) {
+      Alert.alert('Error', 'Please enter a task name and select a task type.');
+      return;
+    }
+    console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}`);
+    setTaskName('');
+    setSelectedTaskType(0); // Reset to default
+    setModalVisible(false);
+  };
+
+  const taskTypeOptions = taskType.map((type) => ({
+    label: type.title,
+    value: type.id,
+  }));
 
   return (
     <View style={styles.container}>
@@ -122,7 +149,6 @@ const ContentScreen = () => {
               <Text style={styles.contentText}>{item.title}</Text>
             </TouchableOpacity>
             <View style={styles.buttonContainer}>
-              {/* Save Button */}
               <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item.id, item.title)}>
                 <Ionicons
                   name={savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
@@ -130,11 +156,11 @@ const ContentScreen = () => {
                   color={savedCards.get(item.id) ? 'red' : 'white'}
                 />
               </TouchableOpacity>
-              {/* Share Button */}
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleShare(item.id)}>
+               
+               <TouchableOpacity style={styles.iconButton} onPress={() => handleShare(item.id)}>
                 <Ionicons name="share-outline" size={24} color="white" />
               </TouchableOpacity>
-              {/* Add Task Button */}
+
               <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item.id)}>
                 <MaterialIcons name="add-task" size={24} color="white" />
               </TouchableOpacity>
@@ -147,6 +173,31 @@ const ContentScreen = () => {
         decelerationRate="fast"
         showsVerticalScrollIndicator={false}
       />
+
+      {/* Task Modal */}
+      <Modal visible={isModalVisible} animationType="slide" transparent>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Add Task</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter task name"
+              placeholderTextColor="#ccc"
+              value={taskName}
+              onChangeText={setTaskName}
+            />
+            <RNPickerSelect
+              onValueChange={(value) => setSelectedTaskType(value)}
+              items={taskTypeOptions}
+              value={selectedTaskType}
+              style={pickerStyles}
+              placeholder={{ label: 'Select Task Type', value: 0 }}
+            />
+            <Button title="Add Task" onPress={handleSubmitTask} />
+            <Button title="Cancel" color="red" onPress={() => setModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -188,6 +239,53 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 10,
   },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+  },
 });
+
+const pickerStyles = {
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    marginBottom: 20,
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    marginBottom: 20,
+  },
+};
 
 export default ContentScreen;
