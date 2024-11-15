@@ -1,0 +1,61 @@
+import React from 'react';
+import { SafeAreaView, Text, View, StyleSheet } from 'react-native';
+
+const App = () => {
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.tileContainer}>
+        <View style={styles.tile}>
+          <Text style={styles.tileText}>Mental Health</Text>
+        </View>
+        <View style={styles.tile}>
+          <Text style={styles.tileText}>Productivity</Text>
+        </View>
+        <View style={styles.tile}>
+          <Text style={styles.tileText}>Communication</Text>
+        </View>
+        <View style={styles.tile}>
+          <Text style={styles.tileText}>Finance</Text>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000', // Black background for the home screen
+    paddingHorizontal: 20, // Padding on left and right of the device
+    paddingTop: 30, // Padding from the top
+    paddingBottom: 30, // Padding from the bottom
+    justifyContent: 'center', // Vertically center the tileContainer
+  },
+  tileContainer: {
+    flexDirection: 'row', // Arranging tiles in a row
+    flexWrap: 'wrap', // Allow tiles to wrap to the next line if needed
+    justifyContent: 'space-between', // Space between tiles
+    alignItems: 'center', // Vertically center the tiles
+    alignSelf: 'center', // Center the tile container horizontally
+  },
+  tile: {
+    width: '45%', // Each tile will take up 45% of the width (to leave space between them)
+    height: 150, // Set a fixed height for the tiles
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000', // Black background for each tile
+    borderColor: '#808080', // Grey border color
+    borderWidth: 2, // Set the border width
+    borderRadius: 10, // Rounded corners for each tile
+    marginBottom: 20, // Space between rows
+    padding: 20, // Padding inside each tile
+  },
+  tileText: {
+    fontSize: 16,
+    color: '#fff', // White text color for contrast
+    fontWeight: 'bold',
+    textAlign: 'center'
+  },
+});
+
+export default App;

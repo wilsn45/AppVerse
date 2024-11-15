@@ -1,0 +1,91 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { categories } from '../Data/CategoryData'; // Assuming you have categories data
+
+const SaveScreen = () => {
+  const [selectedCategory, setSelectedCategory] = useState(0); // Default category is 'All' with ID 0
+
+  // Handle category selection change
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+    console.log('Selected Category ID:', value); // You can handle the category ID here
+  };
+
+  // Dropdown options with category ID
+  const categoryOptions = [
+    { label: 'All', value: 0 },
+    ...categories.map((category) => ({
+      label: category.title,
+      value: category.id,
+    })),
+  ];
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Dropdown menu at the top */}
+      <View style={styles.dropdownContainer}>
+        <RNPickerSelect
+          onValueChange={handleCategoryChange}
+          items={categoryOptions}
+          value={selectedCategory} // Default value is 'All' (0)
+          style={pickerStyles}
+          Icon={() => (
+            <Ionicons
+              name="chevron-down"
+              size={20}
+              color="white"
+              style={styles.icon}
+            />
+          )}
+        />
+      </View>
+    </SafeAreaView>
+  );
+};
+
+const pickerStyles = StyleSheet.create({
+  inputIOS: {
+    backgroundColor: 'grey',
+    color: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    paddingRight: 35, // Add right padding to avoid the icon touching the boundary
+    borderRadius: 5,
+    fontSize: 16,
+    width: '100%',
+    alignSelf: 'stretch',
+  },
+  inputAndroid: {
+    backgroundColor: 'grey',
+    color: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    paddingRight: 35, // Add right padding to avoid the icon touching the boundary
+    borderRadius: 5,
+    fontSize: 16,
+    width: '100%',
+    alignSelf: 'stretch',
+  },
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    padding: 10,
+  },
+  dropdownContainer: {
+    marginTop: 20,
+    alignSelf: 'flex-end',
+    marginBottom: 20,
+  },
+  icon: {
+    marginTop: 10,
+    width: 20,
+    marginRight: 10,
+  },
+});
+
+export default SaveScreen;

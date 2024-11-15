@@ -1,0 +1,121 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+
+const { height } = Dimensions.get('window');
+
+// Function to generate random key with a category prefix
+const generateRandomKey = (prefix: number) => {
+  const randomNumber = Math.floor(Math.random() * 1000); // Random number between 0 and 999
+  return `${prefix}-${randomNumber}`;
+};
+
+// Sample content data for each category with random keys
+const financeContent = [
+  { id: generateRandomKey(1), title: 'Finance Tip 1: Budgeting' },
+  { id: generateRandomKey(1), title: 'Finance Tip 2: Saving' },
+  { id: generateRandomKey(1), title: 'Finance Tip 3: Investing' },
+  { id: generateRandomKey(1), title: 'Finance Tip 4: Debt Management' },
+];
+
+const focusContent = [
+  { id: generateRandomKey(2), title: 'Focus Tip 1: Time Management' },
+  { id: generateRandomKey(2), title: 'Focus Tip 2: Eliminate Distractions' },
+  { id: generateRandomKey(2), title: 'Focus Tip 3: Goal Setting' },
+  { id: generateRandomKey(2), title: 'Focus Tip 4: Prioritizing Tasks' },
+];
+
+const mindContent = [
+  { id: generateRandomKey(3), title: 'Mind Tip 1: Meditation' },
+  { id: generateRandomKey(3), title: 'Mind Tip 2: Journaling' },
+  { id: generateRandomKey(3), title: 'Mind Tip 3: Self-care Routines' },
+  { id: generateRandomKey(3), title: 'Mind Tip 4: Stress Management' },
+];
+
+const fitContent = [
+  { id: generateRandomKey(4), title: 'Fit Tip 1: Regular Exercise' },
+  { id: generateRandomKey(4), title: 'Fit Tip 2: Balanced Diet' },
+  { id: generateRandomKey(4), title: 'Fit Tip 3: Hydration' },
+  { id: generateRandomKey(4), title: 'Fit Tip 4: Sleep Well' },
+];
+
+const ContentScreen = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { tileType } = route.params;
+  const [contentList, setContentList] = useState([]);
+
+  useEffect(() => {
+    switch (tileType) {
+      case 'Finance':
+        setContentList(financeContent);
+        break;
+      case 'Focus':
+        setContentList(focusContent);
+        break;
+      case 'Mind':
+        setContentList(mindContent);
+        break;
+      case 'Fit':
+        setContentList(fitContent);
+        break;
+      default:
+        setContentList([]);
+    }
+
+    navigation.setOptions({
+      title: tileType,
+      headerBackTitle: '',
+      headerTintColor: 'grey',
+    });
+  }, [tileType, navigation]);
+
+  const handleCardPress = (item) => {
+    navigation.navigate('ContentDetailScreen', { item });
+  };
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={contentList}
+        keyExtractor={(item) => item.id} // Use the random key here
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => handleCardPress(item)}>
+            <View style={styles.cardContainer}>
+              <Text style={styles.contentText}>{item.title}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        pagingEnabled
+        snapToAlignment="center"
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  cardContainer: {
+    height: height * 0.8,
+    width: '90%',
+    backgroundColor: '#333',
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginVertical: 10,
+  },
+  contentText: {
+    fontSize: 24,
+    color: '#fff',
+    textAlign: 'center',
+  },
+});
+
+export default ContentScreen;
