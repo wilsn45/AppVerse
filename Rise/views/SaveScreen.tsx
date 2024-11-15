@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect
+import { useFocusEffect } from '@react-navigation/native';
 import { categories } from '../Data/CategoryData';
 import { SaveHandler } from '../Handlers/SaveHandler';
 
@@ -11,41 +11,41 @@ const SaveScreen = () => {
   const [allSavedCards, setAllSavedCards] = useState([]);
   const [filteredCards, setFilteredCards] = useState([]);
 
-  // Function to fetch saved cards
   const fetchSavedCards = async () => {
     try {
       const savedCards = await SaveHandler.getSavedCards();
-      console.log(`Fetched ${savedCards.length} saved cards`);
       setAllSavedCards(savedCards);
     } catch (error) {
       console.error('Error fetching saved cards:', error);
     }
   };
 
-  // Use useFocusEffect to re-fetch saved cards when screen is focused
   useFocusEffect(
     React.useCallback(() => {
-      console.log('SaveScreen is focused, fetching saved cards...');
       fetchSavedCards();
     }, [])
   );
 
-  // Update filtered cards whenever selectedCategory or allSavedCards change
   useEffect(() => {
     const updatedCards = allSavedCards.filter(
       (card) => selectedCategory === 0 || card.categoryId === selectedCategory.toString()
     );
-    console.log(`Filtered ${updatedCards.length} cards`);
     setFilteredCards(updatedCards);
   }, [selectedCategory, allSavedCards]);
 
-  // Handle category selection change
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
-    console.log('Selected Category ID:', value);
   };
 
-  // Dropdown options with category ID
+  const handleRemoveCard = async (categoryId, contentId) => {
+    try {
+      await SaveHandler.removeSave(categoryId, contentId);
+      fetchSavedCards(); // Refresh the saved cards after removal
+    } catch (error) {
+      console.error('Error removing card:', error);
+    }
+  };
+
   const categoryOptions = [
     { label: 'All', value: 0 },
     ...categories.map((category) => ({
@@ -54,14 +54,16 @@ const SaveScreen = () => {
     })),
   ];
 
+  const deviceWidth = Dimensions.get('window').width;
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* Dropdown menu at the top */}
+      {/* Dropdown menu */}
       <View style={styles.dropdownContainer}>
         <RNPickerSelect
           onValueChange={handleCategoryChange}
           items={categoryOptions}
-          value={selectedCategory} // Default value is 'All' (0)
+          value={selectedCategory}
           style={pickerStyles}
           placeholder={{}}
           Icon={() => (
@@ -75,19 +77,23 @@ const SaveScreen = () => {
         />
       </View>
 
-      {/* Content of the screen */}
-      <View style={styles.contentContainer}>
-        <FlatList
-          data={filteredCards}
-          keyExtractor={(item) => item.contentId}
-          renderItem={({ item }) => (
-            <View style={styles.cardContainer}>
-              <Text style={styles.cardTitle}>{item.contentTitle}</Text>
-            </View>
-          )}
-          contentContainerStyle={styles.flatListContainer}
-        />
-      </View>
+      {/* Content */}
+      <FlatList
+        data={filteredCards}
+        keyExtractor={(item) => item.contentId}
+        renderItem={({ item }) => (
+          <View style={[styles.cardContainer, { width: deviceWidth - 20 }]}>
+            <Text style={styles.cardTitle}>{item.contentTitle}</Text>
+            <TouchableOpacity
+              onPress={() => handleRemoveCard(item.categoryId, item.contentId)}
+              style={styles.removeButton}
+            >
+              <Ionicons name="close" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        )}
+        contentContainerStyle={styles.flatListContainer}
+      />
     </SafeAreaView>
   );
 };
@@ -98,7 +104,7 @@ const pickerStyles = StyleSheet.create({
     color: 'white',
     paddingVertical: 10,
     paddingHorizontal: 15,
-    paddingRight: 35, // Add right padding to avoid the icon touching the boundary
+    paddingRight: 35,
     borderRadius: 5,
     fontSize: 16,
     width: '100%',
@@ -109,7 +115,7 @@ const pickerStyles = StyleSheet.create({
     color: 'white',
     paddingVertical: 10,
     paddingHorizontal: 15,
-    paddingRight: 35, // Add right padding to avoid the icon touching the boundary
+    paddingRight: 35,
     borderRadius: 5,
     fontSize: 16,
     width: '100%',
@@ -133,29 +139,31 @@ const styles = StyleSheet.create({
     width: 20,
     marginRight: 10,
   },
-  contentContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   flatListContainer: {
     paddingBottom: 20,
   },
   cardContainer: {
-    height: 40,
-    justifyContent: 'center',
-    paddingHorizontal: 10,
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    marginVertical: 5,
     borderWidth: 1,
     borderColor: 'grey',
     borderRadius: 8,
-    marginVertical: 5,
-    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: '#1c1c1c',
   },
   cardTitle: {
     color: '#fff',
     fontSize: 18,
     flex: 1,
+    flexWrap: 'wrap', // Allow text to wrap
+  },
+  removeButton: {
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
