@@ -61,7 +61,7 @@ const GoalTaskScreen = () => {
   const handleSave = async () => {
     if (inputValue.trim()) {
       try {
-        await GoalTaskHandler.addRecord(task.id, inputValue);
+        await GoalTaskHandler.addRecord(task.id, inputValue, progressValue);
         console.log('Record saved successfully');
         fetchTaskRecords(); // Refresh the records after saving
       } catch (error) {
@@ -72,6 +72,7 @@ const GoalTaskScreen = () => {
     }
     setIsModalVisible(false); // Close the modal
     setInputValue(''); // Clear the input field
+    setIsSaveEnable(false)
     setProgressValue(0)
   };
 
@@ -86,10 +87,6 @@ const GoalTaskScreen = () => {
     const newProgess =  totalProgressValue + parseInt(value)
     const isEnable =  (newProgess < 100)
     setIsSaveEnable(isEnable)
-    console.log(`PVC: ${value}`);
-    console.log(`PVC new progress: ${newProgess}`);
-    console.log(`PVC isEnabled: ${isEnable}`);
-    
   };
 
   
