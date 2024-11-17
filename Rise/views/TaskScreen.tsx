@@ -4,6 +4,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { categories } from '../Data/CategoryData'; // Import categories for the first dropdown
 import { taskType } from '../Data/TaskData'; // Import taskType for the second dropdown
+import { useFocusEffect } from '@react-navigation/native';
 import { TaskHandler } from '../Handlers/TaskHandler'; // Import TaskHandler
 
 const TaskScreen = () => {
@@ -24,6 +25,13 @@ const TaskScreen = () => {
       console.error('Error fetching tasks:', error);
     }
   };
+
+    // Re-fetch saved cards on screen focus
+    useFocusEffect(
+      React.useCallback(() => {
+        fetchTasks();
+      }, [])
+    );
 
   useEffect(() => {
     fetchTasks(); // Fetch tasks when component mounts
