@@ -65,7 +65,7 @@ const TaskScreen = () => {
             onPress={() => handleTaskPress(item)}>
       <Text style={styles.taskName}>{item.name}</Text>
       <Text style={styles.taskDetails}>
-         {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} |  
+         {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} | 
          {categories.find((c) => c.id === parseInt(item.categoryId))?.title || 'Unknown'}
       </Text>
       </TouchableOpacity>
@@ -78,7 +78,7 @@ const TaskScreen = () => {
     if (task.type === 1) {
       navigation.navigate('RoutineTaskScreen', { task });
     } else if (task.type === 2) {
-      navigation.navigate('TargetTaskScreen', { task });
+      navigation.navigate('GoalTaskScreen', { task });
     }
   }
 

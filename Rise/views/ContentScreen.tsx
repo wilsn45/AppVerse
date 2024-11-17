@@ -216,7 +216,7 @@ const ContentScreen = () => {
                 maximumTrackTintColor="#00BFFF"
                 thumbTintColor="#FFD700"
               />
-              <Text style={styles.sliderLabel}>Target</Text>
+              <Text style={styles.sliderLabel}>Goal</Text>
             </View>
 
             <Button title="Add Task" onPress={handleSubmitTask} />

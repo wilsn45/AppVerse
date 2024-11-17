@@ -9,7 +9,7 @@ import ContentDetailScreen from './views/ContentDetailScreen'; // Adjust the pat
 import SavedScreen from './views/SaveScreen.tsx'; // You need to create this screen
 import TaskScreen from './views/TaskScreen'; // You need to create this screen
 import RoutineTaskScreen from './views/RoutineTaskScreen.tsx';
-import TargetTaskScreen from './views/TargetTaskScreen.tsx';
+import GoalTaskScreen from './views/GoalTaskScreen.tsx';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -98,8 +98,8 @@ const App = () => {
           }}
         />
         <Stack.Screen
-          name="TargetTaskScreen"
-          component={TargetTaskScreen}
+          name="GoalTaskScreen"
+          component={GoalTaskScreen}
           options={{
             headerShown: true,
             headerBackTitle: '', 
