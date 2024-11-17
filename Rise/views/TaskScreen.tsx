@@ -1,52 +1,79 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, FlatList } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { categories } from '../Data/CategoryData'; // Import categories for the first dropdown
 import { taskType } from '../Data/TaskData'; // Import taskType for the second dropdown
+import { TaskHandler } from '../Handlers/TaskHandler'; // Import TaskHandler
 
 const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0); // Default category is 'All'
-  const [selectedTaskType, setSelectedTaskType] = useState(1); // Default task type is 'All'
+  const [selectedTaskType, setSelectedTaskType] = useState(0); // Default task type is 'All'
+  const [tasks, setTasks] = useState([]); // State to hold tasks
 
-  // Handle category change from the first dropdown
+  // Fetch tasks from TaskHandler
+  const fetchTasks = async () => {
+    try {
+      const allTasks = await TaskHandler.getTasks();
+      // Flatten the tasks into a single array for display
+      const taskList = Object.keys(allTasks).flatMap((categoryId) =>
+        allTasks[categoryId].map((task) => ({ ...task, categoryId }))
+      );
+      setTasks(taskList);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks(); // Fetch tasks when component mounts
+  }, []);
+
+  // Handle category change
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
   };
 
-  // Handle task type change from the second dropdown
+  // Handle task type change
   const handleTaskTypeChange = (value) => {
     setSelectedTaskType(value);
   };
 
-  // Dropdown options for categories
-  const categoryOptions = [
-    { label: 'All', value: 0 },
-    ...categories.map((category) => ({
-      label: category.title,
-      value: category.id,
-    })),
-  ];
+  // Filter tasks based on selectedCategory and selectedTaskType
+  const filteredTasks = tasks.filter((task) => {
+    const matchesCategory =
+      selectedCategory === 0 || task.categoryId === selectedCategory.toString();
+    const matchesTaskType =
+      selectedTaskType === 0 || task.taskType === selectedTaskType;
+    return matchesCategory && matchesTaskType;
+  });
 
-  // Dropdown options for task types
-  const taskTypeOptions = [
-    { label: 'All', value: 0 },
-    ...taskType.map((task) => ({
-      label: task.title,
-      value: task.id,
-    })),
-  ];
+  // Render a single task item
+  const renderTask = ({ item }) => (
+    <View style={styles.taskItem}>
+      <Text style={styles.taskName}>{item.taskName}</Text>
+      <Text style={styles.taskDetails}>
+        Type: {taskType.find((t) => t.id === item.taskType)?.title || 'Unknown'} | 
+        Category: {categories.find((c) => c.id === parseInt(item.categoryId))?.title || 'Unknown'}
+      </Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header with two dropdowns */}
-    
       <View style={styles.headerContainer}>
         {/* Left Dropdown for Task Type */}
         <View style={styles.dropdownContainer}>
           <RNPickerSelect
             onValueChange={handleTaskTypeChange}
-            items={taskTypeOptions}
+            items={[
+              { label: 'All', value: 0 },
+              ...taskType.map((task) => ({
+                label: task.title,
+                value: task.id,
+              })),
+            ]}
             value={selectedTaskType}
             style={pickerStyles}
             placeholder={{}}
@@ -65,7 +92,13 @@ const TaskScreen = () => {
         <View style={styles.dropdownContainer}>
           <RNPickerSelect
             onValueChange={handleCategoryChange}
-            items={categoryOptions}
+            items={[
+              { label: 'All', value: 0 },
+              ...categories.map((category) => ({
+                label: category.title,
+                value: category.id,
+              })),
+            ]}
             value={selectedCategory}
             style={pickerStyles}
             placeholder={{}}
@@ -81,6 +114,16 @@ const TaskScreen = () => {
         </View>
       </View>
 
+      {/* Task List */}
+      <FlatList
+        data={filteredTasks}
+        renderItem={renderTask}
+        keyExtractor={(item) => item.taskId}
+        contentContainerStyle={styles.taskList}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No tasks found.</Text>
+        }
+      />
     </SafeAreaView>
   );
 };
@@ -124,24 +167,36 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   dropdownContainer: {
-    marginTop: 10, // 10px padding at the top
-    alignSelf: 'flex-end',
-    marginBottom: 20,
-  },
-  dropdownLeft: {
     flex: 1,
-    alignItems: 'flex-start',
-    marginTop: 10, // Ensure proper padding at top
-  },
-  dropdownRight: {
-    flex: 1,
-    alignItems: 'flex-end',
-    marginTop: 10, // Ensure proper padding at top
+    marginHorizontal: 5,
   },
   icon: {
     marginTop: 10,
     width: 20,
     marginRight: 10,
+  },
+  taskList: {
+    padding: 10,
+  },
+  taskItem: {
+    backgroundColor: '#222',
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  taskName: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  taskDetails: {
+    fontSize: 14,
+    color: 'grey',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: 'grey',
+    marginTop: 20,
   },
 });
 

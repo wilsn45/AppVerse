@@ -57,7 +57,7 @@ const ContentScreen = () => {
   const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
   const [isModalVisible, setModalVisible] = useState(false);
   const [taskName, setTaskName] = useState('');
-  const [selectedTaskType, setSelectedTaskType] = useState(0); // Default to "Routine"
+  const [selectedTaskType, setSelectedTaskType] = useState(1); // Default to "Routine"
   const [selectedContentid, setSelectedContendid] = useState(""); // Default to "Routine"
 
   useEffect(() => {
@@ -135,9 +135,8 @@ const ContentScreen = () => {
   }
 
   const handleSubmitTask = async () => {
-    // Check if task name is empty or task type is not selected
     if (!taskName.trim()) {
-      Alert.alert('Error', 'Please enter a task name and select a task type.');
+      Alert.alert('Error', 'Please enter a task name');
       return;
     }
   
@@ -148,12 +147,10 @@ const ContentScreen = () => {
       // Log the task details to console (for debugging purposes)
       console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}, Category: ${categoryId}, ContentId: ${selectedContentid}`);
   
-      // Reset the input fields
-      setTaskName(''); // Clear task name input
-      setSelectedTaskType(0); // Reset task type to default
-      setModalVisible(false); // Close the modal
+      setTaskName(''); 
+      setSelectedTaskType(0); 
+      setModalVisible(false); 
     } catch (error) {
-      // Handle any errors that occur while adding the task
       console.error("Error adding task:", error);
       Alert.alert('Error', 'Something went wrong while adding the task.');
     }
@@ -205,8 +202,8 @@ const ContentScreen = () => {
               <Text style={styles.sliderLabel}>Routine</Text>
               <Slider
                 style={styles.slider}
-                minimumValue={0}
-                maximumValue={1}
+                minimumValue={1}
+                maximumValue={2}
                 step={1}
                 value={selectedTaskType}
                 onValueChange={handleTaskTypeChange}
