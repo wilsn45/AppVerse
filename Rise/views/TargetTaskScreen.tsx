@@ -9,7 +9,7 @@ const TargetTaskScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{itemTitle}</Text>
+      <Text style={styles.title}>{task.contentTitle}</Text>
       <Text style={styles.contentText}>
         {/* Detailed content for this item goes here */}
         Here’s some more detailed information about "{task.contentTitle}" with id "{task.name}". You can add as much text as you’d like or format it differently!

@@ -9,9 +9,10 @@ import { TaskHandler } from '../Handlers/TaskHandler'; // Import TaskHandler
 import { useNavigation } from '@react-navigation/native';
 
 const TaskScreen = () => {
-  const [selectedCategory, setSelectedCategory] = useState(0); // Default category is 'All'
-  const [selectedTaskType, setSelectedTaskType] = useState(0); // Default task type is 'All'
-  const [tasks, setTasks] = useState([]); // State to hold tasks
+  const [selectedCategory, setSelectedCategory] = useState(0); 
+  const [selectedTaskType, setSelectedTaskType] = useState(0); 
+  const [tasks, setTasks] = useState([]); 
+  const navigation = useNavigation();
 
   // Fetch tasks from TaskHandler
   const fetchTasks = async () => {
@@ -64,7 +65,7 @@ const TaskScreen = () => {
             onPress={() => handleTaskPress(item)}>
       <Text style={styles.taskName}>{item.name}</Text>
       <Text style={styles.taskDetails}>
-         {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} | 
+         {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} |  
          {categories.find((c) => c.id === parseInt(item.categoryId))?.title || 'Unknown'}
       </Text>
       </TouchableOpacity>
