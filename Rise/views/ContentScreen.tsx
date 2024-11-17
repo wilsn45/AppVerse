@@ -142,9 +142,12 @@ const ContentScreen = () => {
   
     try {
       // Call the addTask method from TaskHandler to save the task
-      await TaskHandler.addTask(taskName, selectedTaskType, selectedContentid, categoryId);
+      const content = contentList.find((item) => item.id === selectedContentid) ;
+      const contentTitle  = content ? content.title : '';
+      await TaskHandler.addTask(taskName, selectedTaskType, selectedContentid,contentTitle, categoryId);
   
       // Log the task details to console (for debugging purposes)
+      console.log(`Task Added contentTitle: ${contentTitle}`)
       console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}, Category: ${categoryId}, ContentId: ${selectedContentid}`);
   
       setTaskName(''); 

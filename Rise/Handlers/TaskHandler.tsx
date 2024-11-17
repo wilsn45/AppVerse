@@ -13,7 +13,7 @@ export class TaskHandler {
   }
 
   // Add a task
-  static async addTask(taskName: string, taskType: number, contentId: string, categoryId: string) {
+  static async addTask(taskName: string, taskType: number, contentId: string, contentTitle: String, categoryId: string) {
     try {
       const tasks = await this.getTasks();
       const newTask = {
@@ -21,6 +21,7 @@ export class TaskHandler {
         taskName,
         taskType,
         contentId,
+        contentTitle,
         categoryId,
         dateAdded: new Date().toISOString(),
       };
