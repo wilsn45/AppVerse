@@ -54,7 +54,6 @@ const RoutineTaskScreen = () => {
   };
 
 
-
   // Handle saving a new record
   const handleSave = async () => {
     if (inputValue.trim()) {
@@ -79,10 +78,16 @@ const RoutineTaskScreen = () => {
 
   // Render a single record in the FlatList
   const renderRecordItem = ({ item }) => (
-    <View style={styles.recordItem}>
-      <Text style={styles.recordText}>{item.message}</Text>
-      <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
+    <View style={styles.mainCellView}>
+        <View style={styles.leftCellView}>
+            <View style={styles.lineView}> <Text></Text></View>
+        </View>
+        <View style={styles.recordItem}>
+            <Text style={styles.recordText}>{item.message}</Text>
+            <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
+        </View>
     </View>
+    
   );
 
   // Add custom text to the right of the header
@@ -95,10 +100,18 @@ const RoutineTaskScreen = () => {
   return (
     <View style={styles.container}>
       {/* Rounded corner title */}
+      <View style={styles.topHeaderView}>
       <TouchableOpacity onPress={navigateToContentDetail} style={styles.roundedTitleContainer}>
         <Text style={styles.title}>{task.contentTitle}</Text>
         <Ionicons name="chevron-forward" size={24} color="white" />
       </TouchableOpacity>
+      </View>
+
+      <View style={styles.recordHeaderView}>
+        <Text style={styles.recordHeaderFrequecy} > Months </Text>
+        <Text style={styles.recordHeaderMessage}> Message </Text>
+      </View>
+      
 
       {/* FlatList to display task records */}
       <FlatList
@@ -157,8 +170,10 @@ const RoutineTaskScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#000',
+  },
+  topHeaderView: {
+    padding: 20,
   },
   roundedTitleContainer: {
     flexDirection: 'row',
@@ -176,17 +191,37 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  recordHeaderView: {
+    flexDirection: 'row',
+    marginTop: 0,
+    marginRight: 20,
+  },
+  recordHeaderFrequecy: {
+    width: 50,
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginRight: 20
+  },
+  recordHeaderMessage: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   recordList: {
-    marginTop: 20,
+    marginTop: 15,
+    marginRight: 20
   },
   recordItem: {
-    padding: 15,
-    borderBottomWidth: 1,
+    paddingVertical: 15,
     borderBottomColor: 'grey',
+    paddingRight: 15
   },
   recordText: {
     color: '#fff',
     fontSize: 16,
+    paddingRight: 15,
+    
   },
   recordDate: {
     color: 'grey',
@@ -260,6 +295,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
   },
+  mainCellView: {
+    flexDirection: 'row',
+  },
+
+  leftCellView:  {
+    width: 50,
+    alignItems: 'center',
+  },
+
+  lineView:  {
+    flex: 1,
+    width: 5,
+    backgroundColor: 'blue'
+  },
+  
 });
 
 export default RoutineTaskScreen;
