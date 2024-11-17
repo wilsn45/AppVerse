@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, FlatList,TouchableOpacity } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { categories } from '../Data/CategoryData'; // Import categories for the first dropdown
 import { taskType } from '../Data/TaskData'; // Import taskType for the second dropdown
 import { useFocusEffect } from '@react-navigation/native';
 import { TaskHandler } from '../Handlers/TaskHandler'; // Import TaskHandler
+import { useNavigation } from '@react-navigation/native';
 
 const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0); // Default category is 'All'
@@ -52,20 +53,33 @@ const TaskScreen = () => {
     const matchesCategory =
       selectedCategory === 0 || task.categoryId === selectedCategory.toString();
     const matchesTaskType =
-      selectedTaskType === 0 || task.taskType === selectedTaskType;
+      selectedTaskType === 0 || task.type === selectedTaskType;
     return matchesCategory && matchesTaskType;
   });
 
   // Render a single task item
   const renderTask = ({ item }) => (
     <View style={styles.taskItem}>
-      <Text style={styles.taskName}>{item.taskName}</Text>
+       <TouchableOpacity
+            onPress={() => handleTaskPress(item)}>
+      <Text style={styles.taskName}>{item.name}</Text>
       <Text style={styles.taskDetails}>
-        Type: {taskType.find((t) => t.id === item.taskType)?.title || 'Unknown'} | 
-        Category: {categories.find((c) => c.id === parseInt(item.categoryId))?.title || 'Unknown'}
+         {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} | 
+         {categories.find((c) => c.id === parseInt(item.categoryId))?.title || 'Unknown'}
       </Text>
+      </TouchableOpacity>
     </View>
   );
+
+  const handleTaskPress = (task) => {
+    
+    const contentTitle = "Sample Content Title"; // Replace with actual content title
+    if (task.type === 1) {
+      navigation.navigate('RoutineTaskScreen', { task });
+    } else if (task.type === 2) {
+      navigation.navigate('TargetTaskScreen', { task });
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>

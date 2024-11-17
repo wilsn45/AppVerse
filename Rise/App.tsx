@@ -8,6 +8,8 @@ import ContentScreen from './views/ContentScreen'; // Adjust the path as needed
 import ContentDetailScreen from './views/ContentDetailScreen'; // Adjust the path as needed
 import SavedScreen from './views/SaveScreen.tsx'; // You need to create this screen
 import TaskScreen from './views/TaskScreen'; // You need to create this screen
+import RoutineTaskScreen from './views/RoutineTaskScreen.tsx';
+import TargetTaskScreen from './views/TargetTaskScreen.tsx';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -80,9 +82,29 @@ const App = () => {
           component={ContentDetailScreen}
           options={{
             headerShown: true,
-            headerBackTitle: '', // Remove the back title on back button
-            headerTintColor: 'grey', // Change the back button color to grey
+            headerBackTitle: '', 
+            headerTintColor: 'grey',
             title: 'Description',
+          }}
+        />
+        <Stack.Screen
+          name="RoutineTaskScreen"
+          component={RoutineTaskScreen}
+          options={{
+            headerShown: true,
+            headerBackTitle: '', 
+            headerTintColor: 'grey', 
+            title: 'Task',
+          }}
+        />
+        <Stack.Screen
+          name="TargetTaskScreen"
+          component={TargetTaskScreen}
+          options={{
+            headerShown: true,
+            headerBackTitle: '', 
+            headerTintColor: 'grey', 
+            title: 'Task',
           }}
         />
       </Stack.Navigator>

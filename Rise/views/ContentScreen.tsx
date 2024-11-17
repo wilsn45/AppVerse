@@ -59,6 +59,7 @@ const ContentScreen = () => {
   const [taskName, setTaskName] = useState('');
   const [selectedTaskType, setSelectedTaskType] = useState(1); // Default to "Routine"
   const [selectedContentid, setSelectedContendid] = useState(""); // Default to "Routine"
+  
 
   useEffect(() => {
     // Set content list based on tileType
@@ -144,6 +145,7 @@ const ContentScreen = () => {
       // Call the addTask method from TaskHandler to save the task
       const content = contentList.find((item) => item.id === selectedContentid) ;
       const contentTitle  = content ? content.title : '';
+
       await TaskHandler.addTask(taskName, selectedTaskType, selectedContentid,contentTitle, categoryId);
   
       // Log the task details to console (for debugging purposes)

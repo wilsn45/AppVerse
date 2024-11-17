@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TaskData } from '../Data/TaskData';
 
 export class TaskHandler {
   // Helper function to get the current tasks from AsyncStorage
@@ -16,21 +17,15 @@ export class TaskHandler {
   static async addTask(taskName: string, taskType: number, contentId: string, contentTitle: String, categoryId: string) {
     try {
       const tasks = await this.getTasks();
-      const newTask = {
-        taskId: new Date().getTime().toString(),
-        taskName,
-        taskType,
-        contentId,
-        contentTitle,
-        categoryId,
-        dateAdded: new Date().toISOString(),
-      };
+      const id = new Date().getTime().toString();
+      const dataAdded = new Date().toISOString()
+      const taskData = new TaskData(id, taskName, taskType,contentId, contentTitle, categoryId, dataAdded);
 
       if (!tasks[categoryId]) {
         tasks[categoryId] = [];
       }
 
-      tasks[categoryId].push(newTask); // Add the task to the appropriate category
+      tasks[categoryId].push(taskData); // Add the task to the appropriate category
       await AsyncStorage.setItem('tasks', JSON.stringify(tasks)); // Store updated tasks
       console.log('Task added successfully');
     } catch (error) {
