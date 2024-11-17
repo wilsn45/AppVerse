@@ -6,7 +6,7 @@ export const taskType: TaskType[] = [
 
 
   export class TaskData {
-    constructor(id, name, type, categoryId, contentId, contentTitle,dataAdded) {
+    constructor(id, name, type, contentId, contentTitle, categoryId,dataAdded) {
       this.id = id;
       this.name = name;
       this.type = type;

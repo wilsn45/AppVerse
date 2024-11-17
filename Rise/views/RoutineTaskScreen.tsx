@@ -1,19 +1,28 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // For navigation
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRoute } from '@react-navigation/native';
-import { TaskData } from '../Data/TaskData';
 
 const RoutineTaskScreen = () => {
-  const route = useRoute();
-  const { task } = route.params
+    const route = useRoute();
+  const { task } = route.params; // Get TaskData passed from previous screen
+  const navigation = useNavigation();
+
+  // Handle navigation to ContentDetailScreen
+  const navigateToContentDetail = () => {
+    navigation.navigate('ContentDetailScreen', { itemId: task.contentId, itemTitle: task.contentTitle });
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{task.contentTitle}</Text>
-      <Text style={styles.contentText}>
-        {/* Detailed content for this item goes here */}
-        Here’s some more detailed information about "{task.contentTitle}" with id "{task.name}". You can add as much text as you’d like or format it differently!
-      </Text>
+      {/* Rounded corner title */}
+      <TouchableOpacity onPress={navigateToContentDetail} style={styles.roundedTitleContainer}>
+        <Text style={styles.title}>{task.contentTitle}</Text>
+        <Ionicons name="chevron-down" size={24} color="white" />
+      </TouchableOpacity>
+
+      {/* Other UI elements */}
     </View>
   );
 };
@@ -21,20 +30,25 @@ const RoutineTaskScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // Black background
     padding: 20,
+    backgroundColor: '#000'
+  },
+  roundedTitleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: 'grey',
+    borderRadius: 8,
+    alignSelf: 'center',
+    backgroundColor: '#1c1c1c',
+   
   },
   title: {
-    fontSize: 26,
     color: '#fff',
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  contentText: {
     fontSize: 18,
-    color: '#ccc',
-    textAlign: 'justify',
+    fontWeight: 'bold',
   },
 });
 
