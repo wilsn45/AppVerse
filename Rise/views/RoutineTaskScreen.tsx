@@ -138,6 +138,8 @@ const RoutineTaskScreen = () => {
             <TextInput
               style={styles.input}
               value={inputValue}
+              multiline={true}
+              numberOfLines={6}
               onChangeText={setInputValue}
               placeholder="Enter task details"
               placeholderTextColor="#aaa"
@@ -232,6 +234,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#333',
     color: '#fff',
+    height: 80,
     padding: 10,
     borderRadius: 8,
     marginBottom: 20,
