@@ -16,6 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Slider from '@react-native-community/slider';
 import { SaveHandler } from '../Handlers/SaveHandler';
+import { TaskHandler } from '../Handlers/TaskHandler';
 
 const { height } = Dimensions.get('window');
 
@@ -56,7 +57,8 @@ const ContentScreen = () => {
   const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
   const [isModalVisible, setModalVisible] = useState(false);
   const [taskName, setTaskName] = useState('');
-  const [selectedTaskType, setSelectedTaskType] = useState(0); // Default to "All"
+  const [selectedTaskType, setSelectedTaskType] = useState(0); // Default to "Routine"
+  const [selectedContentid, setSelectedContendid] = useState(""); // Default to "Routine"
 
   useEffect(() => {
     // Set content list based on tileType
@@ -121,19 +123,40 @@ const ContentScreen = () => {
     navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title });
   };
 
-  const handleAddTask = () => {
+  const handleAddTask = (itemId: string) => {
+    setSelectedContendid(itemId)
     setModalVisible(true);
   };
 
-  const handleSubmitTask = () => {
-    if (!taskName.trim() || selectedTaskType === 0) {
+  const handleCancelAddTask = async () => { 
+      setTaskName(''); // Clear task name input
+      setSelectedTaskType(0); // Reset task type to default
+      setModalVisible(false); // Close the modal
+  }
+
+  const handleSubmitTask = async () => {
+    // Check if task name is empty or task type is not selected
+    if (!taskName.trim()) {
       Alert.alert('Error', 'Please enter a task name and select a task type.');
       return;
     }
-    console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}`);
-    setTaskName('');
-    setSelectedTaskType(0); // Reset to default
-    setModalVisible(false);
+  
+    try {
+      // Call the addTask method from TaskHandler to save the task
+      await TaskHandler.addTask(taskName, selectedTaskType, selectedContentid, categoryId);
+  
+      // Log the task details to console (for debugging purposes)
+      console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}, Category: ${categoryId}, ContentId: ${selectedContentid}`);
+  
+      // Reset the input fields
+      setTaskName(''); // Clear task name input
+      setSelectedTaskType(0); // Reset task type to default
+      setModalVisible(false); // Close the modal
+    } catch (error) {
+      // Handle any errors that occur while adding the task
+      console.error("Error adding task:", error);
+      Alert.alert('Error', 'Something went wrong while adding the task.');
+    }
   };
 
   return (
@@ -157,7 +180,7 @@ const ContentScreen = () => {
               <TouchableOpacity style={styles.iconButton} onPress={() => handleShare(item.id)}>
                 <Ionicons name="share-outline" size={24} color="white" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask()}>
+              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item.id)}>
                 <MaterialIcons name="add-task" size={24} color="white" />
               </TouchableOpacity>
             </View>
@@ -195,7 +218,7 @@ const ContentScreen = () => {
             </View>
 
             <Button title="Add Task" onPress={handleSubmitTask} />
-            <Button title="Cancel" color="red" onPress={() => setModalVisible(false)} />
+            <Button title="Cancel" color="red" onPress={handleCancelAddTask} />
           </View>
         </View>
       </Modal>
@@ -275,6 +298,7 @@ const styles = StyleSheet.create({
     color: '#333',
     width: 80, // Ensure labels have space
     textAlign: 'center',
+    fontWeight: 'bold'
   },
   slider: {
     width: 80, // Adjusted width for better size
