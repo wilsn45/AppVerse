@@ -106,12 +106,12 @@ const GoalTaskScreen = () => {
     
   );
 
-  // Add custom text to the right of the header
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <Text style={styles.headerRightText}>Custom Text</Text>,
-    });
-  }, [navigation]);
+  // // Add custom text to the right of the header
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => <Text style={styles.headerRightText}>Custom Text</Text>,
+  //   });
+  // }, [navigation]);
 
   return (
     <View style={styles.container}>

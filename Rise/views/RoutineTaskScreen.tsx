@@ -92,11 +92,11 @@ const RoutineTaskScreen = () => {
   );
 
   // Add custom text to the right of the header
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <Text style={styles.headerRightText}>Custom Text</Text>,
-    });
-  }, [navigation]);
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => <Text style={styles.headerRightText}>Custom Text</Text>,
+  //   });
+  // }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -126,13 +126,13 @@ const RoutineTaskScreen = () => {
       {/* Bottom View with buttons */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity onPress={openModal} style={styles.iconButton}>
-          <Ionicons name="add-circle" size={30} color="white" />
+          <Ionicons name="add-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
         <TouchableOpacity onPress={deleteTask} style={styles.iconButton}>
-          <Ionicons name="checkmark-circle" size={30} color="white" />
+          <Ionicons name="checkmark-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
         <TouchableOpacity onPress={deleteTask} style={styles.iconButton}>
-          <Ionicons name="trash-bin" size={30} color="white" />
+          <Ionicons name="trash-bin" size={30} color={theme.colors.white} />
         </TouchableOpacity>
       </View>
 
@@ -246,6 +246,7 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 10,
     borderRadius: 50,
+    color:   theme.colors.primary,
     backgroundColor: theme.colors.primary,
   },
   modalContainer: {
