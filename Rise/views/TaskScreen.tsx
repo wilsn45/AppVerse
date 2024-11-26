@@ -7,6 +7,7 @@ import { taskType } from '../Data/TaskData'; // Import taskType for the second d
 import { useFocusEffect } from '@react-navigation/native';
 import { TaskHandler } from '../Handlers/TaskHandler'; // Import TaskHandler
 import { useNavigation } from '@react-navigation/native';
+import theme from '../Theme/Theme';
 
 const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0); 
@@ -179,13 +180,15 @@ const pickerStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.white,
     padding: 10,
   },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
     marginBottom: 20,
     marginHorizontal: 10,
   },
@@ -202,19 +205,21 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   taskItem: {
-    backgroundColor: '#222',
+    backgroundColor: theme.colors.white,
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
     padding: 15,
     borderRadius: 5,
     marginBottom: 10,
   },
   taskName: {
     fontSize: 16,
-    color: 'white',
+    color: theme.colors.black,
     fontWeight: 'bold',
   },
   taskDetails: {
     fontSize: 14,
-    color: 'grey',
+    color: theme.colors.grey1,
   },
   emptyText: {
     textAlign: 'center',

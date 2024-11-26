@@ -77,7 +77,7 @@ const App = () => {
             headerShown: true,
             title: 'Content', // Customize title if needed
             headerBackTitle: '', // Remove the back title
-            headerTintColor: 'grey', // Change back button color to grey
+            headerTintColor: theme.colors.black, // Change back button color to grey
           }}
         />
         <Stack.Screen

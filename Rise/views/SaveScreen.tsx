@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native'; // Import useNavigatio
 import { useFocusEffect } from '@react-navigation/native';
 import { categories } from '../Data/CategoryData';
 import { SaveHandler } from '../Handlers/SaveHandler';
+import theme from '../Theme/Theme';
 
 const SaveScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -128,22 +129,23 @@ const pickerStyles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   inputAndroid: {
-    backgroundColor: 'grey',
-    color: 'white',
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.black,
     paddingVertical: 10,
     paddingHorizontal: 15,
     paddingRight: 35,
     borderRadius: 5,
     fontSize: 16,
     width: '100%',
-    alignSelf: 'stretch',
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
   },
 });
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.white,
     padding: 10,
   },
   dropdownContainer: {
@@ -167,14 +169,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-    borderWidth: 1,
-    borderColor: 'grey',
     borderRadius: 8,
     alignSelf: 'center',
-    backgroundColor: '#1c1c1c',
+    backgroundColor: theme.colors.white,
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
   },
   cardTitle: {
-    color: '#fff',
+    color: theme.colors.black,
     fontSize: 18,
     flex: 1,
     flexWrap: 'wrap',

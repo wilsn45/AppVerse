@@ -6,6 +6,7 @@ const theme = {
       grey2: '#dcdef4',
       black: '#000000',
       error: '#e74c3c',
+      red: '#ff3131'
     },
     spacing: {
       small: 8,
