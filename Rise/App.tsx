@@ -10,6 +10,7 @@ import SavedScreen from './views/SaveScreen.tsx'; // You need to create this scr
 import TaskScreen from './views/TaskScreen'; // You need to create this screen
 import RoutineTaskScreen from './views/RoutineTaskScreen.tsx';
 import GoalTaskScreen from './views/GoalTaskScreen.tsx';
+import theme from './Theme/Theme';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,8 @@ const TabNavigator = () => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        tabBarActiveTintColor: theme.colors.primary, 
+        tabBarInactiveTintColor: theme.colors.grey1,
       })}
     >
       <Tab.Screen

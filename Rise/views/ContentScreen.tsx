@@ -23,7 +23,7 @@ const { height } = Dimensions.get('window');
 // Sample content data for each category
 const financeContent = [
   { id: '11', title: 'Finance Tip 1: Budgeting' },
-  { id: '12', title: 'Finance Tip 2: Saving' },
+  { id: '12', title: 'Finance Tip 2: Saving A very very very very very very longggggggggggg Saving sabinnnnggg savnnggggggg savingggggggg' },
   { id: '13', title: 'Finance Tip 3: Investing' },
   { id: '14', title: 'Finance Tip 4: Debt Management' },
 ];

@@ -1,1 +1,0 @@
-1. On TaskDetail Screen -> Add Entry, Close button is not properly aligned
