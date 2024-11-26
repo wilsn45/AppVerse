@@ -17,6 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Slider from '@react-native-community/slider';
 import { SaveHandler } from '../Handlers/SaveHandler';
 import { TaskHandler } from '../Handlers/TaskHandler';
+import theme from '../Theme/Theme';
 
 const { height } = Dimensions.get('window');
 
@@ -176,14 +177,14 @@ const ContentScreen = () => {
                 <Ionicons
                   name={savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
                   size={24}
-                  color={savedCards.get(item.id) ? 'red' : 'white'}
+                  color={savedCards.get(item.id) ? theme.colors.red : theme.colors.primary}
                 />
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleShare(item.id)}>
-                <Ionicons name="share-outline" size={24} color="white" />
+                <Ionicons name="share-outline" size={24} color={theme.colors.primary} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item.id)}>
-                <MaterialIcons name="add-task" size={24} color="white" />
+                <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>
               </TouchableOpacity>
             </View>
           </View>
@@ -231,13 +232,13 @@ const ContentScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.white,
   },
   cardContainer: {
     height: height * 0.8,
     width: '90%',
-    backgroundColor: '#333',
-    borderColor: 'gray',
+    backgroundColor: theme.colors.white,
+    borderColor: theme.colors.grey2,
     borderWidth: 1,
     borderRadius: 10,
     alignSelf: 'center',
@@ -252,7 +253,7 @@ const styles = StyleSheet.create({
   },
   contentText: {
     fontSize: 24,
-    color: '#fff',
+    color: theme.colors.black,
     textAlign: 'center',
     marginBottom: 10,
   },

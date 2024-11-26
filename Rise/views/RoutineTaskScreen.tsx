@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import RoutineTaskHandler from '../Handlers/RoutineTaskHandler';
 import { TaskHandler } from '../Handlers/TaskHandler';
+import theme from '../Theme/Theme';
 
 const RoutineTaskScreen = () => {
   const route = useRoute();
@@ -170,7 +171,7 @@ const RoutineTaskScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.white,
   },
   topHeaderView: {
     padding: 20,
@@ -182,12 +183,12 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'grey',
+    borderColor: theme.colors.grey2,
     borderRadius: 8,
-    backgroundColor: '#1c1c1c',
+    backgroundColor: theme.colors.white,
   },
   title: {
-    color: '#fff',
+    color: theme.colors.black,
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -198,13 +199,13 @@ const styles = StyleSheet.create({
   },
   recordHeaderFrequecy: {
     width: 50,
-    color: '#fff',
+    color: theme.colors.primary,
     fontSize: 12,
     fontWeight: 'bold',
     marginRight: 20
   },
   recordHeaderMessage: {
-    color: '#fff',
+    color: theme.colors.primary,
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -214,22 +215,22 @@ const styles = StyleSheet.create({
   },
   recordItem: {
     paddingVertical: 15,
-    borderBottomColor: 'grey',
+    borderBottomColor: theme.colors.grey1,
     paddingRight: 15
   },
   recordText: {
-    color: '#fff',
+    color: theme.colors.black,
     fontSize: 16,
     paddingRight: 15,
     
   },
   recordDate: {
-    color: 'grey',
+    color: theme.colors.grey1,
     fontSize: 12,
     marginTop: 5,
   },
   emptyText: {
-    color: 'grey',
+    color: theme.colors.grey1,
     textAlign: 'center',
     marginTop: 20,
   },
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 10,
     borderRadius: 50,
-    backgroundColor: '#333',
+    backgroundColor: theme.colors.primary,
   },
   modalContainer: {
     flex: 1,

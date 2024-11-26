@@ -86,8 +86,8 @@ const App = () => {
           options={{
             headerShown: true,
             headerBackTitle: '', 
-            headerTintColor: 'grey',
-            title: 'Description',
+            headerTintColor: theme.colors.black,
+            title: '',
           }}
         />
         <Stack.Screen
@@ -96,7 +96,7 @@ const App = () => {
           options={{
             headerShown: true,
             headerBackTitle: '', 
-            headerTintColor: 'grey', 
+            headerTintColor: theme.colors.black, 
             title: 'Task',
           }}
         />
@@ -106,7 +106,7 @@ const App = () => {
           options={{
             headerShown: true,
             headerBackTitle: '', 
-            headerTintColor: 'grey', 
+            headerTintColor: theme.colors.black, 
             title: 'Task',
           }}
         />
