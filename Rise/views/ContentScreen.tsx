@@ -58,9 +58,10 @@ const ContentScreen = () => {
   const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
   const [isModalVisible, setModalVisible] = useState(false);
   const [taskName, setTaskName] = useState('');
-  const [selectedTaskType, setSelectedTaskType] = useState(1); // Default to "Routine"
   const [selectedContentid, setSelectedContendid] = useState(""); // Default to "Routine"
-  
+  const [selectedTaskType, setSelectedTaskType] = useState(0); // 0 for Routine, 1 for Goal
+  const [selectedSubTaskType, setSelectedSubTaskType] = useState(0); // 0 for Daily, 1 for Weekly, 2 for Monthly
+
 
   useEffect(() => {
     // Set content list based on tileType
@@ -147,7 +148,7 @@ const ContentScreen = () => {
       const content = contentList.find((item) => item.id === selectedContentid) ;
       const contentTitle  = content ? content.title : '';
 
-      await TaskHandler.addTask(taskName, selectedTaskType, selectedContentid,contentTitle, categoryId);
+      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, selectedContentid,contentTitle, categoryId);
   
       // Log the task details to console (for debugging purposes)
       console.log(`Task Added contentTitle: ${contentTitle}`)
@@ -192,40 +193,69 @@ const ContentScreen = () => {
       />
 
       {/* Task Modal */}
-      <Modal visible={isModalVisible} animationType="slide" transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Task</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter task name"
-              placeholderTextColor="#ccc"
-              value={taskName}
-              onChangeText={setTaskName}
-            />
+    {/* Task Modal */}
+{/* Task Modal */}
+<Modal visible={isModalVisible} animationType="slide" transparent>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>Add Task</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter task name"
+        placeholderTextColor="#ccc"
+        value={taskName}
+        onChangeText={setTaskName}
+      />
 
-            <View style={styles.sliderContainer}>
-              <Text style={styles.sliderLabel}>Routine</Text>
-              <Slider
-                style={styles.slider}
-                minimumValue={1}
-                maximumValue={2}
-                step={1}
-                value={selectedTaskType}
-                onValueChange={handleTaskTypeChange}
-                minimumTrackTintColor="#FF6347"
-                maximumTrackTintColor="#00BFFF"
-                thumbTintColor="#FFD700"
-              />
-              <Text style={styles.sliderLabel}>Goal</Text>
-            </View>
+      {/* Routine and Goal Buttons */}
+      <View style={styles.optionButtonContainer}>
+        <TouchableOpacity
+          style={[styles.optionButton, selectedTaskType === 0 && styles.selectedButton]}
+          onPress={() => setSelectedTaskType(0)} // 0 for Routine
+        >
+          <Text style={[styles.optionButtonText, selectedTaskType === 0 && styles.selectedOptionButtonText]}>Routine</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.optionButton, selectedTaskType === 1 && styles.selectedButton]}
+          onPress={() => setSelectedTaskType(1)} // 0 for Routine
+        >
+          <Text style={[styles.optionButtonText, selectedTaskType === 1 && styles.selectedOptionButtonText]}>Goal</Text>
+        </TouchableOpacity>
+      </View>
 
-            <Button title="Add Task" onPress={handleSubmitTask} />
-            <Button title="Cancel" color="red" onPress={handleCancelAddTask} />
-          </View>
+      {/* Sub-buttons for Routine */}
+      {selectedTaskType === 0 && (
+        <View style={styles.subButtonContainer}>
+          {[0, 1, 2].map((value, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.optionButton,
+                selectedSubTaskType === value && styles.selectedButton,
+              ]}
+              onPress={() => setSelectedSubTaskType(value)}
+            >
+              <Text style={[
+                styles.optionButtonText,
+                selectedSubTaskType === value && styles.selectedOptionButtonText,
+              ]}>
+                {value === 0 ? 'Daily' : value === 1 ? 'Weekly' : 'Monthly'}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      </Modal>
+      )}
+
+      {/* Add Task and Cancel Buttons */}
+      <View style={styles.buttonContainer}>
+        <Button title="Add Task" onPress={handleSubmitTask} />
+        <Button title="Cancel" color="red" onPress={handleCancelAddTask} />
+      </View>
     </View>
+  </View>
+</Modal>
+
+ </View>
   );
 };
 
@@ -257,55 +287,77 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-  },
   iconButton: {
     padding: 10,
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '90%',
-    backgroundColor: '#fff',
+    width: '80%',
+    backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   input: {
-    borderWidth: 1,
+    height: 40,
     borderColor: '#ccc',
+    borderWidth: 1,
     borderRadius: 5,
-    padding: 10,
     marginBottom: 20,
+    paddingLeft: 10,
   },
-  sliderContainer: {
+  optionButtonContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginVertical: 10,
+  },
+  optionButton: {
+    flex: 1,
+    marginHorizontal: 5,
+    height: 40,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginVertical: 5,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
+    backgroundColor: theme.colors.white
   },
-  sliderLabel: {
+  selectedButton: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.grey2,
+  },
+  optionButtonText: {
+    color: theme.colors.primary,
     fontSize: 16,
-    color: '#333',
-    width: 80, // Ensure labels have space
-    textAlign: 'center',
-    fontWeight: 'bold'
   },
-  slider: {
-    width: 80, // Adjusted width for better size
-    height: 30,
+  selectedOptionButtonText: {
+    color: theme.colors.white,
+  },
+  subButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginVertical: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    gap: 20,
+  },
+  addTaskButton: {
+    flex: 1,
+    marginHorizontal: 5,
+    backgroundColor: theme.colors.white
   },
 });
 

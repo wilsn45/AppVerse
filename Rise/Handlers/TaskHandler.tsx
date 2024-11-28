@@ -15,12 +15,12 @@ export class TaskHandler {
   }
 
   // Add a task
-  static async addTask(taskName: string, taskType: number, contentId: string, contentTitle: String, categoryId: string) {
+  static async addTask(taskName: string, taskType: number, subTaskType: number, contentId: string, contentTitle: String, categoryId: string) {
     try {
       const tasks = await this.getTasks();
       const id = new Date().getTime().toString();
       const dataAdded = new Date().toISOString()
-      const taskData = new TaskData(id, taskName, taskType,contentId, contentTitle, categoryId, dataAdded);
+      const taskData = new TaskData(id, taskName, taskType,subTaskType,contentId, contentTitle, categoryId, dataAdded);
 
       if (!tasks[categoryId]) {
         tasks[categoryId] = [];
