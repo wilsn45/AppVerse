@@ -59,8 +59,8 @@ const ContentScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [taskName, setTaskName] = useState('');
   const [selectedContentid, setSelectedContendid] = useState(""); // Default to "Routine"
-  const [selectedTaskType, setSelectedTaskType] = useState(0); // 0 for Routine, 1 for Goal
-  const [selectedSubTaskType, setSelectedSubTaskType] = useState(0); // 0 for Daily, 1 for Weekly, 2 for Monthly
+  const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
+  const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
 
 
   useEffect(() => {
@@ -155,8 +155,8 @@ const ContentScreen = () => {
       console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}, Category: ${categoryId}, ContentId: ${selectedContentid}`);
   
       setTaskName(''); 
-      setSelectedSubTaskType(0)
-      setSelectedTaskType(0); 
+      setSelectedSubTaskType(1)
+      setSelectedTaskType(1); 
       setModalVisible(false); 
     } catch (error) {
       console.error("Error adding task:", error);
@@ -211,23 +211,23 @@ const ContentScreen = () => {
       {/* Routine and Goal Buttons */}
       <View style={styles.optionButtonContainer}>
         <TouchableOpacity
-          style={[styles.optionButton, selectedTaskType === 0 && styles.selectedButton]}
-          onPress={() => setSelectedTaskType(0)} // 0 for Routine
-        >
-          <Text style={[styles.optionButtonText, selectedTaskType === 0 && styles.selectedOptionButtonText]}>Routine</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           style={[styles.optionButton, selectedTaskType === 1 && styles.selectedButton]}
           onPress={() => setSelectedTaskType(1)} // 0 for Routine
         >
-          <Text style={[styles.optionButtonText, selectedTaskType === 1 && styles.selectedOptionButtonText]}>Goal</Text>
+          <Text style={[styles.optionButtonText, selectedTaskType === 1 && styles.selectedOptionButtonText]}>Routine</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.optionButton, selectedTaskType === 2 && styles.selectedButton]}
+          onPress={() => setSelectedTaskType(2)} // 0 for Routine
+        >
+          <Text style={[styles.optionButtonText, selectedTaskType === 2 && styles.selectedOptionButtonText]}>Goal</Text>
         </TouchableOpacity>
       </View>
 
       {/* Sub-buttons for Routine */}
-      {selectedTaskType === 0 && (
+      {selectedTaskType === 1 && (
         <View style={styles.subButtonContainer}>
-          {[0, 1, 2].map((value, index) => (
+          {[1, 2, 3].map((value, index) => (
             <TouchableOpacity
               key={index}
               style={[
@@ -240,7 +240,7 @@ const ContentScreen = () => {
                 styles.optionButtonText,
                 selectedSubTaskType === value && styles.selectedOptionButtonText,
               ]}>
-                {value === 0 ? 'Daily' : value === 1 ? 'Weekly' : 'Monthly'}
+                {value === 1 ? 'Daily' : value === 2 ? 'Weekly' : 'Monthly'}
               </Text>
             </TouchableOpacity>
           ))}

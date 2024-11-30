@@ -8,6 +8,8 @@ import {
   StyleSheet,
   Pressable,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons
+import theme from '../../Theme/Theme';
 
 const DropDownList = ({ data, defaultId, onSelection }) => {
   const [selectedId, setSelectedId] = useState(defaultId);
@@ -28,7 +30,11 @@ const DropDownList = ({ data, defaultId, onSelection }) => {
         style={styles.box}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.text}>{defaultTitle}</Text>
+        <Text style={styles.text}>
+          {defaultTitle}
+        </Text>
+        {/* Ionicons down arrow */}
+        <Ionicons name="chevron-down" size={16} color={theme.colors.black} style={styles.arrow} />
       </TouchableOpacity>
 
       {/* Modal for List */}
@@ -72,11 +78,18 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     padding: 10,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: theme.colors.grey3,
+    flexDirection: 'row',  // Align text and arrow in a row
+    alignItems: 'center',  // Center them vertically
   },
   text: {
-    fontSize: 16,
-    color: "#333",
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: theme.colors.black,
+    flex: 1,  // Allow text to take available space
+  },
+  arrow: {
+    paddingLeft: 5,  // Space between text and arrow
   },
   modalOverlay: {
     flex: 1,
@@ -84,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    backgroundColor: "white",
+    backgroundColor: theme.colors.white,
     margin: 20,
     borderRadius: 10,
     padding: 20,
@@ -92,11 +105,11 @@ const styles = StyleSheet.create({
   item: {
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: theme.colors.grey1,
   },
   itemText: {
     fontSize: 16,
-    color: "#333",
+    color: theme.colors.black,
   },
 });
 

@@ -1,6 +1,6 @@
 export const taskType: TaskType[] = [
-    { id: 0, title: 'Routine' },
-    { id: 1, title: 'Goal' }
+    { id: 1, title: 'Routine' },
+    { id: 2, title: 'Goal' }
   ];
 
 

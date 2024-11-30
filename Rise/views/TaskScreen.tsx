@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList,TouchableOpacity } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { categories } from '../Data/CategoryData'; // Import categories for the first dropdown
-import { taskType } from '../Data/TaskData'; // Import taskType for the second dropdown
+import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
+import { categories } from '../Data/CategoryData'; 
+import { taskType } from '../Data/TaskData';
 import { useFocusEffect } from '@react-navigation/native';
-import { TaskHandler } from '../Handlers/TaskHandler'; // Import TaskHandler
+import { TaskHandler } from '../Handlers/TaskHandler';
 import { useNavigation } from '@react-navigation/native';
 import theme from '../Theme/Theme';
+import DropDownList from './Common/DropDownList'; 
 
 const TaskScreen = () => {
-  const [selectedCategory, setSelectedCategory] = useState(0); 
-  const [selectedTaskType, setSelectedTaskType] = useState(0); 
-  const [tasks, setTasks] = useState([]); 
+  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedTaskType, setSelectedTaskType] = useState(0);
+  const [tasks, setTasks] = useState([]);
   const navigation = useNavigation();
 
-  // Fetch tasks from TaskHandler
   const fetchTasks = async () => {
     try {
       const allTasks = await TaskHandler.getTasks();
-      // Flatten the tasks into a single array for display
       const taskList = Object.keys(allTasks).flatMap((categoryId) =>
         allTasks[categoryId].map((task) => ({ ...task, categoryId }))
       );
@@ -29,28 +26,16 @@ const TaskScreen = () => {
     }
   };
 
-    // Re-fetch saved cards on screen focus
-    useFocusEffect(
-      React.useCallback(() => {
-        fetchTasks();
-      }, [])
-    );
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchTasks();
+    }, [])
+  );
 
   useEffect(() => {
-    fetchTasks(); // Fetch tasks when component mounts
+    fetchTasks();
   }, []);
 
-  // Handle category change
-  const handleCategoryChange = (value) => {
-    setSelectedCategory(value);
-  };
-
-  // Handle task type change
-  const handleTaskTypeChange = (value) => {
-    setSelectedTaskType(value);
-  };
-
-  // Filter tasks based on selectedCategory and selectedTaskType
   const filteredTasks = tasks.filter((task) => {
     const matchesCategory =
       selectedCategory === 0 || task.categoryId === selectedCategory.toString();
@@ -59,82 +44,74 @@ const TaskScreen = () => {
     return matchesCategory && matchesTaskType;
   });
 
-  // Render a single task item
   const renderTask = ({ item }) => (
     <View style={styles.taskItem}>
-       <TouchableOpacity
-            onPress={() => handleTaskPress(item)}>
-      <Text style={styles.taskName}>{item.name}</Text>
-      <Text style={styles.taskDetails}>
-         {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} | 
-         {categories.find((c) => c.id === parseInt(item.categoryId))?.title || 'Unknown'}
-      </Text>
+      <TouchableOpacity onPress={() => handleTaskPress(item)}>
+        <Text style={styles.taskName}>{item.name}</Text>
+        <Text style={styles.taskDetails}>
+          {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} |{' '}
+          {categories.find((c) => c.id === parseInt(item.categoryId))?.title ||
+            'Unknown'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
 
   const handleTaskPress = (task) => {
-    
-    const contentTitle = "Sample Content Title"; // Replace with actual content title
     if (task.type === 0) {
       navigation.navigate('RoutineTaskScreen', { task });
     } else if (task.type === 1) {
       navigation.navigate('GoalTaskScreen', { task });
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header with two dropdowns */}
+      {/* Header Section */}
       <View style={styles.headerContainer}>
-        {/* Left Dropdown for Task Type */}
-        <View style={styles.dropdownContainer}>
-          <RNPickerSelect
-            onValueChange={handleTaskTypeChange}
-            items={[
-              { label: 'All', value: 0 },
-              ...taskType.map((task) => ({
-                label: task.title,
-                value: task.id,
-              })),
-            ]}
-            value={selectedTaskType}
-            style={pickerStyles}
-            placeholder={{}}
-            Icon={() => (
-              <Ionicons
-                name="chevron-down"
-                size={20}
-                color="white"
-                style={styles.icon}
-              />
-            )}
-          />
-        </View>
+        <Text style={styles.title}>Task</Text>
+        <View style={styles.taskControlContainer}>
+          {/* Task Type Buttons */}
+          <View style={styles.buttonGroup}>
+            {[
+              { id: 0, title: 'All' },
+              { id: 1, title: 'Routine' },
+              { id: 2, title: 'Goal' },
+            ].map((button) => (
+              <TouchableOpacity
+                key={button.id}
+                style={[
+                  styles.taskTypeButton,
+                  selectedTaskType === button.id && styles.selectedTaskTypeButton,
+                ]}
+                onPress={() => setSelectedTaskType(button.id)}
+              >
+                <Text
+                  style={[
+                    styles.taskTypeButtonText,
+                    selectedTaskType === button.id && styles.selectedTaskTypeButtonText,
+                  ]}
+                >
+                  {button.title}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-        {/* Right Dropdown for Category */}
-        <View style={styles.dropdownContainer}>
-          <RNPickerSelect
-            onValueChange={handleCategoryChange}
-            items={[
-              { label: 'All', value: 0 },
-              ...categories.map((category) => ({
-                label: category.title,
-                value: category.id,
-              })),
-            ]}
-            value={selectedCategory}
-            style={pickerStyles}
-            placeholder={{}}
-            Icon={() => (
-              <Ionicons
-                name="chevron-down"
-                size={20}
-                color="white"
-                style={styles.icon}
-              />
-            )}
-          />
+          {/* Category Dropdown */}
+          <View style={styles.dropdownContainer}>
+            <DropDownList
+              data={[
+                { id: 0, title: 'All' },
+                ...categories.map((category) => ({
+                  id: category.id,
+                  title: category.title,
+                })),
+              ]}
+              defaultId={selectedCategory}
+              onSelection={(id) => setSelectedCategory(id)}
+            />
+          </View>
         </View>
       </View>
 
@@ -152,31 +129,6 @@ const TaskScreen = () => {
   );
 };
 
-const pickerStyles = StyleSheet.create({
-  inputIOS: {
-    backgroundColor: 'grey',
-    color: 'white',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    paddingRight: 35,
-    borderRadius: 5,
-    fontSize: 16,
-    width: '100%',
-    alignSelf: 'stretch',
-  },
-  inputAndroid: {
-    backgroundColor: 'grey',
-    color: 'white',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    paddingRight: 35,
-    borderRadius: 5,
-    fontSize: 16,
-    width: '100%',
-    alignSelf: 'stretch',
-  },
-});
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -184,22 +136,49 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.grey2,
     marginBottom: 20,
     marginHorizontal: 10,
   },
-  dropdownContainer: {
-    flex: 1,
+  title: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    color: theme.colors.black,
+    marginBottom: 10,
+  },
+  taskControlContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    flex: 2,
+    justifyContent: 'flex-start',
     marginHorizontal: 5,
   },
-  icon: {
-    marginTop: 10,
-    width: 20,
-    marginRight: 10,
+  taskTypeButton: {
+    backgroundColor: theme.colors.white,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginHorizontal: 5,
+    borderColor: theme.colors.primary,
+    borderWidth: 1,
+  },
+  selectedTaskTypeButton: {
+    backgroundColor: theme.colors.primary,
+  },
+  taskTypeButtonText: {
+    color: theme.colors.primary,
+    fontSize: 14,
+  },
+  selectedTaskTypeButtonText: {
+    color: theme.colors.white,
+    fontWeight: 'bold',
+  },
+  dropdownContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   taskList: {
     padding: 10,
