@@ -17,12 +17,22 @@ const RoutineTaskScreen = () => {
 
   // State for task records
   const [taskRecords, setTaskRecords] = useState([]);
+  const [frequencyType, setFrequencyType] = useState('D');
 
   // Fetch records for the current task ID
   const fetchTaskRecords = async () => {
     try {
       const records = await RoutineTaskHandler.getAllRecordsForTask(task.id);
       setTaskRecords(records);
+
+      if (records.subType == 0) {
+        setFrequencyType('Days')
+      } else if (records.subType == 1) {
+        setFrequencyType('Weeks')
+      } else {
+        setFrequencyType('Months')
+      }
+
     } catch (error) {
       console.error('Error fetching task records:', error);
     }
@@ -80,23 +90,18 @@ const RoutineTaskScreen = () => {
   // Render a single record in the FlatList
   const renderRecordItem = ({ item }) => (
     <View style={styles.mainCellView}>
-        <View style={styles.leftCellView}>
-            <View style={styles.lineView}> <Text></Text></View>
+      <View style={styles.leftCellView}>
+        <View style={styles.lineSuperView}>
+          <View style={styles.lineView}></View>
+          <View style={styles.circleView}></View>
         </View>
-        <View style={styles.recordItem}>
-            <Text style={styles.recordText}>{item.message}</Text>
-            <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
-        </View>
+      </View>
+      <View style={styles.recordItem}>
+        <Text style={styles.recordText}>{item.message}</Text>
+        <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
+      </View>
     </View>
-    
   );
-
-  // Add custom text to the right of the header
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => <Text style={styles.headerRightText}>Custom Text</Text>,
-  //   });
-  // }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -104,12 +109,12 @@ const RoutineTaskScreen = () => {
       <View style={styles.topHeaderView}>
       <TouchableOpacity onPress={navigateToContentDetail} style={styles.roundedTitleContainer}>
         <Text style={styles.title}>{task.contentTitle}</Text>
-        <Ionicons name="chevron-forward" size={24} color="white" />
+        <Ionicons name="chevron-forward" size={24} color={theme.colors.grey1} />
       </TouchableOpacity>
       </View>
 
       <View style={styles.recordHeaderView}>
-        <Text style={styles.recordHeaderFrequecy} > Months </Text>
+        <Text style={styles.recordHeaderFrequecy} > {frequencyType} </Text>
         <Text style={styles.recordHeaderMessage}> Message </Text>
       </View>
       
@@ -195,14 +200,14 @@ const styles = StyleSheet.create({
   recordHeaderView: {
     flexDirection: 'row',
     marginTop: 0,
-    marginRight: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 10
   },
   recordHeaderFrequecy: {
     width: 50,
     color: theme.colors.primary,
     fontSize: 12,
     fontWeight: 'bold',
-    marginRight: 20
   },
   recordHeaderMessage: {
     color: theme.colors.primary,
@@ -210,13 +215,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   recordList: {
-    marginTop: 15,
-    marginRight: 20
+    paddingHorizontal: 20,
   },
   recordItem: {
     paddingVertical: 15,
     borderBottomColor: theme.colors.grey1,
-    paddingRight: 15
+    paddingRight: 15,
   },
   recordText: {
     color: theme.colors.black,
@@ -297,20 +301,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
   },
-  mainCellView: {
-    flexDirection: 'row',
-  },
+  mainCellView: { flexDirection: 'row' },
+  leftCellView: { width: 50, alignItems: 'center', justifyContent: 'center',  },
+  lineSuperView: { flex: 1, justifyContent: 'center',alignItems: 'center' },
+  lineView: { width: 5, flex: 1, backgroundColor: 'blue' },
+  circleView: { height: 30, width: 30, borderRadius: 15, backgroundColor: '#FF0000' , marginTop: -15,   },
 
-  leftCellView:  {
-    width: 50,
-    alignItems: 'center',
-  },
-
-  lineView:  {
-    flex: 1,
-    width: 5,
-    backgroundColor: 'blue'
-  },
+  
+  // circleView: {
+  //   height: 30,
+  //   width: 30,
+  //   borderRadius: 15,
+  //   backgroundColor: '#FF0000',
+  //   position: 'absolute',
+  //   top: '50%',                // Position circle in the middle of the left cell
+  //   marginTop: -15,            // Adjust margin to truly center (half of circle height)
+  // },
   
 });
 

@@ -58,9 +58,9 @@ const TaskScreen = () => {
   );
 
   const handleTaskPress = (task) => {
-    if (task.type === 0) {
+    if (task.type === 1) {
       navigation.navigate('RoutineTaskScreen', { task });
-    } else if (task.type === 1) {
+    } else if (task.type === 2) {
       navigation.navigate('GoalTaskScreen', { task });
     }
   };
