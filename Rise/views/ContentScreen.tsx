@@ -155,7 +155,8 @@ const ContentScreen = () => {
       console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}, Category: ${categoryId}, ContentId: ${selectedContentid}`);
   
       setTaskName(''); 
-      setSelectedTaskType(1); 
+      setSelectedSubTaskType(0)
+      setSelectedTaskType(0); 
       setModalVisible(false); 
     } catch (error) {
       console.error("Error adding task:", error);

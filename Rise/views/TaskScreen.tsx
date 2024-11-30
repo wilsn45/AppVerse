@@ -76,9 +76,9 @@ const TaskScreen = () => {
   const handleTaskPress = (task) => {
     
     const contentTitle = "Sample Content Title"; // Replace with actual content title
-    if (task.type === 1) {
+    if (task.type === 0) {
       navigation.navigate('RoutineTaskScreen', { task });
-    } else if (task.type === 2) {
+    } else if (task.type === 1) {
       navigation.navigate('GoalTaskScreen', { task });
     }
   }
