@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import theme from '../Theme/Theme';
 
 const ContentDetailScreen = () => {
   const route = useRoute();
@@ -21,19 +22,19 @@ const ContentDetailScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // Black background
+    backgroundColor: theme.colors.white,
     padding: 20,
   },
   title: {
     fontSize: 26,
-    color: '#fff',
+    color: theme.colors.black,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
   },
   contentText: {
     fontSize: 18,
-    color: '#ccc',
+    color: theme.colors.grey1,
     textAlign: 'justify',
   },
 });

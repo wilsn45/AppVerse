@@ -8,6 +8,9 @@ import ContentScreen from './views/ContentScreen'; // Adjust the path as needed
 import ContentDetailScreen from './views/ContentDetailScreen'; // Adjust the path as needed
 import SavedScreen from './views/SaveScreen.tsx'; // You need to create this screen
 import TaskScreen from './views/TaskScreen'; // You need to create this screen
+import RoutineTaskScreen from './views/RoutineTaskScreen.tsx';
+import GoalTaskScreen from './views/GoalTaskScreen.tsx';
+import theme from './Theme/Theme';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -29,6 +32,8 @@ const TabNavigator = () => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        tabBarActiveTintColor: theme.colors.primary, 
+        tabBarInactiveTintColor: theme.colors.grey1,
       })}
     >
       <Tab.Screen
@@ -72,7 +77,7 @@ const App = () => {
             headerShown: true,
             title: 'Content', // Customize title if needed
             headerBackTitle: '', // Remove the back title
-            headerTintColor: 'grey', // Change back button color to grey
+            headerTintColor: theme.colors.black, // Change back button color to grey
           }}
         />
         <Stack.Screen
@@ -80,9 +85,29 @@ const App = () => {
           component={ContentDetailScreen}
           options={{
             headerShown: true,
-            headerBackTitle: '', // Remove the back title on back button
-            headerTintColor: 'grey', // Change the back button color to grey
-            title: 'Description',
+            headerBackTitle: '', 
+            headerTintColor: theme.colors.black,
+            title: '',
+          }}
+        />
+        <Stack.Screen
+          name="RoutineTaskScreen"
+          component={RoutineTaskScreen}
+          options={{
+            headerShown: true,
+            headerBackTitle: '', 
+            headerTintColor: theme.colors.black, 
+            title: 'Task',
+          }}
+        />
+        <Stack.Screen
+          name="GoalTaskScreen"
+          component={GoalTaskScreen}
+          options={{
+            headerShown: true,
+            headerBackTitle: '', 
+            headerTintColor: theme.colors.black, 
+            title: 'Task',
           }}
         />
       </Stack.Navigator>

@@ -2,6 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class SaveHandler {
   // Helper function to get the current saved items from AsyncStorage
+
+  static STORAGE_KEY = 'likedItems'; 
+
   static async getSaves() {
     try {
       const savedItems = await AsyncStorage.getItem('likedItems');
@@ -37,7 +40,7 @@ export class SaveHandler {
     const savedItems = await this.getSaves();
     if (!savedItems[categoryId]) savedItems[categoryId] = [];
     savedItems[categoryId].push({ contentId, contentTitle }); // Save both contentId and contentTitle
-    await AsyncStorage.setItem('likedItems', JSON.stringify(savedItems));
+    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedItems));
   }
 
   // Remove save
@@ -45,7 +48,7 @@ export class SaveHandler {
     const savedItems = await this.getSaves();
     if (savedItems[categoryId]) {
       savedItems[categoryId] = savedItems[categoryId].filter((card) => card.contentId !== contentId);
-      await AsyncStorage.setItem('likedItems', JSON.stringify(savedItems));
+      await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedItems));
     }
   }
 }

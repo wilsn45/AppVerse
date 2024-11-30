@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { categories } from '../Data/CategoryData'; // Ensure correct path to CategoryData
+import theme from '../Theme/Theme';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -36,6 +37,8 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.welcomeLabel}>Welcome</Text> {/* New Label */}
+      <Text style={styles.userNameLabel}>User!</Text> {/* New Label */}
       <FlatList
         data={groupCategories()} // Use the grouped categories for each row
         renderItem={({ item }) => (
@@ -60,12 +63,26 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.white,
     padding: 10,
+  },
+  welcomeLabel: {
+    fontSize: 20,
+    color: theme.colors.grey1,
+    paddingTop: 20,
+    paddingLeft: 20,
+    textAlign: 'left', // Center the text
+  },
+  userNameLabel: {
+    fontSize: 20,
+    color: theme.colors.black,
+    fontWeight: 'bold',
+    paddingLeft: 20,
+    paddingBottom: 50,
+    textAlign: 'left', // Center the text
   },
   contentContainer: {
     flexGrow: 1,
-    justifyContent: 'center',
   },
   row: {
     flexDirection: 'row', // Align items in a row
@@ -73,18 +90,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', // Ensure tiles are spaced evenly
   },
   tile: {
-    padding: 20,
-    backgroundColor: '#333',
+    padding: 15,
+    backgroundColor: theme.colors.white,
     margin: 10,
     borderRadius: 10,
-    width: 150, // Fixed width for tiles
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
+    width: 170, // Fixed width for tiles
     height: 150, // Fixed height for tiles
     justifyContent: 'center', // Center content in the tile
     alignItems: 'center',
+    
   },
   tileText: {
-    color: '#fff',
+    color: theme.colors.primary,
     fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
