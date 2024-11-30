@@ -91,7 +91,7 @@ const SaveScreen = () => {
               onPress={() => handleRemoveCard(item.categoryId, item.contentId)}
               style={styles.removeButton}
             >
-              <Ionicons name="close" size={24} color="white" />
+              <Ionicons name="close" size={18} color={theme.colors.grey2} />
             </TouchableOpacity>
           </TouchableOpacity>
         )}
