@@ -68,6 +68,7 @@ const SaveScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       {/* Custom Dropdown Component */}
+      <Text style={styles.title}>Saved</Text>
       <View style={styles.dropdownContainer}>
         <DropDownList
           data={categoryOptions}
@@ -104,13 +105,21 @@ const SaveScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.background,
     padding: 10,
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    color: theme.colors.black,
+    marginBottom: 0,
+    marginHorizontal: 10,
   },
   dropdownContainer: {
     marginTop: 10, // 10px padding at the top
     alignSelf: 'flex-end',
     marginBottom: 20,
+    marginHorizontal: 10,
   },
   flatListContainer: {
     paddingBottom: 20,

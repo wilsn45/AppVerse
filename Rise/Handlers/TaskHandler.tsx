@@ -6,7 +6,7 @@ export class TaskHandler {
 
   static async getTasks() {
     try {
-      const tasks = await AsyncStorage.getItem('tasks');
+      const tasks = await AsyncStorage.getItem(this.STORAGE_KEY);
       return tasks ? JSON.parse(tasks) : {};
     } catch (error) {
       console.error('Error retrieving tasks', error);

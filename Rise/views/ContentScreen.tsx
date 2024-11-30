@@ -16,6 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Slider from '@react-native-community/slider';
 import { SaveHandler } from '../Handlers/SaveHandler';
+import { LikeHandler } from '../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../Handlers/TaskHandler';
 import theme from '../Theme/Theme';
 
@@ -23,31 +24,31 @@ const { height } = Dimensions.get('window');
 
 // Sample content data for each category
 const financeContent = [
-  { id: '11', title: 'Finance Tip 1: Budgeting' },
-  { id: '12', title: 'Finance Tip 2: Saving A very very very very very very longggggggggggg Saving sabinnnnggg savnnggggggg savingggggggg' },
-  { id: '13', title: 'Finance Tip 3: Investing' },
-  { id: '14', title: 'Finance Tip 4: Debt Management' },
+  { id: '11', title: 'Finance Tip 1: Budgeting', like: 10 },
+  { id: '12', title: 'Finance Tip 2: Saving A very very very very very very longggggggggggg Saving sabinnnnggg savnnggggggg savingggggggg', like: 11 },
+  { id: '13', title: 'Finance Tip 3: Investing', like: 12 },
+  { id: '14', title: 'Finance Tip 4: Debt Management', like: 13 },
 ];
 
 const focusContent = [
-  { id: '21', title: 'Focus Tip 1: Time Management' },
-  { id: '22', title: 'Focus Tip 2: Eliminate Distractions' },
-  { id: '23', title: 'Focus Tip 3: Goal Setting' },
-  { id: '24', title: 'Focus Tip 4: Prioritizing Tasks' },
+  { id: '21', title: 'Focus Tip 1: Time Management', like: 20 },
+  { id: '22', title: 'Focus Tip 2: Eliminate Distractions', like: 21 },
+  { id: '23', title: 'Focus Tip 3: Goal Setting', like: 22 },
+  { id: '24', title: 'Focus Tip 4: Prioritizing Tasks', like: 23 },
 ];
 
 const mindContent = [
-  { id: '31', title: 'Mind Tip 1: Meditation' },
-  { id: '32', title: 'Mind Tip 2: Journaling' },
-  { id: '33', title: 'Mind Tip 3: Self-care Routines' },
-  { id: '34', title: 'Mind Tip 4: Stress Management' },
+  { id: '31', title: 'Mind Tip 1: Meditation' , like: 30},
+  { id: '32', title: 'Mind Tip 2: Journaling', like: 31 },
+  { id: '33', title: 'Mind Tip 3: Self-care Routines', like: 32 },
+  { id: '34', title: 'Mind Tip 4: Stress Management', like: 33 },
 ];
 
 const fitContent = [
-  { id: '41', title: 'Fit Tip 1: Regular Exercise' },
-  { id: '42', title: 'Fit Tip 2: Balanced Diet' },
-  { id: '43', title: 'Fit Tip 3: Hydration' },
-  { id: '44', title: 'Fit Tip 4: Sleep Well' },
+  { id: '41', title: 'Fit Tip 1: Regular Exercise', like: 40 },
+  { id: '42', title: 'Fit Tip 2: Balanced Diet' , like: 41},
+  { id: '43', title: 'Fit Tip 3: Hydration', like: 42 },
+  { id: '44', title: 'Fit Tip 4: Sleep Well', like: 43 },
 ];
 
 const ContentScreen = () => {
@@ -56,6 +57,7 @@ const ContentScreen = () => {
   const { tileType, categoryId } = route.params;
   const [contentList, setContentList] = useState<any[]>([]);
   const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
+  const [likedCards, setLikedCards] = useState<Map<string, boolean>>(new Map());
   const [isModalVisible, setModalVisible] = useState(false);
   const [taskName, setTaskName] = useState('');
   const [selectedContentid, setSelectedContendid] = useState(""); // Default to "Routine"
@@ -87,39 +89,79 @@ const ContentScreen = () => {
     navigation.setOptions({
       title: tileType,
     });
-
-    const loadSavedCards = async () => {
-      const savedItems = await SaveHandler.getSaves();
+  
+    const loadCards = async () => {
+      const savedItemsPromise = SaveHandler.getSaves();
+      const likedItemsPromise = LikeHandler.getLikes();
+  
+      const [savedItems, likedItems] = await Promise.all([savedItemsPromise, likedItemsPromise]);
+  
       const savedContentIds = savedItems[categoryId] || [];
+      const likedContentIds = likedItems[categoryId] || [];
+  
       const updatedSavedCards = new Map();
+      const updatedLikedCards = new Map();
+  
       contentList.forEach((item) => {
         updatedSavedCards.set(item.id, savedContentIds.some((savedCard) => savedCard.contentId === item.id));
+        updatedLikedCards.set(item.id, likedContentIds.some((likedCard) => likedCard.contentId === item.id));
       });
+  
       setSavedCards(updatedSavedCards);
+      setLikedCards(updatedLikedCards);
     };
-
+  
     if (contentList.length > 0) {
-      loadSavedCards();
+      loadCards();
     }
   }, [contentList, categoryId, navigation, tileType]);
+  
 
-  const handleSave = async (itemId: string, itemTitle: string) => {
+  const handleSave = async (itemId, itemTitle) => {
     const isSaved = savedCards.get(itemId);
     if (isSaved) {
       await SaveHandler.removeSave(categoryId, itemId);
-      setSavedCards((prev) => new Map(prev).set(itemId, false));
     } else {
       await SaveHandler.addSave(categoryId, itemId, itemTitle);
-      setSavedCards((prev) => new Map(prev).set(itemId, true));
     }
+    // Update only the savedCards state here
+    setSavedCards((prev) => new Map(prev).set(itemId, !isSaved));
   };
-
-  const handleTaskTypeChange = (value: number) => {
-    setSelectedTaskType(value);
-  };
-
-  const handleShare = (itemId: string) => {
+  
+  const handleLike = async (itemId, itemTitle) => {
+    const isLiked = likedCards.get(itemId);
+    if (isLiked) {
+      await LikeHandler.removeLike(categoryId, itemId);
+      dencreaseLikeCount(itemId)
+    } else {
+      await LikeHandler.addLike(categoryId, itemId, itemTitle);
+      increaseLikeCount(itemId)
+    }
+    // Update only the likedCards state here
+    setLikedCards((prev) => new Map(prev).set(itemId, !isLiked));
     
+  };
+
+  const increaseLikeCount = (id) => {
+    setContentList((prevContentList) => {
+      return prevContentList.map(item => {
+        if (item.id === id) {
+          return { ...item, like: item.like + 1 };
+        }
+        return item;
+      });
+    });
+  };
+
+  const dencreaseLikeCount = (id) => {
+    setContentList((prevContentList) => {
+      return prevContentList.map(item => {
+        if (item.id === id) {
+          return { ...item, like: item.like - 1 };
+        }
+        return item;
+      });
+    });
   };
 
   const handleCardPress = (item: { id: string, title: string }) => {
@@ -132,8 +174,9 @@ const ContentScreen = () => {
   };
 
   const handleCancelAddTask = async () => { 
-      setTaskName(''); // Clear task name input
-      setSelectedTaskType(0); // Reset task type to default
+      setTaskName(''); 
+      setSelectedSubTaskType(1)
+      setSelectedTaskType(1); 
       setModalVisible(false); // Close the modal
   }
 
@@ -179,11 +222,16 @@ const ContentScreen = () => {
                 <Ionicons
                   name={savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
                   size={24}
-                  color={savedCards.get(item.id) ? theme.colors.red : theme.colors.primary}
+                  color={savedCards.get(item.id) ? theme.colors.green : theme.colors.primary}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleShare(item.id)}>
-                <Ionicons name="share-outline" size={24} color={theme.colors.primary} />
+              <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike(item.id, item.title)}>
+                <Ionicons
+                  name={likedCards.get(item.id) ? 'heart' : 'heart-outline'}
+                  size={24}
+                  color={likedCards.get(item.id) ? theme.colors.red : theme.colors.primary}
+                />
+                <Text>{item.like}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item.id)}>
                 <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>
@@ -197,64 +245,75 @@ const ContentScreen = () => {
     {/* Task Modal */}
 {/* Task Modal */}
 <Modal visible={isModalVisible} animationType="slide" transparent>
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>Add Task</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter task name"
-        placeholderTextColor="#ccc"
-        value={taskName}
-        onChangeText={setTaskName}
-      />
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Add Task</Text>
+          
+          {/* Task Input */}
+          <TextInput
+            style={styles.input}
+            placeholder="Enter task name"
+            placeholderTextColor="#ccc"
+            value={taskName}
+            onChangeText={setTaskName}
+          />
 
-      {/* Routine and Goal Buttons */}
-      <View style={styles.optionButtonContainer}>
-        <TouchableOpacity
-          style={[styles.optionButton, selectedTaskType === 1 && styles.selectedButton]}
-          onPress={() => setSelectedTaskType(1)} // 0 for Routine
-        >
-          <Text style={[styles.optionButtonText, selectedTaskType === 1 && styles.selectedOptionButtonText]}>Routine</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.optionButton, selectedTaskType === 2 && styles.selectedButton]}
-          onPress={() => setSelectedTaskType(2)} // 0 for Routine
-        >
-          <Text style={[styles.optionButtonText, selectedTaskType === 2 && styles.selectedOptionButtonText]}>Goal</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Sub-buttons for Routine */}
-      {selectedTaskType === 1 && (
-        <View style={styles.subButtonContainer}>
-          {[1, 2, 3].map((value, index) => (
+          {/* Routine and Goal Buttons */}
+          <View style={styles.optionButtonContainer}>
             <TouchableOpacity
-              key={index}
-              style={[
-                styles.optionButton,
-                selectedSubTaskType === value && styles.selectedButton,
-              ]}
-              onPress={() => setSelectedSubTaskType(value)}
+              style={[styles.optionButton, selectedTaskType === 1 && styles.selectedButton]}
+              onPress={() => setSelectedTaskType(1)} // 0 for Routine
             >
-              <Text style={[
-                styles.optionButtonText,
-                selectedSubTaskType === value && styles.selectedOptionButtonText,
-              ]}>
-                {value === 1 ? 'Daily' : value === 2 ? 'Weekly' : 'Monthly'}
+              <Text style={[styles.optionButtonText, selectedTaskType === 1 && styles.selectedOptionButtonText]}>
+                Routine
               </Text>
             </TouchableOpacity>
-          ))}
-        </View>
-      )}
+            <TouchableOpacity
+              style={[styles.optionButton, selectedTaskType === 2 && styles.selectedButton]}
+              onPress={() => setSelectedTaskType(2)} // 1 for Goal
+            >
+              <Text style={[styles.optionButtonText, selectedTaskType === 2 && styles.selectedOptionButtonText]}>
+                Goal
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-      {/* Add Task and Cancel Buttons */}
-      <View style={styles.buttonContainer}>
-        <Button title="Add Task" onPress={handleSubmitTask} />
-        <Button title="Cancel" color="red" onPress={handleCancelAddTask} />
+          {/* Sub-buttons for Routine */}
+          {selectedTaskType === 1 && (
+            <View style={styles.subButtonContainer}>
+              {[1, 2, 3].map((value, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.optionButton,
+                    selectedSubTaskType === value && styles.selectedButton,
+                  ]}
+                  onPress={() => setSelectedSubTaskType(value)}
+                >
+                  <Text style={[
+                    styles.optionButtonText,
+                    selectedSubTaskType === value && styles.selectedOptionButtonText,
+                  ]}>
+                    {value === 1 ? 'Daily' : value === 2 ? 'Weekly' : 'Monthly'}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Add Task and Cancel Buttons */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.addButton} onPress={handleSubmitTask}>
+              <Text style={styles.addButtonText}>Add Task</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.cancelButton} onPress={handleCancelAddTask}>
+              <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-    </View>
-  </View>
-</Modal>
+    </Modal>
 
  </View>
   );
@@ -263,7 +322,7 @@ const ContentScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.background,
   },
   cardContainer: {
     height: height * 0.8,
@@ -291,6 +350,13 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 10,
   },
+  iconButtonLike: {
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -310,7 +376,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: theme.colors.grey2,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
@@ -324,7 +390,7 @@ const styles = StyleSheet.create({
   optionButton: {
     flex: 1,
     marginHorizontal: 5,
-    height: 40,
+    height: 35,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
@@ -353,12 +419,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
-    gap: 20,
+    gap: 40,
   },
-  addTaskButton: {
+  addButton: {
     flex: 1,
-    marginHorizontal: 5,
-    backgroundColor: theme.colors.white
+    backgroundColor: theme.colors.primary, // Primary color background
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: theme.colors.white,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: 'transparent', // Transparent background
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'red', // Red border
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    color: 'red', // Red text color
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

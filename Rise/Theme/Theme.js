@@ -1,13 +1,15 @@
 const theme = {
     colors: {
       primary: '#2355CA',
+      background: '#F5F7F9',
       white: '#ffffff',
       grey1: '#f4f4f71',
       grey2: '#dcdef4',
       grey3: '#f8f8f8',
       black: '#000000',
       error: '#e74c3c',
-      red: '#ff3131'
+      red: '#ff3131',
+      green: '#4CAF50'
     },
     spacing: {
       small: 8,

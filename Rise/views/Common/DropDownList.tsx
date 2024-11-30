@@ -77,19 +77,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     backgroundColor: theme.colors.grey3,
     flexDirection: 'row',  // Align text and arrow in a row
     alignItems: 'center',  // Center them vertically
+    width: 'auto', // Allow width to adjust based on content
   },
   text: {
     fontSize: 14,
     fontWeight: 'bold',
     color: theme.colors.black,
-    flex: 1,  // Allow text to take available space
+    flexShrink: 1, // Allow text to shrink if needed
   },
   arrow: {
-    paddingLeft: 5,  // Space between text and arrow
+    paddingLeft: 5,  // Adjusted to reduce space between text and arrow
   },
   modalOverlay: {
     flex: 1,
@@ -97,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: "white",
     margin: 20,
     borderRadius: 10,
     padding: 20,
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
   item: {
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.grey1,
+    borderBottomColor: theme.colors.grey2, 
   },
   itemText: {
     fontSize: 16,
