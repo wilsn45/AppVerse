@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import HomeScreen from './views/HomeScreen'; // Adjust the path as needed
-import ContentScreen from './views/ContentScreen'; // Adjust the path as needed
-import ContentDetailScreen from './views/ContentDetailScreen'; // Adjust the path as needed
-import SavedScreen from './views/SaveScreen.tsx'; // You need to create this screen
-import TaskScreen from './views/TaskScreen'; // You need to create this screen
+import HomeScreen from './views/HomeScreen';
+import ContentScreen from './views/ContentScreen';
+import ContentDetailScreen from './views/ContentDetailScreen';
+import SavedScreen from './views/SaveScreen.tsx';
+import TaskScreen from './views/TaskScreen';
 import RoutineTaskScreen from './views/RoutineTaskScreen.tsx';
 import GoalTaskScreen from './views/GoalTaskScreen.tsx';
+import LetsStartScreen from './views/LetsStartScreen'; 
+import SplashScreen from './views/SplashScreen'; 
+import ProfileHandler from './Handlers/ProfileHandler'; 
 import theme from './Theme/Theme';
 
 const Stack = createStackNavigator();
@@ -22,7 +25,7 @@ const TabNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: string;
 
-          if (route.name === 'Home') {
+          if (route.name === 'HomeTab') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Save') {
             iconName = focused ? 'bookmark' : 'bookmark-outline';
@@ -32,29 +35,29 @@ const TabNavigator = () => {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: theme.colors.primary, 
+        tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.grey1,
       })}
     >
       <Tab.Screen
-        name="Home"
+        name="HomeTab" // Changed name to avoid conflict
         component={HomeScreen}
-        options={{ headerShown: false }} // Hides the "Home" title from Tab
+        options={{ headerShown: false }}
       />
       <Tab.Screen
         name="Save"
         component={SavedScreen}
         options={{
-          headerShown: false, // Hide header if necessary
-          title: 'Saved', // Tab title
+          headerShown: false,
+          title: 'Saved',
         }}
       />
       <Tab.Screen
         name="Tasks"
         component={TaskScreen}
         options={{
-          headerShown: false, // Hide header if necessary
-          title: 'Tasks', // Tab title
+          headerShown: false,
+          title: 'Tasks',
         }}
       />
     </Tab.Navigator>
@@ -62,22 +65,50 @@ const TabNavigator = () => {
 };
 
 const App = () => {
+  const [isOnboarded, setIsOnboarded] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      const onboardedStatus = await ProfileHandler.getIsOnboarded();
+      setIsOnboarded(onboardedStatus);
+    };
+    
+    checkOnboardingStatus();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
+
         <Stack.Screen
-          name="Home"
-          component={TabNavigator}
-          options={{ headerShown: false }} // Hide "Home" title in the Stack
+            name="SplashScreen"
+            component={SplashScreen}
+            options={{ headerShown: false }}
         />
+
+        <Stack.Screen
+            name="LetsStartScreen"
+            component={LetsStartScreen}
+            options={{ headerShown: false }}
+        />
+
+         <Stack.Screen
+          name="HomeTabNavigator" // HomeTabNavigator will always be available
+          component={TabNavigator}
+          options={{ headerShown: false }}
+        />
+
+       
+
+        {/* Other screens */}
         <Stack.Screen
           name="ContentScreen"
           component={ContentScreen}
           options={{
             headerShown: true,
-            title: 'Content', // Customize title if needed
-            headerBackTitle: '', // Remove the back title
-            headerTintColor: theme.colors.black, // Change back button color to grey
+            title: 'Content',
+            headerBackTitle: '',
+            headerTintColor: theme.colors.black,
           }}
         />
         <Stack.Screen
@@ -85,7 +116,7 @@ const App = () => {
           component={ContentDetailScreen}
           options={{
             headerShown: true,
-            headerBackTitle: '', 
+            headerBackTitle: '',
             headerTintColor: theme.colors.black,
             title: '',
           }}
@@ -95,8 +126,8 @@ const App = () => {
           component={RoutineTaskScreen}
           options={{
             headerShown: true,
-            headerBackTitle: '', 
-            headerTintColor: theme.colors.black, 
+            headerBackTitle: '',
+            headerTintColor: theme.colors.black,
             title: 'Task',
           }}
         />
@@ -105,8 +136,8 @@ const App = () => {
           component={GoalTaskScreen}
           options={{
             headerShown: true,
-            headerBackTitle: '', 
-            headerTintColor: theme.colors.black, 
+            headerBackTitle: '',
+            headerTintColor: theme.colors.black,
             title: 'Task',
           }}
         />

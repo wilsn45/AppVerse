@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { categories } from '../Data/CategoryData'; // Ensure correct path to CategoryData
+import { categories } from '../Data/CategoryData'; 
+import ProfileHandler from '../Handlers/ProfileHandler'; 
+
 import theme from '../Theme/Theme';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  console.log('Categories:', categories);
+  const [userName, setUserName] = useState('User');
+
+
+  useEffect(() => {
+
+    const fetchUserName = async () => {
+      try {
+        const userName = await ProfileHandler.getUserName(); 
+        setUserName(userName)
+      } catch (error) {
+        console.error("Error fetchUserName", error);
+      }
+    };
+
+    fetchUserName();
+  }, [navigation]);
+
 
   const handleTilePress = (tileType: string, id: string) => {
     // Navigate to ContentScreen with the tile type
@@ -38,7 +56,7 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeLabel}>Welcome</Text> {/* New Label */}
-      <Text style={styles.userNameLabel}>User!</Text> {/* New Label */}
+      <Text style={styles.userNameLabel}>{userName}!</Text> {/* New Label */}
       <FlatList
         data={groupCategories()} // Use the grouped categories for each row
         renderItem={({ item }) => (
