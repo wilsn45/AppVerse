@@ -285,14 +285,14 @@ const ContentScreen = () => {
                 <TouchableOpacity
                   key={index}
                   style={[
-                    styles.optionButton,
-                    selectedSubTaskType === value && styles.selectedButton,
+                    styles.subOptionButton,
+                    selectedSubTaskType === value && styles.subSelectedButton,
                   ]}
                   onPress={() => setSelectedSubTaskType(value)}
                 >
                   <Text style={[
-                    styles.optionButtonText,
-                    selectedSubTaskType === value && styles.selectedOptionButtonText,
+                    styles.subOptionButtonText,
+                    selectedSubTaskType === value && styles.subSelectedOptionButtonText,
                   ]}>
                     {value === 1 ? 'Daily' : value === 2 ? 'Weekly' : 'Monthly'}
                   </Text>
@@ -394,21 +394,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: theme.colors.grey2,
-    backgroundColor: theme.colors.white
+    backgroundColor: theme.colors.unselected1,
   },
   selectedButton: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.grey2,
+    backgroundColor: theme.colors.selected1
   },
   optionButtonText: {
-    color: theme.colors.primary,
+    color: theme.colors.white,
     fontSize: 16,
   },
   selectedOptionButtonText: {
-    color: theme.colors.white,
+    fontWeight: 'bold'
   },
+
+  subOptionButton: {
+    flex: 1,
+    marginHorizontal: 5,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: theme.colors.unselected2,
+  },
+  subSelectedButton: {
+    backgroundColor: theme.colors.selected2
+  },
+  subOptionButtonText: {
+    color: theme.colors.white,
+    fontSize: 16,
+  },
+  subSelectedOptionButtonText: {
+    fontWeight: 'bold'
+  },
+
   subButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',

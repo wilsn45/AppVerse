@@ -9,7 +9,11 @@ const theme = {
       black: '#000000',
       error: '#e74c3c',
       red: '#ff3131',
-      green: '#4CAF50'
+      green: '#4CAF50',
+      selected1: '#0097b2',
+      unselected1: '#bbdde4',
+      selected2: '#00bf63',
+      unselected2: '#b0ebce'
     },
     spacing: {
       small: 8,
