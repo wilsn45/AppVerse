@@ -58,14 +58,16 @@ const ContentDetailScreen = () => {
   
   const handleLike = async () => {
     if (isLiked) {
+      setIsLiked(false)
       await LikeHandler.removeLike(categoryId, itemId);
       dencreaseLikeCount(itemId)
     } else {
+      setIsLiked(true)
       await LikeHandler.addLike(categoryId, itemId, itemTitle);
       increaseLikeCount(itemId)
     }
     // Update only the likedCards state here
-    setIsLiked((prevIsLiked) => !prevIsLiked);
+    setIsLiked(!isLiked)
   };
 
   const increaseLikeCount = (id) => {
