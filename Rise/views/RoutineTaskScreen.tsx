@@ -158,18 +158,20 @@ const RoutineTaskScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Record Progress</Text>
             <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
               <Ionicons name="close" size={24} color={theme.colors.grey1} />
             </TouchableOpacity>
-            <Text style={styles.modalTitle}>Record Progress</Text>
+            </View>
             <TextInput
               style={styles.input}
               value={inputValue}
               multiline={true}
               numberOfLines={6}
               onChangeText={setInputValue}
-              placeholder="Enter task details"
-              placeholderTextColor="#aaa"
+              placeholder="Enter progress"
+              placeholderTextColor={theme.colors.placeholder}
             />
             <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
               <Text style={styles.saveButtonText}>Save</Text>
@@ -272,12 +274,20 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 8,
     width: '80%',
+    paddingBottom: 15
+  },
+  modalHeader: {
+    height: 40,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
   },
   modalTitle: {
     color: theme.colors.black,
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
   },
   input: {
@@ -301,10 +311,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    padding: 10,
   },
   headerRightText: {
     color: 'grey',

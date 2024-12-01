@@ -16,7 +16,8 @@ const theme = {
       selected1: '#0097b2',
       unselected1: '#bbdde4',
       selected2: '#00bf63',
-      unselected2: '#b0ebce'
+      unselected2: '#b0ebce',
+      placeholder: '#aaa'
     },
     spacing: {
       small: 8,
