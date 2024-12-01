@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import GoalTaskHandler from '../../Handlers/Tasks/GoalTaskHandler'; 
+import RoutineTaskHandler from '../../Handlers/Tasks/GoalTaskHandler';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
+import theme from '../../Theme/Theme';
+import GoalTaskHandler from '../../Handlers/Tasks/GoalTaskHandler';
 
 const GoalTaskScreen = () => {
   const route = useRoute();
@@ -12,19 +14,36 @@ const GoalTaskScreen = () => {
 
   // State for modal and input
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [progressValue, setProgressValue] = useState(0);
-  const [totalProgressValue, setTotalProgress] = useState(50);
-  const [isSaveEnable, setIsSaveEnable] = useState(false);
+  const [totalProgressValue, setTotalProgress] = useState(0);
 
   // State for task records
   const [taskRecords, setTaskRecords] = useState([]);
+  const [isTaskCompleted, setIsTaskCompleted] = useState(false);
+  const [isSaveEnable, setIsSaveEnable] = useState(false);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 16, marginRight: 15, fontWeight: 'bold' }}>
+         {isTaskCompleted ? 'Done' : 'In Progress'}
+        </Text>
+      ),
+    });
+  }, [isTaskCompleted]);
 
   // Fetch records for the current task ID
   const fetchTaskRecords = async () => {
     try {
       const records = await GoalTaskHandler.getAllRecordsForTask(task.id);
+      const totalProgress = records.reduce((sum, record) => sum + (parseInt(record.progress, 10) || 0), 0);
+      
+      setTotalProgress(totalProgress)
       setTaskRecords(records);
+      setIsTaskCompleted(task.isDone)
+
     } catch (error) {
       console.error('Error fetching task records:', error);
     }
@@ -45,17 +64,26 @@ const GoalTaskScreen = () => {
     setIsModalVisible(true);
   };
 
+  const openCompleteTaskModal = () => {
+    setIsCompleteTaskModalVisible(true);
+  };
+
   const deleteTask = async () => {
     try {
-        await GoalTaskHandler.removeAllRecordsForTask(task.id);
+        await RoutineTaskHandler.removeAllRecordsForTask(task.id);
         await TaskHandler.removeTask(task.categoryId,task.id)
-        console.log('All Records saved successfully');
-        navigation.popToTop();
+        navigation.navigate('HomeTabNavigator', { screen: 'Tasks' });
       } catch (error) {
         console.error('Error saving record:', error);
       }
   };
 
+  const onProgressInputValueChanged = (value) => {
+    setProgressValue(value);
+    const newProgess =  totalProgressValue + parseInt(value)
+    const isEnable =  (newProgess < 101)
+    setIsSaveEnable(isEnable)
+  };
 
   // Handle saving a new record
   const handleSave = async () => {
@@ -79,39 +107,35 @@ const GoalTaskScreen = () => {
   // Handle closing the modal
   const closeModal = () => {
     setIsModalVisible(false);
-    setProgressValue(0)
   };
 
-  const onProgressInputValueChanged = (value) => {
-    setProgressValue(value);
-    const newProgess =  totalProgressValue + parseInt(value)
-    const isEnable =  (newProgess < 100)
-    setIsSaveEnable(isEnable)
+  const closeCompleteTaskModal = () => {
+    setIsCompleteTaskModalVisible(false);
   };
 
-  
+  const handleTaskOperation = async () => {
+    await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
+    setIsTaskCompleted(!isTaskCompleted)
+    setIsCompleteTaskModalVisible(false); 
+  };
 
   // Render a single record in the FlatList
   const renderRecordItem = ({ item }) => (
     <View style={styles.mainCellView}>
-        <View style={styles.leftCellView}>
-            <View style={styles.lineView}> <Text></Text></View>
+      <View style={styles.leftCellView}>
+        <View style={styles.lineSuperView}>
+          <View style={styles.lineView}></View>
+          <View style={styles.circleView}>
+            <Text style={styles.circleText}>{item.progress}%</Text> {/* Add desired text here */}
+          </View>
         </View>
-        <View style={styles.recordItem}>
-            <Text style={styles.recordText}>{item.message}</Text>
-            <Text style={styles.recordText}>{item.progress}</Text>
-            <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
-        </View>
+      </View>
+      <View style={styles.recordItem}>
+        <Text style={styles.recordText}>{item.message}</Text>
+        <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
+      </View>
     </View>
-    
   );
-
-  // // Add custom text to the right of the header
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerRight: () => <Text style={styles.headerRightText}>Custom Text</Text>,
-  //   });
-  // }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -119,12 +143,12 @@ const GoalTaskScreen = () => {
       <View style={styles.topHeaderView}>
       <TouchableOpacity onPress={navigateToContentDetail} style={styles.roundedTitleContainer}>
         <Text style={styles.title}>{task.contentTitle}</Text>
-        <Ionicons name="chevron-forward" size={24} color="white" />
+        <Ionicons name="chevron-forward" size={24} color={theme.colors.grey1} />
       </TouchableOpacity>
       </View>
 
       <View style={styles.recordHeaderView}>
-        <Text style={styles.recordHeaderFrequecy} > Status </Text>
+        <Text style={styles.recordHeaderFrequecy} > Progress </Text>
         <Text style={styles.recordHeaderMessage}> Message </Text>
       </View>
       
@@ -140,58 +164,98 @@ const GoalTaskScreen = () => {
 
       {/* Bottom View with buttons */}
       <View style={styles.bottomContainer}>
-        <TouchableOpacity onPress={openModal} style={styles.iconButton}>
-          <Ionicons name="add-circle" size={30} color="white" />
+        <TouchableOpacity onPress={openModal} 
+             style={[styles.iconButton, isTaskCompleted && styles.disabledButton]}
+             disabled={isTaskCompleted} >
+          <Ionicons name="add-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={deleteTask} style={styles.iconButton}>
-          <Ionicons name="checkmark-circle" size={30} color="white" />
+        <TouchableOpacity onPress={openCompleteTaskModal} style={styles.iconButton}>
+          <Ionicons name="checkmark-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={deleteTask} style={styles.iconButton}>
-          <Ionicons name="trash-bin" size={30} color="white" />
+        <TouchableOpacity onPress={deleteTask} 
+            style={styles.iconButton}>
+          <Ionicons name="trash-bin" size={30} color={theme.colors.white} />
         </TouchableOpacity>
       </View>
 
       {/* Modal for Add Task */}
       <Modal
-        visible={isModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={closeModal}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.modalTitle}>Record Progress</Text>
-            <TextInput
-              style={styles.input}
-              value={inputValue}
-              multiline={true}
-              numberOfLines={6}
-              onChangeText={setInputValue}
-              placeholder="Enter task details"
-              placeholderTextColor="#aaa"
-            />
+  visible={isModalVisible}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={closeModal}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <View style={styles.modalTopHeader}>
+        <TouchableOpacity onPress={closeModal}>
+          <Ionicons name="close" size={24} color={theme.colors.grey1} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.modalTitleHeader}>
+        <Text style={styles.modalTitle}>Record Progress</Text>
+      </View>
+      <TextInput
+        style={styles.input}
+        value={inputValue}
+        multiline={true}
+        numberOfLines={6}
+        onChangeText={setInputValue}
+        placeholder="Enter progress"
+        placeholderTextColor={theme.colors.placeholder}
+      />
 
-          <TextInput
+      <TextInput
               style={styles.progressInput}
               value={progressValue}
               keyboardType="numeric"
               onChangeText={onProgressInputValueChanged}
               placeholder="Enter progress"
               placeholderTextColor="#aaa"
-            />
-            <TouchableOpacity onPress={handleSave} style={[
-              styles.saveButton,
-                !isSaveEnable && styles.disabledButton, // Apply faded style when disabled
-               ]}
-                disabled={!isSaveEnable}>
-              <Text style={styles.saveButtonText}>Save</Text>
+        />
+      {!isSaveEnable && progressValue.trim() !== '' && (
+      <Text style={styles.errorText}>
+        Overall Progress cannot be greater than 100%
+      </Text>
+    )}
+      <TouchableOpacity
+        onPress={handleSave}
+        style={[styles.saveButton, !isSaveEnable && styles.disabledButton]}
+        disabled={!isSaveEnable}
+      >
+        <Text style={styles.saveButtonText}>Save</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
+
+      <Modal
+        visible={isCompleteTaskModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeCompleteTaskModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+          
+          <View style={styles.modalTitleHeader}>
+            <Text style={styles.modalTitle}>{!isTaskCompleted ? 'Mark Task Done' : 'Mark Task Undone'}</Text>
+           </View>
+
+           <View style={styles.completeTaskOptions}>
+           <TouchableOpacity onPress={handleTaskOperation} style={styles.yesButton}>
+              <Text style={styles.saveButtonText}>Yes</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={closeCompleteTaskModal} style={styles.noButton}>
+              <Text style={styles.saveButtonText}>No</Text>
+            </TouchableOpacity>
+           </View>
+           
           </View>
         </View>
       </Modal>
+
     </View>
   );
 };
@@ -199,7 +263,7 @@ const GoalTaskScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: theme.colors.white,
   },
   topHeaderView: {
     padding: 20,
@@ -211,54 +275,54 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'grey',
+    borderColor: theme.colors.grey2,
     borderRadius: 8,
-    backgroundColor: '#1c1c1c',
+    backgroundColor: theme.colors.white,
   },
   title: {
-    color: '#fff',
+    color: theme.colors.black,
     fontSize: 18,
     fontWeight: 'bold',
   },
   recordHeaderView: {
     flexDirection: 'row',
     marginTop: 0,
-    marginRight: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 10,
   },
   recordHeaderFrequecy: {
     width: 50,
-    color: '#fff',
+    color: theme.colors.primary,
+    textAlign: 'center',
     fontSize: 12,
     fontWeight: 'bold',
-    marginRight: 20
   },
   recordHeaderMessage: {
-    color: '#fff',
+    color: theme.colors.primary,
     fontSize: 12,
     fontWeight: 'bold',
   },
   recordList: {
-    marginTop: 15,
-    marginRight: 20
+    paddingHorizontal: 20,
   },
   recordItem: {
     paddingVertical: 15,
-    borderBottomColor: 'grey',
-    paddingRight: 15
+    borderBottomColor: theme.colors.grey1,
+    paddingRight: 15,
   },
   recordText: {
-    color: '#fff',
+    color: theme.colors.black,
     fontSize: 16,
     paddingRight: 15,
     
   },
   recordDate: {
-    color: 'grey',
+    color: theme.colors.grey1,
     fontSize: 12,
     marginTop: 5,
   },
   emptyText: {
-    color: 'grey',
+    color: theme.colors.grey1,
     textAlign: 'center',
     marginTop: 20,
   },
@@ -274,7 +338,11 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 10,
     borderRadius: 50,
-    backgroundColor: '#333',
+    color:   theme.colors.primary,
+    backgroundColor: theme.colors.primary,
+  },
+  disabledButton: {
+    backgroundColor: theme.colors.primaryDisabled,
   },
   modalContainer: {
     flex: 1,
@@ -283,70 +351,121 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: '#1c1c1c',
+    backgroundColor: theme.colors.white,
     padding: 20,
     borderRadius: 8,
     width: '80%',
+    paddingBottom: 15
+  },
+  modalTopHeader: {
+    height: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  modalTitleHeader: {
+    height: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10
   },
   modalTitle: {
-    color: '#fff',
-    fontSize: 18,
+    color: theme.colors.black,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
   },
   input: {
-    backgroundColor: '#333',
-    color: '#fff',
+    backgroundColor: theme.colors.grey1,
+    color: theme.colors.black,
     height: 80,
     padding: 10,
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
     borderRadius: 8,
     marginBottom: 20,
   },
   progressInput: {
-    backgroundColor: '#333',
-    color: '#fff',
+    backgroundColor:  theme.colors.grey1,
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
     padding: 10,
     borderRadius: 8,
-    marginBottom: 20,
+    marginBottom: 15,
+   
+  },
+  errorText: {
+    color: theme.colors.red, // Use your theme's red color or a hardcoded hex value like '#FF0000'
+    fontSize: 14,
+    padding: 10,
+    textAlign: 'left',
+    marginBottom: 5,
   },
   saveButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: theme.colors.primary,
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
-  disabledButton: {
-    backgroundColor: '#ccc', // Faded gray when disabled
-  },
   saveButtonText: {
-    color: '#fff',
+    color: theme.colors.white,
     fontSize: 16,
   },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
+  yesButton:  {
+    backgroundColor: theme.colors.green,
     padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: 70
+  },
+  noButton: {
+    backgroundColor: theme.colors.red,
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: 70
+  },
+  completeTaskOptions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 20
   },
   headerRightText: {
     color: 'grey',
     fontSize: 16,
     marginRight: 15,
   },
-  mainCellView: {
-    flexDirection: 'row',
+  mainCellView: { flexDirection: 'row', gap: 15 },
+  leftCellView: { width: 50, alignItems: 'center', justifyContent: 'center',  },
+  lineSuperView: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center', // Ensures vertical alignment
   },
-
-  leftCellView:  {
-    width: 50,
+  lineView: {
+    width: 5,
+    flex: 1,
+    backgroundColor: theme.colors.primary,
+  },
+  circleView: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    borderColor: theme.colors.grey2,
+    borderWidth: 1,
+    backgroundColor: theme.colors.white,
+    position: 'absolute',
+    marginTop: -15,
+    justifyContent: 'center', // Center content vertically
     alignItems: 'center',
   },
-
-  lineView:  {
-    flex: 1,
-    width: 5,
-    backgroundColor: 'blue'
+  circleText: {
+    color: theme.colors.black, 
+    fontSize: 14, 
+    fontWeight: 'bold', 
   },
   
 });

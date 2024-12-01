@@ -80,18 +80,18 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     backgroundColor: theme.colors.grey3,
-    flexDirection: 'row',  // Align text and arrow in a row
-    alignItems: 'center',  // Center them vertically
-    width: 'auto', // Allow width to adjust based on content
+    flexDirection: 'row',  
+    alignItems: 'center', 
+    width: 'auto', 
   },
   text: {
     fontSize: 14,
     fontWeight: 'bold',
     color: theme.colors.black,
-    flexShrink: 1, // Allow text to shrink if needed
+    flexShrink: 1, 
   },
   arrow: {
-    paddingLeft: 5,  // Adjusted to reduce space between text and arrow
+    paddingLeft: 5,  
   },
   modalOverlay: {
     flex: 1,
