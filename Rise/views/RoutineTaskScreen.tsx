@@ -21,6 +21,16 @@ const RoutineTaskScreen = () => {
   const [frequencyType, setFrequencyType] = useState('Days');
   const [isTaskCompleted, setIsTaskCompleted] = useState(false);
 
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 16, marginRight: 15, fontWeight: 'bold' }}>
+         {isTaskCompleted ? 'Done' : 'In Progress'}
+        </Text>
+      ),
+    });
+  }, [isTaskCompleted]);
+
   // Fetch records for the current task ID
   const fetchTaskRecords = async () => {
     try {
@@ -70,8 +80,7 @@ const RoutineTaskScreen = () => {
     try {
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
         await TaskHandler.removeTask(task.categoryId,task.id)
-        console.log('All Records saved successfully');
-        navigation.navigate('HomeTabNavigator');
+        navigation.navigate('HomeTabNavigator', { screen: 'Tasks' });
       } catch (error) {
         console.error('Error saving record:', error);
       }

@@ -13,6 +13,7 @@ const theme = {
       error: '#e74c3c',
       red: '#ff3131',
       green: '#4CAF50',
+      yellow: '#D4AF37',
       green2: '#28a745',
       selected1: '#0097b2',
       unselected1: '#bbdde4',
