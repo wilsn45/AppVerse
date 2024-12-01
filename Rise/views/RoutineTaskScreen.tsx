@@ -17,17 +17,23 @@ const RoutineTaskScreen = () => {
 
   // State for task records
   const [taskRecords, setTaskRecords] = useState([]);
-  const [frequencyType, setFrequencyType] = useState('D');
+  const [frequencyType, setFrequencyType] = useState('Days');
 
   // Fetch records for the current task ID
   const fetchTaskRecords = async () => {
     try {
       const records = await RoutineTaskHandler.getAllRecordsForTask(task.id);
-      setTaskRecords(records);
+      const recordsWithNumbers = records.map((record, index) => ({
+        ...record,
+        no: index + 1, 
+      }));
+  
+      setTaskRecords(recordsWithNumbers);
+      console.log("Record Type: {re}")
 
-      if (records.subType == 0) {
+      if (task.subType == 1) {
         setFrequencyType('Days')
-      } else if (records.subType == 1) {
+      } else if (task.subType == 2) {
         setFrequencyType('Weeks')
       } else {
         setFrequencyType('Months')
@@ -93,7 +99,9 @@ const RoutineTaskScreen = () => {
       <View style={styles.leftCellView}>
         <View style={styles.lineSuperView}>
           <View style={styles.lineView}></View>
-          <View style={styles.circleView}></View>
+          <View style={styles.circleView}>
+            <Text style={styles.circleText}>{item.no}</Text> {/* Add desired text here */}
+          </View>
         </View>
       </View>
       <View style={styles.recordItem}>
@@ -151,7 +159,7 @@ const RoutineTaskScreen = () => {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color="white" />
+              <Ionicons name="close" size={24} color={theme.colors.grey1} />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Record Progress</Text>
             <TextInput
@@ -260,34 +268,36 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    backgroundColor: '#1c1c1c',
+    backgroundColor: theme.colors.white,
     padding: 20,
     borderRadius: 8,
     width: '80%',
   },
   modalTitle: {
-    color: '#fff',
+    color: theme.colors.black,
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
   },
   input: {
-    backgroundColor: '#333',
-    color: '#fff',
+    backgroundColor: theme.colors.grey1,
+    color: theme.colors.black,
     height: 80,
     padding: 10,
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
     borderRadius: 8,
     marginBottom: 20,
   },
   saveButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: theme.colors.green,
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
   saveButtonText: {
-    color: '#fff',
+    color: theme.colors.white,
     fontSize: 16,
   },
   closeButton: {
@@ -301,22 +311,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
   },
-  mainCellView: { flexDirection: 'row' },
+  mainCellView: { flexDirection: 'row', gap: 15 },
   leftCellView: { width: 50, alignItems: 'center', justifyContent: 'center',  },
-  lineSuperView: { flex: 1, justifyContent: 'center',alignItems: 'center' },
-  lineView: { width: 5, flex: 1, backgroundColor: 'blue' },
-  circleView: { height: 30, width: 30, borderRadius: 15, backgroundColor: '#FF0000' , marginTop: -15,   },
-
-  
-  // circleView: {
-  //   height: 30,
-  //   width: 30,
-  //   borderRadius: 15,
-  //   backgroundColor: '#FF0000',
-  //   position: 'absolute',
-  //   top: '50%',                // Position circle in the middle of the left cell
-  //   marginTop: -15,            // Adjust margin to truly center (half of circle height)
-  // },
+  lineSuperView: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center', // Ensures vertical alignment
+  },
+  lineView: {
+    width: 5,
+    flex: 1,
+    backgroundColor: theme.colors.primary,
+  },
+  circleView: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    borderColor: theme.colors.grey2,
+    borderWidth: 1,
+    backgroundColor: theme.colors.white,
+    position: 'absolute',
+    marginTop: -15,
+    justifyContent: 'center', // Center content vertically
+    alignItems: 'center',
+  },
+  circleText: {
+    color: theme.colors.black, 
+    fontSize: 14, 
+    fontWeight: 'bold', 
+  },
   
 });
 
