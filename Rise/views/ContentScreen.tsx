@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 20,
-    gap: 40,
+    gap: 10,
   },
   addButton: {
     flex: 1,

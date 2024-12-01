@@ -15,5 +15,6 @@ export const taskType: TaskType[] = [
       this.contentId = contentId;
       this.contentTitle = contentTitle;
       this.dataAdded = dataAdded
+      this.isDone = false
     }
   }

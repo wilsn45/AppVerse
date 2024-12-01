@@ -3,6 +3,7 @@ import { green } from "react-native-reanimated/lib/typescript/Colors";
 const theme = {
     colors: {
       primary: '#2355CA',
+      primaryDisabled: '#b2c3eb',
       background: '#F5F7F9',
       white: '#ffffff',
       grey1: '#f4f4f71',

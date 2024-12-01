@@ -52,4 +52,34 @@ export class TaskHandler {
       console.error('Error removing task:', error);
     }
   }
+
+  static async updateTaskState(categoryId, taskId, state) {
+    try {
+      // Retrieve all tasks from AsyncStorage
+      const tasks = await this.getTasks(); // Assume this method gets the tasks object
+  
+      // Check if the category exists
+      if (tasks[categoryId]) {
+        // Find the task within the category
+        const taskIndex = tasks[categoryId].findIndex((task) => task.id === taskId);
+  
+        if (taskIndex !== -1) {
+          // Update the 'isDone' property to true
+          tasks[categoryId][taskIndex].isDone = state;
+  
+          // Save the updated tasks object back to AsyncStorage
+          await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(tasks));
+  
+          console.log(`Task with ID: ${taskId} marked as done in category: ${categoryId}`);
+        } else {
+          console.warn(`Task with ID: ${taskId} not found in category: ${categoryId}`);
+        }
+      } else {
+        console.warn(`No tasks found for category ID: ${categoryId}`);
+      }
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
+  }
+  
 }

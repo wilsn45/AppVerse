@@ -13,11 +13,13 @@ const RoutineTaskScreen = () => {
 
   // State for modal and input
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
   // State for task records
   const [taskRecords, setTaskRecords] = useState([]);
   const [frequencyType, setFrequencyType] = useState('Days');
+  const [isTaskCompleted, setIsTaskCompleted] = useState(false);
 
   // Fetch records for the current task ID
   const fetchTaskRecords = async () => {
@@ -38,6 +40,7 @@ const RoutineTaskScreen = () => {
       } else {
         setFrequencyType('Months')
       }
+      setIsTaskCompleted(task.isDone)
 
     } catch (error) {
       console.error('Error fetching task records:', error);
@@ -59,17 +62,20 @@ const RoutineTaskScreen = () => {
     setIsModalVisible(true);
   };
 
+  const openCompleteTaskModal = () => {
+    setIsCompleteTaskModalVisible(true);
+  };
+
   const deleteTask = async () => {
     try {
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
         await TaskHandler.removeTask(task.categoryId,task.id)
         console.log('All Records saved successfully');
-        navigation.popToTop();
+        navigation.navigate('HomeTabNavigator');
       } catch (error) {
         console.error('Error saving record:', error);
       }
   };
-
 
   // Handle saving a new record
   const handleSave = async () => {
@@ -91,6 +97,16 @@ const RoutineTaskScreen = () => {
   // Handle closing the modal
   const closeModal = () => {
     setIsModalVisible(false);
+  };
+
+  const closeCompleteTaskModal = () => {
+    setIsCompleteTaskModalVisible(false);
+  };
+
+  const handleTaskOperation = async () => {
+    await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
+    setIsTaskCompleted(!isTaskCompleted)
+    setIsCompleteTaskModalVisible(false); 
   };
 
   // Render a single record in the FlatList
@@ -138,13 +154,16 @@ const RoutineTaskScreen = () => {
 
       {/* Bottom View with buttons */}
       <View style={styles.bottomContainer}>
-        <TouchableOpacity onPress={openModal} style={styles.iconButton}>
+        <TouchableOpacity onPress={openModal} 
+             style={[styles.iconButton, isTaskCompleted && styles.disabledButton]}
+             disabled={isTaskCompleted} >
           <Ionicons name="add-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={deleteTask} style={styles.iconButton}>
+        <TouchableOpacity onPress={openCompleteTaskModal} style={styles.iconButton}>
           <Ionicons name="checkmark-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={deleteTask} style={styles.iconButton}>
+        <TouchableOpacity onPress={deleteTask} 
+            style={styles.iconButton}>
           <Ionicons name="trash-bin" size={30} color={theme.colors.white} />
         </TouchableOpacity>
       </View>
@@ -158,12 +177,14 @@ const RoutineTaskScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Record Progress</Text>
+          <View style={styles.modalTopHeader}>
             <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
               <Ionicons name="close" size={24} color={theme.colors.grey1} />
             </TouchableOpacity>
             </View>
+            <View style={styles.modalTitleHeader}>
+            <Text style={styles.modalTitle}>Record Progress</Text>
+           </View>
             <TextInput
               style={styles.input}
               value={inputValue}
@@ -179,6 +200,34 @@ const RoutineTaskScreen = () => {
           </View>
         </View>
       </Modal>
+
+
+      <Modal
+        visible={isCompleteTaskModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeCompleteTaskModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+          
+          <View style={styles.modalTitleHeader}>
+            <Text style={styles.modalTitle}>{!isTaskCompleted ? 'Mark Task Done' : 'Mark Task Undone'}</Text>
+           </View>
+
+           <View style={styles.completeTaskOptions}>
+           <TouchableOpacity onPress={handleTaskOperation} style={styles.yesButton}>
+              <Text style={styles.saveButtonText}>Yes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={closeCompleteTaskModal} style={styles.noButton}>
+              <Text style={styles.saveButtonText}>No</Text>
+            </TouchableOpacity>
+           </View>
+           
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 };
@@ -211,11 +260,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 0,
     paddingHorizontal: 20,
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   recordHeaderFrequecy: {
     width: 50,
     color: theme.colors.primary,
+    textAlign: 'center',
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -263,6 +313,9 @@ const styles = StyleSheet.create({
     color:   theme.colors.primary,
     backgroundColor: theme.colors.primary,
   },
+  disabledButton: {
+    backgroundColor: theme.colors.primaryDisabled,
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -276,17 +329,22 @@ const styles = StyleSheet.create({
     width: '80%',
     paddingBottom: 15
   },
-  modalHeader: {
-    height: 40,
-    width: '100%',
+  modalTopHeader: {
+    height: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  modalTitleHeader: {
+    height: 30,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 10
   },
   modalTitle: {
     color: theme.colors.black,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -310,7 +368,25 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontSize: 16,
   },
-  closeButton: {
+  yesButton:  {
+    backgroundColor: theme.colors.green,
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: 70
+  },
+  noButton: {
+    backgroundColor: theme.colors.red,
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    width: 70
+  },
+  completeTaskOptions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 20
   },
   headerRightText: {
     color: 'grey',
