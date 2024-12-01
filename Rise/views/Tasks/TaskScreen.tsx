@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from
 import { categories } from '../../Data/CategoryData'; 
 import { taskType } from '../../Data/TaskData';
 import { useFocusEffect } from '@react-navigation/native';
-import { TaskHandler } from '../../Handlers/TaskHandler';
+import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import { useNavigation } from '@react-navigation/native';
 import theme from '../../Theme/Theme';
 import DropDownList from '../Common/DropDownList'; 

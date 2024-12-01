@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import RoutineTaskHandler from '../../Handlers/RoutineTaskHandler';
-import { TaskHandler } from '../../Handlers/TaskHandler';
+import RoutineTaskHandler from '../../Handlers/Tasks/RoutineTaskHandler';
+import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import theme from '../../Theme/Theme';
 
 const RoutineTaskScreen = () => {
@@ -179,36 +179,40 @@ const RoutineTaskScreen = () => {
 
       {/* Modal for Add Task */}
       <Modal
-        visible={isModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={closeModal}
+  visible={isModalVisible}
+  animationType="slide"
+  transparent={true}
+  onRequestClose={closeModal}
+>
+  <View style={styles.modalContainer}>
+    <View style={styles.modalContent}>
+      <View style={styles.modalTopHeader}>
+        <TouchableOpacity onPress={closeModal}>
+          <Ionicons name="close" size={24} color={theme.colors.grey1} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.modalTitleHeader}>
+        <Text style={styles.modalTitle}>Record Progress</Text>
+      </View>
+      <TextInput
+        style={styles.input}
+        value={inputValue}
+        multiline={true}
+        numberOfLines={6}
+        onChangeText={setInputValue}
+        placeholder="Enter progress"
+        placeholderTextColor={theme.colors.placeholder}
+      />
+      <TouchableOpacity
+        onPress={handleSave}
+        style={[styles.saveButton, inputValue.trim() === '' && styles.disabledButton]}
+        disabled={inputValue.trim() === ''}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-          <View style={styles.modalTopHeader}>
-            <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-              <Ionicons name="close" size={24} color={theme.colors.grey1} />
-            </TouchableOpacity>
-            </View>
-            <View style={styles.modalTitleHeader}>
-            <Text style={styles.modalTitle}>Record Progress</Text>
-           </View>
-            <TextInput
-              style={styles.input}
-              value={inputValue}
-              multiline={true}
-              numberOfLines={6}
-              onChangeText={setInputValue}
-              placeholder="Enter progress"
-              placeholderTextColor={theme.colors.placeholder}
-            />
-            <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        <Text style={styles.saveButtonText}>Save</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
 
 
       <Modal
@@ -368,7 +372,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   saveButton: {
-    backgroundColor: theme.colors.green,
+    backgroundColor: theme.colors.primary,
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',

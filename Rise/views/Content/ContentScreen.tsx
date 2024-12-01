@@ -17,7 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Slider from '@react-native-community/slider';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
-import { TaskHandler } from '../../Handlers/TaskHandler.tsx';
+import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
 import theme from '../../Theme/Theme.js';
 
 const { height } = Dimensions.get('window');
@@ -303,7 +303,7 @@ const ContentScreen = () => {
 
           {/* Add Task and Cancel Buttons */}
           <View style={styles.addTaskbuttonContainer}>
-            <TouchableOpacity style={styles.addButton} onPress={handleSubmitTask}>
+            <TouchableOpacity  style={[styles.addButton, taskName.trim() === '' && styles.disabledAddButton]} onPress={handleSubmitTask} disabled={taskName.trim() === ''}>
               <Text style={styles.addButtonText}>Add Task</Text>
             </TouchableOpacity>
 
@@ -455,11 +455,14 @@ const styles = StyleSheet.create({
   },
   addButton: {
     flex: 1,
-    backgroundColor: theme.colors.primary, // Primary color background
+    backgroundColor: theme.colors.primary, 
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
     alignItems: 'center',
+  },
+  disabledAddButton: {
+    backgroundColor: theme.colors.primaryDisabled, 
   },
   addButtonText: {
     color: theme.colors.white,
