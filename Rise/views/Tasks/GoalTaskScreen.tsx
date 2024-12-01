@@ -17,8 +17,6 @@ const GoalTaskScreen = () => {
   const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
   const [isDeleteTaskModalVisible, setIsDeleteTaskModalVisible] = useState(false);
 
-
-
   const [isDeleteRecordEnable, setIsDeleteRecordEnable] = useState(false);
 
 
@@ -41,7 +39,7 @@ const GoalTaskScreen = () => {
             </Text>
           </TouchableOpacity>
         ) : (
-          <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 16, marginRight: 15, fontWeight: 'bold' }}>
+          <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 20, marginRight: 15, fontWeight: 'bold' }}>
             {isTaskCompleted ? 'Done' : 'In Progress'}
           </Text>
         )

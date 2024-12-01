@@ -50,8 +50,8 @@ const SaveScreen = () => {
   };
 
   // Navigate to content detail page on cell click
-  const handleCardPress = (itemTitle, itemId) => {
-    navigation.navigate('ContentDetailScreen', { itemTitle, itemId }); // Pass itemTitle and itemId to the ContentDetailScreen
+  const handleCardPress = (itemTitle, itemId, categoryId) => {
+    navigation.navigate('ContentDetailScreen', { itemTitle, itemId, categoryId }); // Pass itemTitle and itemId to the ContentDetailScreen
   };
 
   // Dropdown options for category filtering
@@ -84,7 +84,7 @@ const SaveScreen = () => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={[styles.cardContainer, { width: deviceWidth - 20 }]}
-            onPress={() => handleCardPress(item.contentTitle, item.contentId)} // Pass the content title and ID
+            onPress={() => handleCardPress(item.contentTitle, item.contentId, item.categoryId)} // Pass the content title and ID
           >
             <Text style={styles.cardTitle}>{item.contentTitle}</Text>
             <TouchableOpacity

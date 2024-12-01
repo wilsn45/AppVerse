@@ -8,13 +8,11 @@ import {
   TouchableOpacity,
   Modal,
   TextInput,
-  Button,
   Alert,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Slider from '@react-native-community/slider';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
@@ -165,7 +163,7 @@ const ContentScreen = () => {
   };
 
   const handleCardPress = (item: { id: string, title: string }) => {
-    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title });
+    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title, categoryId: categoryId });
   };
 
   const handleAddTask = (itemId: string) => {

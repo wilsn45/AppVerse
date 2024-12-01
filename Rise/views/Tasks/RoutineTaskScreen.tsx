@@ -36,7 +36,7 @@ const RoutineTaskScreen = () => {
             </Text>
           </TouchableOpacity>
         ) : (
-          <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 16, marginRight: 15, fontWeight: 'bold' }}>
+          <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 20, marginRight: 15, fontWeight: 'bold' }}>
             {isTaskCompleted ? 'Done' : 'In Progress'}
           </Text>
         )
@@ -77,7 +77,7 @@ const RoutineTaskScreen = () => {
 
   // Handle navigation to ContentDetailScreen
   const navigateToContentDetail = () => {
-    navigation.navigate('ContentDetailScreen', { itemId: task.contentId, itemTitle: task.contentTitle });
+    navigation.navigate('ContentDetailScreen', { itemId: task.contentId, itemTitle: task.contentTitle, categoryId:  task.categoryId });
   };
 
   // Handle opening the modal

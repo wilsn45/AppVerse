@@ -51,4 +51,9 @@ export class LikeHandler {
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(likedItems));
     }
   }
+
+  static async isCardLiked(categoryId, contentId) {
+    const savedItems = await this.getLikes();
+    return savedItems[categoryId]?.some((card) => card.contentId === contentId) || false;
+  }
 }

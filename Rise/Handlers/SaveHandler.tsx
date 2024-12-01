@@ -3,11 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export class SaveHandler {
   // Helper function to get the current saved items from AsyncStorage
 
-  static STORAGE_KEY = 'likedItems'; 
+  static STORAGE_KEY = 'SAVED_CARD'; 
 
   static async getSaves() {
     try {
-      const savedItems = await AsyncStorage.getItem('likedItems');
+      const savedItems = await AsyncStorage.getItem(this.STORAGE_KEY);
       return savedItems ? JSON.parse(savedItems) : {};
     } catch (error) {
       console.error('Error retrieving savedItems', error);
@@ -50,5 +50,10 @@ export class SaveHandler {
       savedItems[categoryId] = savedItems[categoryId].filter((card) => card.contentId !== contentId);
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedItems));
     }
+  }
+
+  static async isCardSaved(categoryId, contentId) {
+    const savedItems = await this.getSaves();
+    return savedItems[categoryId]?.some((card) => card.contentId === contentId) || false;
   }
 }
