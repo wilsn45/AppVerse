@@ -146,18 +146,18 @@ const RoutineTaskScreen = () => {
       </TouchableOpacity>
       </View>
 
-      <View style={styles.recordHeaderView}>
-        <Text style={styles.recordHeaderFrequecy} > {frequencyType} </Text>
-        <Text style={styles.recordHeaderMessage}> Message </Text>
-      </View>
-      
-
       {/* FlatList to display task records */}
       <FlatList
         data={taskRecords}
         keyExtractor={(item) => item.recordId}
         renderItem={renderRecordItem}
         style={styles.recordList}
+        ListHeaderComponent={() => (
+          <View style={styles.listHeader}>
+            <Text style={styles.leftHeaderText}>{frequencyType}</Text>
+            <Text style={styles.centerHeaderText}>Message</Text>
+          </View>
+        )}
         ListEmptyComponent={<Text style={styles.emptyText}>No records found</Text>}
       />
 
@@ -269,22 +269,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  recordHeaderView: {
+  listHeader: {
     flexDirection: 'row',
-    marginTop: 0,
-    paddingHorizontal: 20,
-    paddingBottom: 10,
+    alignItems: 'center',
+    paddingHorizontal: 0,
+    paddingVertical: 10,
+    backgroundColor: theme.colors.grey1, // Optional background for the header
   },
-  recordHeaderFrequecy: {
-    width: 50,
-    color: theme.colors.primary,
+  leftHeaderText: {
     textAlign: 'center',
-    fontSize: 12,
+    color: theme.colors.primary,
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  recordHeaderMessage: {
+  centerHeaderText: {
+    marginLeft: 10,
+    flex: 1,
+    textAlign: 'left',
     color: theme.colors.primary,
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   recordList: {

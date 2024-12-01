@@ -16,7 +16,7 @@ const GoalTaskScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [progressValue, setProgressValue] = useState(0);
+  const [progressValue, setProgressValue] = useState('');
   const [totalProgressValue, setTotalProgress] = useState(0);
 
   // State for task records
@@ -146,19 +146,19 @@ const GoalTaskScreen = () => {
         <Ionicons name="chevron-forward" size={24} color={theme.colors.grey1} />
       </TouchableOpacity>
       </View>
-
-      <View style={styles.recordHeaderView}>
-        <Text style={styles.recordHeaderFrequecy} > Progress </Text>
-        <Text style={styles.recordHeaderMessage}> Message </Text>
-      </View>
       
-
       {/* FlatList to display task records */}
       <FlatList
         data={taskRecords}
         keyExtractor={(item) => item.recordId}
         renderItem={renderRecordItem}
         style={styles.recordList}
+        ListHeaderComponent={() => (
+          <View style={styles.listHeader}>
+            <Text style={styles.leftHeaderText}>Progess</Text>
+            <Text style={styles.centerHeaderText}>Message</Text>
+          </View>
+        )}
         ListEmptyComponent={<Text style={styles.emptyText}>No records found</Text>}
       />
 
@@ -201,7 +201,7 @@ const GoalTaskScreen = () => {
         multiline={true}
         numberOfLines={6}
         onChangeText={setInputValue}
-        placeholder="Enter progress"
+        placeholder="Enter Details"
         placeholderTextColor={theme.colors.placeholder}
       />
 
@@ -213,7 +213,7 @@ const GoalTaskScreen = () => {
               placeholder="Enter progress"
               placeholderTextColor="#aaa"
         />
-      {!isSaveEnable && progressValue.trim() !== '' && (
+     {!isSaveEnable &&  progressValue !== '' && (
       <Text style={styles.errorText}>
         Overall Progress cannot be greater than 100%
       </Text>
@@ -284,22 +284,25 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  recordHeaderView: {
+  listHeader: {
     flexDirection: 'row',
-    marginTop: 0,
-    paddingHorizontal: 20,
-    paddingBottom: 10,
+    alignItems: 'center',
+    paddingHorizontal: 0,
+    paddingVertical: 10,
+    backgroundColor: theme.colors.grey1, // Optional background for the header
   },
-  recordHeaderFrequecy: {
-    width: 50,
-    color: theme.colors.primary,
+  leftHeaderText: {
     textAlign: 'center',
-    fontSize: 12,
+    color: theme.colors.primary,
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  recordHeaderMessage: {
+  centerHeaderText: {
+    marginLeft: 10,
+    flex: 1,
+    textAlign: 'left',
     color: theme.colors.primary,
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   recordList: {
