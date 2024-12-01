@@ -75,6 +75,21 @@ class GoalTaskHandler {
     }
   }
 
+  static async removeRecord(recordId) {
+    try {
+      const allRecords = await this.getAllRecords();
+
+      // Filter out the record with the given recordId
+      const updatedRecords = allRecords.filter(record => record.recordId !== recordId);
+
+      // Save the updated records back to AsyncStorage
+      await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedRecords));
+      console.log(`Record with recordId: ${recordId} has been removed.`);
+    } catch (error) {
+      console.error('Error removing record:', error);
+    }
+  }
+
 }
 
 

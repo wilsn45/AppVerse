@@ -146,9 +146,8 @@ const GoalTaskScreen = () => {
   };
 
   const handleDeleteRecord = async (recordId) => {
-    await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
-    setIsTaskCompleted(!isTaskCompleted)
-    setIsCompleteTaskModalVisible(false); 
+    await GoalTaskHandler.removeRecord(recordId)
+    fetchTaskRecords()
   };
 
   const handleTaskOperation = async () => {
@@ -164,7 +163,7 @@ const GoalTaskScreen = () => {
         <View style={styles.lineSuperView}>
           <View style={styles.lineView}></View>
           <View style={styles.circleView}>
-            <Text style={styles.circleText}>{item.progress}%</Text> {/* Add desired text here */}
+            <Text style={styles.circleText}>{item.progress}%</Text>
           </View>
         </View>
       </View>
@@ -172,6 +171,16 @@ const GoalTaskScreen = () => {
         <Text style={styles.recordText}>{item.message}</Text>
         <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
       </View>
+  
+      {/* Conditionally render the cross icon based on isDeleteRecordEnabled */}
+      {isDeleteRecordEnable && (
+        <TouchableOpacity
+          onPress={() => handleDeleteRecord(item.recordId)}  // Replace with your delete logic
+          style={styles.deleteIconContainer}
+        >
+          <Ionicons name="close" size={28} color={theme.colors.red} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -400,6 +409,12 @@ const styles = StyleSheet.create({
     color: theme.colors.grey1,
     fontSize: 12,
     marginTop: 5,
+  },
+  deleteIconContainer: {
+    position: 'absolute',
+    right: 10,  // Adjust the right spacing if needed
+    top: '50%',  // Vertically center
+    transform: [{ translateY: -12 }],  // Adjust for exact vertical centering
   },
   emptyText: {
     color: theme.colors.grey1,
