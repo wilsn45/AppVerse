@@ -15,6 +15,13 @@ const GoalTaskScreen = () => {
   // State for modal and input
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCompleteTaskModalVisible, setIsCompleteTaskModalVisible] = useState(false);
+  const [isDeleteTaskModalVisible, setIsDeleteTaskModalVisible] = useState(false);
+
+
+
+  const [isDeleteRecordEnable, setIsDeleteRecordEnable] = useState(false);
+
+
   const [inputValue, setInputValue] = useState('');
   const [progressValue, setProgressValue] = useState('');
   const [totalProgressValue, setTotalProgress] = useState(0);
@@ -27,12 +34,20 @@ const GoalTaskScreen = () => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 16, marginRight: 15, fontWeight: 'bold' }}>
-         {isTaskCompleted ? 'Done' : 'In Progress'}
-        </Text>
+        isDeleteRecordEnable ? (
+          <TouchableOpacity onPress={handleDeleteDone} style={styles.deleteDoneButton}>
+            <Text style={{ color: theme.colors.primary, fontSize: 24, fontWeight: 'bold', marginRight: 10 }}>
+              Done
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 16, marginRight: 15, fontWeight: 'bold' }}>
+            {isTaskCompleted ? 'Done' : 'In Progress'}
+          </Text>
+        )
       ),
     });
-  }, [isTaskCompleted]);
+  }, [isTaskCompleted, isDeleteRecordEnable, navigation]);
 
   // Fetch records for the current task ID
   const fetchTaskRecords = async () => {
@@ -66,6 +81,10 @@ const GoalTaskScreen = () => {
 
   const openCompleteTaskModal = () => {
     setIsCompleteTaskModalVisible(true);
+  };
+
+  const openDeleteTaskModal = () => {
+    setIsDeleteTaskModalVisible(true);
   };
 
   const deleteTask = async () => {
@@ -111,6 +130,25 @@ const GoalTaskScreen = () => {
 
   const closeCompleteTaskModal = () => {
     setIsCompleteTaskModalVisible(false);
+  };
+
+  const closeDeleteTaskModal = () => {
+    setIsDeleteTaskModalVisible(false);
+  };
+
+  const enableDeleteRecord = async () => {
+    setIsDeleteRecordEnable(true)
+    setIsDeleteTaskModalVisible(false)
+  }; 
+
+  const handleDeleteDone = async () => {
+    setIsDeleteRecordEnable(false)
+  };
+
+  const handleDeleteRecord = async (recordId) => {
+    await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
+    setIsTaskCompleted(!isTaskCompleted)
+    setIsCompleteTaskModalVisible(false); 
   };
 
   const handleTaskOperation = async () => {
@@ -165,15 +203,18 @@ const GoalTaskScreen = () => {
       {/* Bottom View with buttons */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity onPress={openModal} 
-             style={[styles.iconButton, isTaskCompleted && styles.disabledButton]}
-             disabled={isTaskCompleted} >
+             style={[styles.iconButton, (isTaskCompleted || isDeleteRecordEnable) && styles.disabledButton]}
+             disabled={isTaskCompleted || isDeleteRecordEnable} >
           <Ionicons name="add-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={openCompleteTaskModal} style={styles.iconButton}>
+        <TouchableOpacity onPress={openCompleteTaskModal} 
+        style={[styles.iconButton, isDeleteRecordEnable && styles.disabledButton]}
+        disabled={isDeleteRecordEnable}>
           <Ionicons name="checkmark-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={deleteTask} 
-            style={styles.iconButton}>
+        <TouchableOpacity onPress={openDeleteTaskModal} 
+            style={[styles.iconButton, isDeleteRecordEnable && styles.disabledButton]}
+            disabled={isDeleteRecordEnable}>
           <Ionicons name="trash-bin" size={30} color={theme.colors.white} />
         </TouchableOpacity>
       </View>
@@ -249,6 +290,42 @@ const GoalTaskScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity onPress={closeCompleteTaskModal} style={styles.noButton}>
               <Text style={styles.saveButtonText}>No</Text>
+            </TouchableOpacity>
+           </View>
+           
+          </View>
+        </View>
+      </Modal>
+
+
+      <Modal
+        visible={isDeleteTaskModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeDeleteTaskModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+          
+          <View style={styles.modalTopHeader}>
+           <TouchableOpacity onPress={closeDeleteTaskModal}>
+                 <Ionicons name="close" size={24} color={theme.colors.grey1} />
+            </TouchableOpacity>
+          </View>
+
+           <View style={styles.completeTaskOptions}>
+           <TouchableOpacity
+              onPress={enableDeleteRecord}
+              style={[
+                 styles.deleteRecordButton, 
+                    taskRecords.length === 0 && styles.deleteRecordButtonDisable
+                ]}
+                 disabled={taskRecords.length === 0}
+                >
+              <Text style={styles.deleteButtonText}>Delete Records</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={deleteTask} style={styles.deleteTaskButton}>
+              <Text style={styles.deleteButtonText}>Delete Task</Text>
             </TouchableOpacity>
            </View>
            
@@ -429,6 +506,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 70
   },
+  deleteRecordButton:  {
+    backgroundColor: theme.colors.primary,
+    padding: 15,
+    marginTop: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  deleteRecordButtonDisable: {
+    backgroundColor: theme.colors.primaryDisabled,
+  },
+ deleteTaskButton: {
+    backgroundColor: theme.colors.red,
+    padding: 15,
+    marginTop: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    color: theme.colors.white,
+    fontSize: 16,
+    fontWeight: 'bold'
+  },
   completeTaskOptions: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -469,6 +568,11 @@ const styles = StyleSheet.create({
     color: theme.colors.black, 
     fontSize: 14, 
     fontWeight: 'bold', 
+  },
+  deleteDoneButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
   },
   
 });
