@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import RoutineTaskHandler from '../Handlers/RoutineTaskHandler';
-import { TaskHandler } from '../Handlers/TaskHandler';
-import theme from '../Theme/Theme';
+import RoutineTaskHandler from '../../Handlers/RoutineTaskHandler';
+import { TaskHandler } from '../../Handlers/TaskHandler';
+import theme from '../../Theme/Theme';
 
 const RoutineTaskScreen = () => {
   const route = useRoute();

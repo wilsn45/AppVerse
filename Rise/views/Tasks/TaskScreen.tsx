@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
-import { categories } from '../Data/CategoryData'; 
-import { taskType } from '../Data/TaskData';
+import { categories } from '../../Data/CategoryData'; 
+import { taskType } from '../../Data/TaskData';
 import { useFocusEffect } from '@react-navigation/native';
-import { TaskHandler } from '../Handlers/TaskHandler';
+import { TaskHandler } from '../../Handlers/TaskHandler';
 import { useNavigation } from '@react-navigation/native';
-import theme from '../Theme/Theme';
-import DropDownList from './Common/DropDownList'; 
+import theme from '../../Theme/Theme';
+import DropDownList from '../Common/DropDownList'; 
 
 const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import ProfileHandler from '../Handlers/ProfileHandler'; // Import your ProfileHandler or logic for checking onboarding status
+import ProfileHandler from '../../Handlers/ProfileHandler'; // Import your ProfileHandler or logic for checking onboarding status
 
 const SplashScreen = ({ navigation }) => {
   useEffect(() => {

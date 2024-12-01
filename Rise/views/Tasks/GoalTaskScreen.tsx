@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import GoalTaskHandler from '../Handlers/GoalTaskHandler'; 
-import { TaskHandler } from '../Handlers/TaskHandler';
+import GoalTaskHandler from '../../Handlers/GoalTaskHandler'; 
+import { TaskHandler } from '../../Handlers/TaskHandler';
 
 const GoalTaskScreen = () => {
   const route = useRoute();

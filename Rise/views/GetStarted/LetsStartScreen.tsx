@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import ProfileHandler from '../Handlers/ProfileHandler'; 
-import theme from '../Theme/Theme';
+import ProfileHandler from '../../Handlers/ProfileHandler'; 
+import theme from '../../Theme/Theme';
 
 const LetsStartScreen = ({ navigation }) => {
   const [name, setName] = useState('');

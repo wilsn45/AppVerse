@@ -15,10 +15,10 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Slider from '@react-native-community/slider';
-import { SaveHandler } from '../Handlers/SaveHandler';
-import { LikeHandler } from '../Handlers/LikeHandler.tsx';
-import { TaskHandler } from '../Handlers/TaskHandler';
-import theme from '../Theme/Theme';
+import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
+import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
+import { TaskHandler } from '../../Handlers/TaskHandler.tsx';
+import theme from '../../Theme/Theme.js';
 
 const { height } = Dimensions.get('window');
 

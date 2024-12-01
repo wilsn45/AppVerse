@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import theme from '../Theme/Theme';
+import theme from '../../Theme/Theme';
 
 const ContentDetailScreen = () => {
   const route = useRoute();
