@@ -253,7 +253,7 @@ const ContentScreen = () => {
           <TextInput
             style={styles.input}
             placeholder="Enter task name"
-            placeholderTextColor="#ccc"
+            placeholderTextColor={theme.colors.placeholder}
             value={taskName}
             onChangeText={setTaskName}
           />
@@ -302,7 +302,7 @@ const ContentScreen = () => {
           )}
 
           {/* Add Task and Cancel Buttons */}
-          <View style={styles.buttonContainer}>
+          <View style={styles.addTaskbuttonContainer}>
             <TouchableOpacity style={styles.addButton} onPress={handleSubmitTask}>
               <Text style={styles.addButtonText}>Add Task</Text>
             </TouchableOpacity>
@@ -394,19 +394,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    backgroundColor: theme.colors.unselected1,
+    borderWidth: 1,
+    borderColor:  theme.colors.selected1,
+    backgroundColor: theme.colors.white,
   },
   selectedButton: {
     backgroundColor: theme.colors.selected1
   },
   optionButtonText: {
-    color: theme.colors.white,
+    color: theme.colors.selected1,
     fontSize: 16,
+     fontWeight: 'bold'
   },
   selectedOptionButtonText: {
-    fontWeight: 'bold'
+    color: theme.colors.white,
+   
   },
-
   subOptionButton: {
     flex: 1,
     marginHorizontal: 5,
@@ -414,17 +417,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    backgroundColor: theme.colors.unselected2,
+    borderWidth: 1,
+    borderColor:  theme.colors.selected2,
+    backgroundColor: theme.colors.white,
   },
   subSelectedButton: {
     backgroundColor: theme.colors.selected2
   },
   subOptionButtonText: {
-    color: theme.colors.white,
+    color: theme.colors.selected2,
     fontSize: 16,
+     fontWeight: 'bold'
   },
   subSelectedOptionButtonText: {
-    fontWeight: 'bold'
+    color: theme.colors.white,
   },
 
   subButtonContainer: {
@@ -432,7 +438,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginVertical: 10,
   },
+
   buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    gap: 40,
+  },
+  addTaskbuttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

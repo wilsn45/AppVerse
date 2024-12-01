@@ -14,11 +14,8 @@ const theme = {
       red: '#ff3131',
       green: '#4CAF50',
       yellow: '#D4AF37',
-      green2: '#28a745',
       selected1: '#0097b2',
-      unselected1: '#bbdde4',
-      selected2: '#00bf63',
-      unselected2: '#b0ebce',
+      selected2: '#29adb2',
       placeholder: '#aaa'
     },
     spacing: {
