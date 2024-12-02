@@ -1,4 +1,4 @@
-package com.rise
+package com.Elevate
 
 import android.app.Application
 import com.facebook.react.PackageList
