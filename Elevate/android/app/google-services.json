@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "683687842608",
+    "project_id": "elevate-a6256",
+    "storage_bucket": "elevate-a6256.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683687842608:android:c20cc96470e019ca9f2ef5",
+        "android_client_info": {
+          "package_name": "com.nextworklab.elevate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCV26VQBCZtkwic3bcvIt0fp2q7-AK_bAI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

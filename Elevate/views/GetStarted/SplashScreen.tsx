@@ -1,45 +1,56 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import ProfileHandler from '../../Handlers/ProfileHandler'; // Import your ProfileHandler or logic for checking onboarding status
+import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
-const SplashScreen = ({ navigation }) => {
-  useEffect(() => {
-    // Function to check if the user is onboarded
-    const checkOnboardingStatus = async () => {
-      try {
-        const isOnboarded = await ProfileHandler.getIsOnboarded(); // Replace with your onboarding check logic
-        if (isOnboarded) {
-          navigation.navigate('HomeTabNavigator'); // Navigate to Home if onboarded
-        } else {
-          navigation.navigate('LetsStartScreen'); // Navigate to onboarding if not onboarded
-        }
-      } catch (error) {
-        console.error("Error checking onboarding status:", error);
-      }
-    };
+const SplashScreen = () => {
+    const [loading, setLoading] = useState(true); // Track loading state
+    const navigation = useNavigation(); // For navigation to the next screen
 
-    checkOnboardingStatus();
-  }, [navigation]);
+    useEffect(() => {
+        const fetchLiveCategory = async () => {
+            try {
+                const snapshot = await firestore().collection('LiveCategory').get();
+                const liveCategories = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                console.log('Live Categories:', liveCategories);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Loading...</Text>
-      <ActivityIndicator size="large" color="#0000ff" />
-    </View>
-  );
+                // Pass data to the next screen or global state
+                navigation.replace('Home', { liveCategories }); // Navigate to Home with data
+            } catch (error) {
+                console.error('Error fetching LiveCategory:', error);
+                // Optional: Show an error message or retry logic here
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchLiveCategory();
+    }, [navigation]);
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.text}>Welcome to Elevate</Text>
+            {loading && <ActivityIndicator size="large" color="#2355CA" />}
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2355CA',
+    },
+    text: {
+        fontSize: 24,
+        color: '#FFF',
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
 });
 
 export default SplashScreen;
