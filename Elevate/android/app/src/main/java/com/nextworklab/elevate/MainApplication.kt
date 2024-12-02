@@ -1,4 +1,4 @@
-package com.Elevate
+package com.nextworklab.elevate
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,4 +1,4 @@
-package com.Elevate
+package com.nextworklab.elevate
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

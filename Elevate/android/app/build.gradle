@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.Elevate"
+    namespace "com.nextworklab.elevate"
     defaultConfig {
-        applicationId "com.Elevate"
+        applicationId "com.nextworklab.elevate"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
