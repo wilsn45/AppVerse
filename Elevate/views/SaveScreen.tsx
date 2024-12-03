@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimen
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import { categories } from '../Data/CategoryData';
+import { CategoryHandler } from '../Handlers/CategoryHandler'; 
 import { SaveHandler } from '../Handlers/SaveHandler';
 import DropDownList from './Common/DropDownList'; 
 import theme from '../Theme/Theme';
@@ -12,9 +12,24 @@ const SaveScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [allSavedCards, setAllSavedCards] = useState([]);
   const [filteredCards, setFilteredCards] = useState([]);
+  const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
 
   // Fetch saved cards from the SaveHandler
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const liveCategories = await CategoryHandler.getLiveCategory();  // Fetch categories from CategoryHandler
+        setCategories(liveCategories);
+      } catch (error) {
+        console.error("Error fetching categories", error);
+      }
+    };
+
+    fetchCategories();
+  }, [navigation]);
+
   const fetchSavedCards = async () => {
     try {
       const savedCards = await SaveHandler.getSavedCards();
@@ -59,7 +74,7 @@ const SaveScreen = () => {
     { id: 0, title: 'All' },
     ...categories.map((category) => ({
       id: category.id,
-      title: category.title,
+      title: category.name,
     })),
   ];
 

@@ -65,17 +65,17 @@ const ContentScreen = () => {
 
   useEffect(() => {
     // Set content list based on tileType
-    switch (tileType) {
-      case 'Finance':
+    switch (categoryId) {
+      case 1:
         setContentList(financeContent);
         break;
-      case 'Focus':
+      case 2:
         setContentList(focusContent);
         break;
-      case 'Mind':
+      case 3:
         setContentList(mindContent);
         break;
-      case 'Fit':
+      case 4:
         setContentList(fitContent);
         break;
       default:

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
-import { categories } from '../../Data/CategoryData'; 
+import { CategoryHandler } from '../../Handlers/CategoryHandler';
 import { taskType } from '../../Data/TaskData';
 import { useFocusEffect } from '@react-navigation/native';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
@@ -12,6 +12,7 @@ const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [selectedTaskType, setSelectedTaskType] = useState(0);
   const [tasks, setTasks] = useState([]);
+  const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
 
   const fetchTasks = async () => {
@@ -25,6 +26,20 @@ const TaskScreen = () => {
       console.error('Error fetching tasks:', error);
     }
   };
+
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const liveCategories = await CategoryHandler.getLiveCategory();  // Fetch categories from CategoryHandler
+        setCategories(liveCategories);
+      } catch (error) {
+        console.error("Error fetching categories", error);
+      }
+    };
+
+    fetchCategories();
+  }, [navigation]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -105,7 +120,7 @@ const TaskScreen = () => {
                 { id: 0, title: 'All' },
                 ...categories.map((category) => ({
                   id: category.id,
-                  title: category.title,
+                  title: category.name,
                 })),
               ]}
               defaultId={selectedCategory}

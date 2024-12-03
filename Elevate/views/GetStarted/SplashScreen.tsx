@@ -12,11 +12,15 @@ const SplashScreen = () => {
     useEffect(() => {
         const fetchLiveCategory = async () => {
             try {
-                const snapshot = await firestore().collection('LiveCategory').get();
+                // Fetch categories from the updated path
+                const snapshot = await firestore().collection('Category').doc('LiveCategory').collection('List').get();
+                
+                // Map the fetched documents to include doc.id and category name
                 const liveCategories = snapshot.docs.map(doc => ({
                     id: doc.id,
-                    ...doc.data(),
+                    name: doc.data().name, // Assuming the document has a "name" field
                 }));
+                
                 console.log('Live Categories:', liveCategories);
 
                 // Save categories using CategoryHandler's setLiveCategory method
