@@ -17,37 +17,11 @@ import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
 import theme from '../../Theme/Theme.js';
+import firestore from '@react-native-firebase/firestore';
 
 const { height } = Dimensions.get('window');
 
-// Sample content data for each category
-const financeContent = [
-  { id: '11', title: 'Finance Tip 1: Budgeting', like: 10 },
-  { id: '12', title: 'Finance Tip 2: Saving A very very very very very very longggggggggggg Saving sabinnnnggg savnnggggggg savingggggggg', like: 11 },
-  { id: '13', title: 'Finance Tip 3: Investing', like: 12 },
-  { id: '14', title: 'Finance Tip 4: Debt Management', like: 13 },
-];
 
-const focusContent = [
-  { id: '21', title: 'Focus Tip 1: Time Management', like: 20 },
-  { id: '22', title: 'Focus Tip 2: Eliminate Distractions', like: 21 },
-  { id: '23', title: 'Focus Tip 3: Goal Setting', like: 22 },
-  { id: '24', title: 'Focus Tip 4: Prioritizing Tasks', like: 23 },
-];
-
-const mindContent = [
-  { id: '31', title: 'Mind Tip 1: Meditation' , like: 30},
-  { id: '32', title: 'Mind Tip 2: Journaling', like: 31 },
-  { id: '33', title: 'Mind Tip 3: Self-care Routines', like: 32 },
-  { id: '34', title: 'Mind Tip 4: Stress Management', like: 33 },
-];
-
-const fitContent = [
-  { id: '41', title: 'Fit Tip 1: Regular Exercise', like: 40 },
-  { id: '42', title: 'Fit Tip 2: Balanced Diet' , like: 41},
-  { id: '43', title: 'Fit Tip 3: Hydration', like: 42 },
-  { id: '44', title: 'Fit Tip 4: Sleep Well', like: 43 },
-];
 
 const ContentScreen = () => {
   const navigation = useNavigation();
@@ -64,24 +38,37 @@ const ContentScreen = () => {
 
 
   useEffect(() => {
-    // Set content list based on tileType
-    switch (categoryId) {
-      case 1:
-        setContentList(financeContent);
-        break;
-      case 2:
-        setContentList(focusContent);
-        break;
-      case 3:
-        setContentList(mindContent);
-        break;
-      case 4:
-        setContentList(fitContent);
-        break;
-      default:
-        setContentList([]);
-    }
-  }, [tileType]);
+    const fetchContentList = async () => {
+        try {
+            // Fetch categories from the updated path
+            console.log('Category id', categoryId);
+            const snapshot = await firestore().collection('Content').doc('List').collection(categoryId).get();
+            
+            // Map the fetched documents to include doc.id and category name
+            const contentList = snapshot.docs.map(doc => ({
+                id: doc.id,
+                title: doc.data().title, 
+                likeCount: doc.data().likeCount,
+                index: doc.data().index
+            }));
+            
+            console.log('Content List:', contentList);
+            setContentList(contentList)
+
+        } catch (error) {
+            console.error('Error fetching LiveCategory:', error);
+        } finally {
+            
+        }
+    };
+
+    
+
+    // Fetch categories and then check onboarding status
+    fetchContentList();
+
+}, [navigation]);
+
 
   useEffect(() => {
     navigation.setOptions({

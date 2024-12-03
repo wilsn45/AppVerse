@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
