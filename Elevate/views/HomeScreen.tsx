@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { CategoryHandler } from '../Handlers/CategoryHandler';  // Import CategoryHandler
+import { CategoryHandler } from '../Handlers/CategoryHandler'; // Import CategoryHandler
 import ProfileHandler from '../Handlers/ProfileHandler'; 
 import theme from '../Theme/Theme';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [userName, setUserName] = useState('User');
-  const [categories, setCategories] = useState([]); // State to store categories
+  const [categories, setCategories] = useState([]);
+  const deviceWidth = Dimensions.get('window').width; // Get device width
+
+  const leftPadding = 20; // Adjust these values as needed
+  const rightPadding = 20;
+  const spacing = 10; // Space between tiles
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const liveCategories = await CategoryHandler.getLiveCategory();  // Fetch categories from CategoryHandler
+        const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
       } catch (error) {
-        console.error("Error fetching categories", error);
+        console.error("Error fetching categories:", error);
       }
     };
 
@@ -29,19 +34,18 @@ const HomeScreen = () => {
       }
     };
 
-    fetchCategories(); // Fetch categories when component mounts
-    fetchUserName(); // Fetch username when component mounts
+    fetchCategories();
+    fetchUserName();
   }, [navigation]);
 
   const handleTilePress = (tileType: string, id: string) => {
-    // Navigate to ContentScreen with the tile type
     navigation.navigate('ContentScreen', { tileType, categoryId: id });
   };
 
   // Group the categories into rows of 2 tiles
   const groupCategories = () => {
     if (!categories || categories.length === 0) {
-      return []; // Return empty if categories is undefined or empty
+      return [];
     }
 
     const rows = [];
@@ -51,10 +55,9 @@ const HomeScreen = () => {
     return rows;
   };
 
-  // Render each tile in the list
-  const renderTile = ({ item }: { item: { id: string; name: string } }) => (
-    <TouchableOpacity onPress={() => handleTilePress(item.name, item.id)}>
-      <View style={styles.tile}>
+  const renderTile = ({ item }: { item: { id: string; title: string } }) => (
+    <TouchableOpacity onPress={() => handleTilePress(item.title, item.id)}>
+      <View style={[styles.tile, { width: (deviceWidth - leftPadding - rightPadding - spacing) / 2 }]}>
         <Text style={styles.tileText}>{item.name}</Text>
       </View>
     </TouchableOpacity>
@@ -62,24 +65,22 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeLabel}>Welcome</Text> {/* New Label */}
-      <Text style={styles.userNameLabel}>{userName}!</Text> {/* New Label */}
+      <Text style={styles.welcomeLabel}>Welcome</Text>
+      <Text style={styles.userNameLabel}>{userName}!</Text>
       <FlatList
-        data={groupCategories()} // Use the grouped categories for each row
+        data={groupCategories()}
         renderItem={({ item }) => (
-          <View
-            style={[
-              styles.row,
-              {
-                justifyContent: item.length === 1 ? 'flex-start' : 'space-between', // Align left if only one tile, or space tiles if two
-              },
-            ]}
-          >
-            {item.map((category) => renderTile({ item: category }))}
+          <View style={[
+            styles.row,
+            {
+              justifyContent: item.length === 1 ? 'flex-start' : 'space-between',
+            }
+          ]}>
+            {item.map(category => renderTile({ item: category }))}
           </View>
         )}
-        keyExtractor={(item) => item[0].id} // Unique key for each row
-        contentContainerStyle={styles.contentContainer} // Optional, for styling the content area
+        keyExtractor={(item) => item[0].id}
+        contentContainerStyle={styles.contentContainer}
       />
     </View>
   );
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
     color: theme.colors.grey1,
     paddingTop: 20,
     paddingLeft: 20,
-    textAlign: 'left', // Center the text
+    textAlign: 'left',
   },
   userNameLabel: {
     fontSize: 20,
@@ -104,26 +105,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingLeft: 20,
     paddingBottom: 50,
-    textAlign: 'left', // Center the text
+    textAlign: 'left',
   },
   contentContainer: {
     flexGrow: 1,
   },
   row: {
-    flexDirection: 'row', // Align items in a row
-    marginBottom: 20, // Space between rows
-    justifyContent: 'space-between', // Ensure tiles are spaced evenly
+    flexDirection: 'row',
+    marginBottom: 20,
+    justifyContent: 'space-between',
   },
   tile: {
     padding: 15,
     backgroundColor: theme.colors.white,
-    margin: 10,
+    margin: 5,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: theme.colors.grey2,
-    width: 170, // Fixed width for tiles
-    height: 150, // Fixed height for tiles
-    justifyContent: 'center', // Center content in the tile
+    height: 150,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   tileText: {
