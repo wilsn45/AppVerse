@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import ProfileHandler from '../../Handlers/ProfileHandler'; // Import your ProfileHandler or logic for checking onboarding status
 import firestore from '@react-native-firebase/firestore';
+import { CategoryHandler } from '../../Handlers/CategoryHandler'; // Import CategoryHandler
 
 const SplashScreen = () => {
     const [loading, setLoading] = useState(true); // Track loading state
@@ -17,17 +19,35 @@ const SplashScreen = () => {
                 }));
                 console.log('Live Categories:', liveCategories);
 
-                // Pass data to the next screen or global state
-                navigation.replace('Home', { liveCategories }); // Navigate to Home with data
+                // Save categories using CategoryHandler's setLiveCategory method
+                await CategoryHandler.setLiveCategory(liveCategories);
+                console.log("Categories saved successfully.");
             } catch (error) {
                 console.error('Error fetching LiveCategory:', error);
                 // Optional: Show an error message or retry logic here
             } finally {
+                // Once the categories are saved, check the onboarding status
+                checkOnboardingStatus();
                 setLoading(false);
             }
         };
 
+        const checkOnboardingStatus = async () => {
+            try {
+                const isOnboarded = await ProfileHandler.getIsOnboarded(); // Replace with your onboarding check logic
+                if (isOnboarded) {
+                    navigation.navigate('HomeTabNavigator'); // Navigate to Home if onboarded
+                } else {
+                    navigation.navigate('LetsStartScreen'); // Navigate to onboarding if not onboarded
+                }
+            } catch (error) {
+                console.error("Error checking onboarding status:", error);
+            }
+        };
+
+        // Fetch categories and then check onboarding status
         fetchLiveCategory();
+
     }, [navigation]);
 
     return (

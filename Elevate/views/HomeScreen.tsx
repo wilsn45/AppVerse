@@ -1,30 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { categories } from '../Data/CategoryData'; 
+import { CategoryHandler } from '../Handlers/CategoryHandler';  // Import CategoryHandler
 import ProfileHandler from '../Handlers/ProfileHandler'; 
-
 import theme from '../Theme/Theme';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [userName, setUserName] = useState('User');
-
+  const [categories, setCategories] = useState([]); // State to store categories
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const liveCategories = await CategoryHandler.getLiveCategory();  // Fetch categories from CategoryHandler
+        setCategories(liveCategories);
+      } catch (error) {
+        console.error("Error fetching categories", error);
+      }
+    };
 
     const fetchUserName = async () => {
       try {
         const userName = await ProfileHandler.getUserName(); 
-        setUserName(userName)
+        setUserName(userName);
       } catch (error) {
         console.error("Error fetchUserName", error);
       }
     };
 
-    fetchUserName();
+    fetchCategories(); // Fetch categories when component mounts
+    fetchUserName(); // Fetch username when component mounts
   }, [navigation]);
-
 
   const handleTilePress = (tileType: string, id: string) => {
     // Navigate to ContentScreen with the tile type
@@ -45,10 +52,10 @@ const HomeScreen = () => {
   };
 
   // Render each tile in the list
-  const renderTile = ({ item }: { item: { id: string; title: string } }) => (
-    <TouchableOpacity onPress={() => handleTilePress(item.title, item.id)}>
+  const renderTile = ({ item }: { item: { id: string; name: string } }) => (
+    <TouchableOpacity onPress={() => handleTilePress(item.name, item.id)}>
       <View style={styles.tile}>
-        <Text style={styles.tileText}>{item.title}</Text>
+        <Text style={styles.tileText}>{item.name}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -118,7 +125,6 @@ const styles = StyleSheet.create({
     height: 150, // Fixed height for tiles
     justifyContent: 'center', // Center content in the tile
     alignItems: 'center',
-    
   },
   tileText: {
     color: theme.colors.primary,
