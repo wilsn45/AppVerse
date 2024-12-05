@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback, useState,  } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,8 @@ import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
 import theme from '../../Theme/Theme.js';
 import firestore from '@react-native-firebase/firestore';
+import { useFocusEffect } from '@react-navigation/native'; // Ensure this is correctly imported
+
 
 const { height } = Dimensions.get('window');
 
@@ -53,7 +55,6 @@ const ContentScreen = () => {
                 index: doc.data().index
             }));
             
-            console.log('Content List:', contentList);
             setContentList(contentList)
 
         } catch (error) {
@@ -71,11 +72,12 @@ const ContentScreen = () => {
 }, [navigation]);
 
 
-  useEffect(() => {
+useFocusEffect(
+  useCallback(() => {
     navigation.setOptions({
       title: tileType,
     });
-  
+    console.log('Reload Save and Like');
     const loadCards = async () => {
       const savedItemsPromise = SaveHandler.getSaves();
       const likedItemsPromise = LikeHandler.getLikes();
@@ -100,6 +102,12 @@ const ContentScreen = () => {
     if (contentList.length > 0) {
       loadCards();
     }
+  }, [])
+);
+
+
+  useEffect(() => {
+    
   }, [contentList, categoryId, navigation, tileType]);
   
 
@@ -116,6 +124,9 @@ const ContentScreen = () => {
   
   const handleLike = async (itemId, itemTitle) => {
     const isLiked = likedCards.get(itemId);
+
+    
+// Update the count property
     if (isLiked) {
       await LikeHandler.removeLike(categoryId, itemId);
       dencreaseLikeCount(itemId)
@@ -129,10 +140,22 @@ const ContentScreen = () => {
   };
 
   const increaseLikeCount = (id) => {
+    const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
+
+      docRef.update({
+        likeCount: firestore.FieldValue.increment(1)  // Increments the count by 1
+      })
+      .then(() => {
+        console.log("Count updated successfully");
+      })
+      .catch((error) => {
+        console.error("Error updating count: ", error);
+      });
+
     setContentList((prevContentList) => {
       return prevContentList.map(item => {
         if (item.id === id) {
-          return { ...item, like: item.like + 1 };
+          return { ...item, likeCount: item.likeCount + 1 };
         }
         return item;
       });
@@ -140,18 +163,32 @@ const ContentScreen = () => {
   };
 
   const dencreaseLikeCount = (id) => {
+
+    const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
+
+    docRef.update({
+      likeCount: firestore.FieldValue.increment(-1)  // Increments the count by 1
+    })
+    .then(() => {
+      console.log("Count updated successfully");
+    })
+    .catch((error) => {
+      console.error("Error updating count: ", error);
+    });
+
     setContentList((prevContentList) => {
       return prevContentList.map(item => {
         if (item.id === id) {
-          return { ...item, like: item.like - 1 };
+          return { ...item, likeCount: item.likeCount - 1 };
         }
         return item;
       });
     });
   };
 
-  const handleCardPress = (item: { id: string, title: string }) => {
-    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title, categoryId: categoryId });
+  const handleCardPress = (item: { id: string, title: string, likeCount: number }) => {
+    console.log('Pass Likes Count', item.likeCount);
+    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title, categoryId: categoryId, likeCount: item.likeCount });
   };
 
   const handleAddTask = (itemId: string) => {
@@ -218,7 +255,7 @@ const ContentScreen = () => {
                   size={24}
                   color={likedCards.get(item.id) ? theme.colors.red : theme.colors.primary}
                 />
-                <Text>{item.like}</Text>
+                <Text>{item.likeCount}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item.id)}>
                 <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>

@@ -14,19 +14,23 @@ import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
 import theme from '../../Theme/Theme';
+import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 const ContentDetailScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { itemTitle, itemId,categoryId } = route.params; // Access the item title and ID passed as parameters
+  const { itemTitle, itemId,categoryId,likeCount } = route.params; // Access the item title and ID passed as parameters
   const [isLiked, setIsLiked] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
-  const [likeCount, setLikeCount] = useState(0)
+  const [likedCount, setLikedCount] = useState(0)
   const [isModalVisible, setModalVisible] = useState(false);
   const [taskName, setTaskName] = useState('');
   const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
+  const [htmlContent, setHtmlContent] = useState('');
+  
 
 
   useEffect(() => {
@@ -41,7 +45,35 @@ const ContentDetailScreen = () => {
     };
 
     checkIfLiked(); 
-    checkIfSaved();// Call the function to check if liked
+    checkIfSaved();
+    setLikedCount(likeCount)
+    console.log('Like Count', likeCount);
+    console.log('Liked Count', likedCount);
+
+    const fetchContent = async () => {
+      try {
+        const docSnapshot = await firestore()
+          .collection('Content')
+          .doc('Doc') 
+          .collection(categoryId)
+          .doc(itemId)
+          .get();
+
+          console.log('Category id', categoryId);
+          console.log('Item id', itemId);
+
+        if (docSnapshot.exists) {
+          const data = docSnapshot.data();
+          setHtmlContent(data?.htmlContent || ''); 
+        } else {
+          console.log('Document not found!');
+        }
+      } catch (error) {
+        console.error('Error fetching content:', error);
+      }
+    };
+
+    fetchContent();
 
   }, [itemId, categoryId]);
 
@@ -66,16 +98,36 @@ const ContentDetailScreen = () => {
       await LikeHandler.addLike(categoryId, itemId, itemTitle);
       increaseLikeCount(itemId)
     }
-    // Update only the likedCards state here
-    setIsLiked(!isLiked)
   };
 
   const increaseLikeCount = (id) => {
-    setLikeCount(likedCount+1)
+    setLikedCount(likedCount+1)
+    const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
+    docRef.update({
+      likeCount: firestore.FieldValue.increment(1)  // Increments the count by 1
+    })
+    .then(() => {
+      console.log("Count updated successfully");
+    })
+    .catch((error) => {
+      console.error("Error updating count: ", error);
+    });
   };
 
   const dencreaseLikeCount = (id) => {
-    setLikeCount(likedCount-1)
+    const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
+
+    docRef.update({
+      likeCount: firestore.FieldValue.increment(-1)  // Increments the count by 1
+    })
+    .then(() => {
+      console.log("Count updated successfully");
+    })
+    .catch((error) => {
+      console.error("Error updating count: ", error);
+    });
+
+    setLikedCount(likedCount-1)
   };
 
   const handleAddTask = () => {
@@ -117,10 +169,18 @@ const ContentDetailScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{itemTitle}</Text>
-      <Text style={styles.contentText}>
-        Here’s some more detailed information about "{itemTitle}" with id "{itemId}". You can add as much text as you’d like or format it differently!
-      </Text>
+     {/* <Text style={styles.title}>{itemTitle}</Text> */}
+      <View style={styles.mainContent}>
+        {htmlContent ? (
+          <WebView
+            originWhitelist={['*']}
+            source={{ html: htmlContent }}
+            style={styles.webView}
+          />
+        ) : (
+          <Text>Loading...</Text>
+        )}
+      </View>
 
       {/* Footer Section */}
       <View style={styles.footer}>
@@ -137,7 +197,7 @@ const ContentDetailScreen = () => {
                   size={24}
                   color={isLiked ? theme.colors.red : theme.colors.primary}
                 />
-                <Text>{likeCount}</Text>
+                <Text>{likedCount}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask()}>
                 <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>
@@ -221,15 +281,22 @@ const ContentDetailScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.white,
-    padding: 20,
+    backgroundColor: theme.colors.background,
     paddingBottom: 80, // Ensure content does not overlap footer
+  },
+  mainContent: {
+    flex: 1,
+  },
+  webView: {
+    flex: 1,
+    marginVertical: 0,
+    borderRadius: 2,
   },
   title: {
     fontSize: 26,
     color: theme.colors.black,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
   },
   contentText: {
