@@ -39,37 +39,29 @@ const ContentScreen = () => {
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
 
 
-  useEffect(() => {
-    const fetchContentList = async () => {
-        try {
-            // Fetch categories from the updated path
-            console.log('Category id', categoryId);
-            const snapshot = await firestore().collection('Content').doc('List').collection(categoryId).get();
-            
-            // Map the fetched documents to include doc.id and category name
-            const contentList = snapshot.docs.map(doc => ({
-                id: doc.id,
-                title: doc.data().title, 
-                likeCount: doc.data().likeCount,
-                description: doc.data().description,
-                index: doc.data().index
-            }));
-            
-            setContentList(contentList)
+  const fetchContentList = async () => {
+    try {
+        // Fetch categories from the updated path
+        console.log('Category id', categoryId);
+        const snapshot = await firestore().collection('Content').doc('List').collection(categoryId).get();
+        
+        // Map the fetched documents to include doc.id and category name
+        const contentList = snapshot.docs.map(doc => ({
+            id: doc.id,
+            title: doc.data().title, 
+            likeCount: doc.data().likeCount,
+            description: doc.data().description,
+            index: doc.data().index
+        }));
+        
+        setContentList(contentList)
 
-        } catch (error) {
-            console.error('Error fetching LiveCategory:', error);
-        } finally {
-            
-        }
-    };
-
-    
-
-    // Fetch categories and then check onboarding status
-    fetchContentList();
-
-}, [navigation]);
+    } catch (error) {
+        console.error('Error fetching LiveCategory:', error);
+    } finally {
+        
+    }
+};
 
 
 useFocusEffect(
@@ -77,7 +69,10 @@ useFocusEffect(
     navigation.setOptions({
       title: tileType,
     });
+    fetchContentList();
+
     console.log('Reload Save and Like');
+
     const loadCards = async () => {
       const savedItemsPromise = SaveHandler.getSaves();
       const likedItemsPromise = LikeHandler.getLikes();
@@ -97,18 +92,14 @@ useFocusEffect(
   
       setSavedCards(updatedSavedCards);
       setLikedCards(updatedLikedCards);
+      console.log('Updated Liked Count', updatedLikedCards);
     };
   
     if (contentList.length > 0) {
       loadCards();
     }
-  }, [])
+  }, [contentList, categoryId, navigation, tileType])
 );
-
-
-  useEffect(() => {
-    
-  }, [contentList, categoryId, navigation, tileType]);
   
 
   const handleSave = async (itemId, itemTitle) => {
