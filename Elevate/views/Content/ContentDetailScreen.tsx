@@ -114,20 +114,39 @@ const ContentDetailScreen = () => {
     });
   };
 
-  const dencreaseLikeCount = (id) => {
+  const dencreaseLikeCount = async (id) => {
     const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
-
-    docRef.update({
-      likeCount: firestore.FieldValue.increment(-1)  // Increments the count by 1
-    })
-    .then(() => {
-      console.log("Count updated successfully");
-    })
-    .catch((error) => {
-      console.error("Error updating count: ", error);
-    });
-
-    setLikedCount(likedCount-1)
+  
+    // Fetch the current likeCount before decreasing it
+    try {
+      const docSnapshot = await docRef.get();
+  
+      if (docSnapshot.exists) {
+        const currentLikeCount = docSnapshot.data().likeCount;
+  
+        // Only decrease likeCount if it's greater than 0
+        if (currentLikeCount > 0) {
+          docRef.update({
+            likeCount: firestore.FieldValue.increment(-1)  // Decrements the count by 1
+          })
+          .then(() => {
+            console.log("Count updated successfully");
+          })
+          .catch((error) => {
+            console.error("Error updating count: ", error);
+          });
+  
+          // Update the local state for likedCount
+          setLikedCount((prevLikedCount) => prevLikedCount - 1);
+        } else {
+          console.log("likeCount is already 0, cannot decrease");
+        }
+      } else {
+        console.log("Document does not exist, cannot decrease likeCount");
+      }
+    } catch (error) {
+      console.error("Error fetching like count: ", error);
+    }
   };
 
   const handleAddTask = () => {
