@@ -49,6 +49,7 @@ const ContentScreen = () => {
                 id: doc.id,
                 title: doc.data().title, 
                 likeCount: doc.data().likeCount,
+                description: doc.data().description,
                 index: doc.data().index
             }));
             
@@ -201,6 +202,7 @@ const ContentScreen = () => {
           <View style={styles.cardContainer}>
             <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}>
               <Text style={styles.contentText}>{item.title}</Text>
+              <Text style={styles.contentDescription}>{item.description}</Text>
             </TouchableOpacity>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item.id, item.title)}>
@@ -319,16 +321,23 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 10,
     justifyContent: 'space-between',
-    paddingVertical: 10,
+     padding: 20
   },
   cardContent: {
     flex: 1,
     justifyContent: 'center',
+    gap: 20,
     alignItems: 'center',
   },
   contentText: {
     fontSize: 24,
     color: theme.colors.black,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  contentDescription:  {
+    fontSize: 20,
+    color: theme.colors.greyText,
     textAlign: 'center',
     marginBottom: 10,
   },
