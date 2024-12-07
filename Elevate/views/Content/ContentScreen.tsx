@@ -16,6 +16,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
+import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 import theme from '../../Theme/Theme.js';
 import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native'; // Ensure this is correctly imported
@@ -40,6 +41,7 @@ const ContentScreen = () => {
 
 
   useEffect(() => {
+     sendContentImpressionEvent()
     fetchContentList()
   }, [ , categoryId, navigation, tileType]);
 
@@ -60,6 +62,7 @@ const ContentScreen = () => {
         }));
         
         setContentList(contentList)
+       sendContentListPresentedEvent()
         
 
     } catch (error) {
@@ -119,6 +122,7 @@ useFocusEffect(
 
   const handleSave = async (itemId, itemTitle) => {
     const isSaved = savedCards.get(itemId);
+    sendContentSavedEvent(isSaved, itemId)
     if (isSaved) {
       await SaveHandler.removeSave(categoryId, itemId);
     } else {
@@ -131,8 +135,8 @@ useFocusEffect(
   const handleLike = async (itemId, itemTitle) => {
     const isLiked = likedCards.get(itemId);
 
-    
-// Update the count property
+    sendContentLikedEvent(isLiked, itemId)
+
     if (isLiked) {
       await LikeHandler.removeLike(categoryId, itemId);
       dencreaseLikeCount(itemId)
@@ -217,13 +221,15 @@ useFocusEffect(
   const handleAddTask = (itemId: string) => {
     setSelectedContendid(itemId)
     setModalVisible(true);
+    sendAddTaskPresentedEvent(itemId)
   };
 
   const handleCancelAddTask = async () => { 
       setTaskName(''); 
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
-      setModalVisible(false); // Close the modal
+      setModalVisible(false); 
+      sendCancelAddTaskPEvent(selectedContentid)
   }
 
   const handleSubmitTask = async () => {
@@ -247,11 +253,120 @@ useFocusEffect(
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
       setModalVisible(false); 
+      sendAddTaskEvent(selectedContentid, selectedTaskType, selectedSubTaskType)
     } catch (error) {
       console.error("Error adding task:", error);
       Alert.alert('Error', 'Something went wrong while adding the task.');
     }
   };
+
+  const sendContentImpressionEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '4.0.0',
+      'Content_List_Appeared',
+      'Content_List',
+      '',
+      ActionType.IMPRESSION,
+      '',
+      { 'categoryId': categoryId}
+   );
+  };
+
+  const sendContentListPresentedEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '4.1.0',
+      'Content_List_Presented',
+      'Content_List',
+      '',
+      ActionType.IMPRESSION,
+      '',
+      { 'categoryId': categoryId}
+   );
+  };
+
+  const sendContentSavedEvent = async (isSave: boolean, contentId: String) => {
+     const optionType =  isSave ? 'Save' : 'Remove'
+     const eventId =  isSave ? '4.1.1.1' : '4.1.1.2'
+     const eventName =  isSave ? 'Content_Saved' : 'Content_Save_Removed'
+    await AnalyticsHelper.sendEvent(
+      eventId,
+      eventName,
+      'Content_List',
+      'Save',
+      ActionType.CLICK,
+      optionType,
+      { 'categoryId': categoryId, 'contentId': contentId}
+   );
+  };
+
+  const sendContentLikedEvent = async (isLike: boolean, contentId: String) => {
+    const optionType =  isLike ? 'Like' : 'Remove'
+    const eventId =  isLike ? '4.1.1.1' : '4.1.1.2'
+     const eventName =  isLike ? 'Content_Liked' : 'Content_Like_Removed'
+   await AnalyticsHelper.sendEvent(
+     eventId,
+     eventName,
+     'Content_List',
+     'Like',
+     ActionType.CLICK,
+     optionType,
+     { 'categoryId': categoryId, 'contentId': contentId}
+  );
+ };
+
+ const sendAddTaskPresentedEvent = async (contentId: String) => {
+  
+ await AnalyticsHelper.sendEvent(
+   '4.3.0',
+   'Add_Task_Presented',
+   'Content_List',
+   'Add_Task',
+   ActionType.IMPRESSION,
+   '',
+   { 'categoryId': categoryId, 'contentId': contentId}
+);
+};
+
+const sendAddTaskEvent = async (contentId: String, taskType: number, freqType: number) => {
+  
+  await AnalyticsHelper.sendEvent(
+    '4.3.1.2',
+    'Add_Task_Cancelled',
+    'Content_List',
+    'Add_Task',
+    ActionType.CLICK,
+    'Cancel',
+    { 'categoryId': categoryId, 'contentId': contentId, 'taskType': taskType, 'freqType': freqType}
+ );
+ };
+
+const sendCancelAddTaskPEvent = async (contentId: String) => {
+  
+  await AnalyticsHelper.sendEvent(
+    '4.3.1.2',
+    'Add_Task_Cancelled',
+    'Content_List',
+    'Add_Task',
+    ActionType.CLICK,
+    'Cancel',
+    { 'categoryId': categoryId, 'contentId': contentId}
+ );
+ };
+
+
+ const sendBackEvent = async () => {
+  
+  await AnalyticsHelper.sendEvent(
+    '4.4.1.1',
+    'Back_Clicked',
+    'Content_List',
+    'Header',
+    ActionType.CLICK,
+    'Back',
+    { 'categoryId': categoryId}
+ );
+ };
+
 
   return (
     <View style={styles.container}>
