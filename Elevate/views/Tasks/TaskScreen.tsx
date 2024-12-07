@@ -7,6 +7,7 @@ import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import { useNavigation } from '@react-navigation/native';
 import theme from '../../Theme/Theme';
 import DropDownList from '../Common/DropDownList'; 
+import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
 const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -29,10 +30,12 @@ const TaskScreen = () => {
 
 
   useEffect(() => {
+    sendSaveImpressionEvent(selectedCategory, selectedTaskType)
     const fetchCategories = async () => {
       try {
         const liveCategories = await CategoryHandler.getLiveCategory();  // Fetch categories from CategoryHandler
         setCategories(liveCategories);
+        sendCategoryDisplayedEvent(selectedCategory, selectedTaskType)
       } catch (error) {
         console.error("Error fetching categories", error);
       }
@@ -73,12 +76,89 @@ const TaskScreen = () => {
   );
 
   const handleTaskPress = (task) => {
+    sendTaskOpenEvent(task.categoryId, task.contentId, task.id)
     if (task.type === 1) {
       navigation.navigate('RoutineTaskScreen', { task });
     } else if (task.type === 2) {
       navigation.navigate('GoalTaskScreen', { task });
     }
   };
+
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId)
+    sendCategoryClickedEvent(categoryId)
+  }
+
+
+  const handleTaskTypeSelect = (taskUd) => {
+    setSelectedTaskType(taskUd)
+    sendTaskTypeChangeEvent(taskUd)
+  }
+
+
+  //ANalytics Events
+  const sendSaveImpressionEvent = async (selectedCategoryId: number, selectedTaskType: number) => {
+    await AnalyticsHelper.sendEvent(
+      '3.0.0',
+      'Task_Appeared',
+      'Task',
+      '',
+      ActionType.IMPRESSION,
+      '',
+      {'selectedCategoryId': selectedCategoryId, 'selectedTaskType' : selectedTaskType }
+    );
+  };
+
+  const sendCategoryDisplayedEvent = async (selectedCategoryId: number, selectedTaskType: number) => {
+    await AnalyticsHelper.sendEvent(
+      '3.1.0',
+      'Content_Lis_Presented',
+      'Task',
+      'Content_List',
+      ActionType.IMPRESSION,
+      '',
+      {'selectedCategoryId': selectedCategoryId, 'selectedTaskType' : selectedTaskType }
+    );
+  };
+
+  const sendTaskOpenEvent = async (categoryId: string, contentId: String, taskId: String) => {
+    await AnalyticsHelper.sendEvent(
+      '3.1.1',
+      'Content_Clicked',
+      'Task',
+      'Content_List',
+      ActionType.CLICK,
+      '',
+      {'categoryId': categoryId, 'contentId': categoryId, 'taskId': taskId }
+    );
+  };
+
+  const sendCategoryClickedEvent = async (categoryId: string) => {
+    await AnalyticsHelper.sendEvent(
+      '3.2.1',
+      'Categoy_Filter_Selected',
+      'Task',
+      'Category_Filter',
+      ActionType.CLICK,
+      '',
+      {'categoryId': categoryId }
+    );
+  };
+
+  const sendTaskTypeChangeEvent = async (taskType: string) => {
+    await AnalyticsHelper.sendEvent(
+      '3.2.2',
+      'Task_Type_Changed',
+      'Task',
+      'Task_Tab',
+      ActionType.CLICK,
+      '',
+      {'taskType': taskType }
+    );
+  };
+
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,7 +179,7 @@ const TaskScreen = () => {
                   styles.taskTypeButton,
                   selectedTaskType === button.id && styles.selectedTaskTypeButton,
                 ]}
-                onPress={() => setSelectedTaskType(button.id)}
+                onPress={() => handleTaskTypeSelect(button.id)}
               >
                 <Text
                   style={[
@@ -116,6 +196,7 @@ const TaskScreen = () => {
           {/* Category Dropdown */}
           <View style={styles.dropdownContainer}>
             <DropDownList
+            source={'Task_Category'}
               data={[
                 { id: 0, title: 'All' },
                 ...categories.map((category) => ({
@@ -124,7 +205,7 @@ const TaskScreen = () => {
                 })),
               ]}
               defaultId={selectedCategory}
-              onSelection={(id) => setSelectedCategory(id)}
+              onSelection={(id) => handleCategorySelect(id)}
             />
           </View>
         </View>
