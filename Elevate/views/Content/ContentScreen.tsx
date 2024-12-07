@@ -260,6 +260,7 @@ useFocusEffect(
     }
   };
 
+  //Analytics
   const sendContentImpressionEvent = async () => {
     await AnalyticsHelper.sendEvent(
       '4.0.0',
@@ -287,7 +288,7 @@ useFocusEffect(
   const sendContentSavedEvent = async (isSave: boolean, contentId: String) => {
      const optionType =  isSave ? 'Save' : 'Remove'
      const eventId =  isSave ? '4.1.1.1' : '4.1.1.2'
-     const eventName =  isSave ? 'Content_Saved' : 'Content_Save_Removed'
+     const eventName =  isSave ? 'Content_Saved' : 'Content_Saved_Removed'
     await AnalyticsHelper.sendEvent(
       eventId,
       eventName,
@@ -301,7 +302,7 @@ useFocusEffect(
 
   const sendContentLikedEvent = async (isLike: boolean, contentId: String) => {
     const optionType =  isLike ? 'Like' : 'Remove'
-    const eventId =  isLike ? '4.1.1.1' : '4.1.1.2'
+    const eventId =  isLike ? '4.2.1.1' : '4.2.1.2'
      const eventName =  isLike ? 'Content_Liked' : 'Content_Like_Removed'
    await AnalyticsHelper.sendEvent(
      eventId,
