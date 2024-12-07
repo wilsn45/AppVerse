@@ -21,7 +21,7 @@ import firestore from '@react-native-firebase/firestore';
 const ContentDetailScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { itemTitle, itemId,categoryId,likeCount } = route.params; // Access the item title and ID passed as parameters
+  const { itemTitle, itemId,categoryId } = route.params; // Access the item title and ID passed as parameters
   const [isLiked, setIsLiked] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [likedCount, setLikedCount] = useState(0)
@@ -46,12 +46,29 @@ const ContentDetailScreen = () => {
 
     checkIfLiked(); 
     checkIfSaved();
-    setLikedCount(likeCount)
-    console.log('Like Count', likeCount);
-    console.log('Liked Count', likedCount);
 
     const fetchContent = async () => {
       try {
+        const contetnDocSnapshot = await firestore()
+        .collection('Content')
+        .doc('List') 
+        .collection(categoryId)
+        .doc(itemId)
+        .get();
+
+      if (contetnDocSnapshot.exists) {
+        const data = contetnDocSnapshot.data();
+       
+        
+        setLikedCount(data?.likeCount || 0)
+      } else {
+        console.log('Like Document not found!');
+      }
+      } catch (error) {
+        console.error('Like Error fetching content:', error);
+      }
+
+      
         const docSnapshot = await firestore()
           .collection('Content')
           .doc('Doc') 
@@ -68,9 +85,9 @@ const ContentDetailScreen = () => {
         } else {
           console.log('Document not found!');
         }
-      } catch (error) {
-        console.error('Error fetching content:', error);
-      }
+
+
+       
     };
 
     fetchContent();

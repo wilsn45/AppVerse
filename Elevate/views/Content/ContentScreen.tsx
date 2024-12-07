@@ -209,9 +209,9 @@ useFocusEffect(
     }
   };
 
-  const handleCardPress = (item: { id: string, title: string, likeCount: number }) => {
+  const handleCardPress = (item: { id: string, title: string }) => {
     console.log('Pass Likes Count', item.likeCount);
-    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title, categoryId: categoryId, likeCount: item.likeCount });
+    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title, categoryId: categoryId });
   };
 
   const handleAddTask = (itemId: string) => {
