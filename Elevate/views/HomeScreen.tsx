@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions } from '
 import { useNavigation } from '@react-navigation/native';
 import { CategoryHandler } from '../Handlers/CategoryHandler'; // Import CategoryHandler
 import ProfileHandler from '../Handlers/ProfileHandler'; 
+import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
+
 import theme from '../Theme/Theme';
 
 const HomeScreen = () => {
@@ -18,8 +20,10 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        sendHomeImpressionEvent()
         const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
+        sendCategoryDisplayedEvent(liveCategories)
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -39,6 +43,7 @@ const HomeScreen = () => {
   }, [navigation]);
 
   const handleTilePress = (tileType: string, id: string) => {
+    sendCategoryClickedEvent(id)
     navigation.navigate('ContentScreen', { tileType, categoryId: id });
   };
 
@@ -63,6 +68,46 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
+
+//ANalytics Events
+  const sendHomeImpressionEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '1.0.0',
+      'Home_Appeared',
+      'Home',
+      '',
+      ActionType.IMPRESSION,
+      '',
+      { }
+    );
+  };
+
+  const sendCategoryDisplayedEvent = async (categoryList: [string]) => {
+    await AnalyticsHelper.sendEvent(
+      '1.1.0',
+      'Category_Displayed',
+      'Home',
+      'CategoryList',
+      ActionType.IMPRESSION,
+      '',
+      {'category': categoryList }
+    );
+  };
+
+
+  const sendCategoryClickedEvent = async (categoryId: string) => {
+    await AnalyticsHelper.sendEvent(
+      '1.1.1',
+      'Category_Clicked',
+      'Home',
+      'CategoryList',
+      ActionType.CLICK,
+      '',
+      {'categoryId': categoryId }
+    );
+  };
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeLabel}>Welcome</Text>
@@ -84,6 +129,7 @@ const HomeScreen = () => {
       />
     </View>
   );
+
 };
 
 const styles = StyleSheet.create({
