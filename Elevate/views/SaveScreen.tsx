@@ -7,6 +7,7 @@ import { CategoryHandler } from '../Handlers/CategoryHandler';
 import { SaveHandler } from '../Handlers/SaveHandler';
 import DropDownList from './Common/DropDownList'; 
 import theme from '../Theme/Theme';
+import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
 
 const SaveScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -18,10 +19,12 @@ const SaveScreen = () => {
   // Fetch saved cards from the SaveHandler
 
   useEffect(() => {
+    sendSaveImpressionEvent(selectedCategory)
     const fetchCategories = async () => {
       try {
         const liveCategories = await CategoryHandler.getLiveCategory();  // Fetch categories from CategoryHandler
         setCategories(liveCategories);
+        sendCategoryDisplayedEvent(selectedCategory)
       } catch (error) {
         console.error("Error fetching categories", error);
       }
@@ -57,6 +60,7 @@ const SaveScreen = () => {
   // Handle card removal
   const handleRemoveCard = async (categoryId, contentId) => {
     try {
+      sendContentRemovedEvent(categoryId,contentId)
       await SaveHandler.removeSave(categoryId, contentId);
       fetchSavedCards(); // Re-fetch saved cards after removal
     } catch (error) {
@@ -66,8 +70,15 @@ const SaveScreen = () => {
 
   // Navigate to content detail page on cell click
   const handleCardPress = (itemTitle, itemId, categoryId) => {
+    sendContentOpenEvent(categoryId,itemId)
     navigation.navigate('ContentDetailScreen', { itemTitle, itemId, categoryId }); // Pass itemTitle and itemId to the ContentDetailScreen
   };
+
+
+  const handleCategorySelect  = (categoryID) => {
+      setSelectedCategory(categoryID)
+      sendCategoryClickedEvent(categoryID)
+  }
 
   // Dropdown options for category filtering
   const categoryOptions = [
@@ -80,15 +91,80 @@ const SaveScreen = () => {
 
   const deviceWidth = Dimensions.get('window').width;
 
+
+  //ANalytics Events
+  const sendSaveImpressionEvent = async (filteredCategoryId: number) => {
+    await AnalyticsHelper.sendEvent(
+      '2.0.0',
+      'Save_Appeared',
+      'Save',
+      '',
+      ActionType.IMPRESSION,
+      '',
+      {'filteredCategoryId': filteredCategoryId }
+    );
+  };
+
+  const sendCategoryDisplayedEvent = async (filteredCategoryId: number) => {
+    await AnalyticsHelper.sendEvent(
+      '2.1.0',
+      'Content_Lis_Presented',
+      'Save',
+      'Category_List',
+      ActionType.IMPRESSION,
+      '',
+      {'filteredCategoryId': filteredCategoryId }
+    );
+  };
+
+  const sendContentOpenEvent = async (categoryId: string, contentId: String) => {
+    await AnalyticsHelper.sendEvent(
+      '2.1.1.1',
+      'Content_Clicked',
+      'Save',
+      'Category_List',
+      ActionType.CLICK,
+      'Open',
+      {'categoryId': categoryId, 'contentId': categoryId }
+    );
+  };
+
+  const sendContentRemovedEvent = async (categoryId: string, contentId: String) => {
+    await AnalyticsHelper.sendEvent(
+      '2.1.1.2',
+      'Content_Save_Removed',
+      'Save',
+      'Category_List',
+      ActionType.CLICK,
+      'Delete',
+      {'categoryId': categoryId, 'contentId': categoryId }
+    );
+  };
+
+
+  const sendCategoryClickedEvent = async (categoryId: string) => {
+    await AnalyticsHelper.sendEvent(
+      '2.2.1',
+      'Categoy_Filter_Selected',
+      'Save',
+      '',
+      ActionType.CLICK,
+      '',
+      {'categoryId': categoryId }
+    );
+  };
+
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Custom Dropdown Component */}
       <Text style={styles.title}>Saved</Text>
       <View style={styles.dropdownContainer}>
         <DropDownList
+           source={'Save_Category'}
           data={categoryOptions}
           defaultId={selectedCategory}
-          onSelection={(value) => setSelectedCategory(value)} // Callback for category selection
+          onSelection={(value) => handleCategorySelect(value)} // Callback for category selection
         />
       </View>
 

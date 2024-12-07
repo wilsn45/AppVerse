@@ -10,17 +10,53 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons
 import theme from '../../Theme/Theme';
+import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
-const DropDownList = ({ data, defaultId, onSelection }) => {
+const DropDownList = ({ source, data, defaultId, onSelection }) => {
   const [selectedId, setSelectedId] = useState(defaultId);
   const [modalVisible, setModalVisible] = useState(false);
 
   const defaultTitle = data.find((item) => item.id === selectedId)?.title || "";
 
+  const showDropDown = () => {
+    setModalVisible(true)
+    sendCategoryFilterAppeardEvent()
+  }
   const handleSelection = (id) => {
     setSelectedId(id);
     onSelection(id); // Pass the selected id to the parent component
     setModalVisible(false);
+  };
+
+  const sendCategoryFilterAppeardEvent = async () => {
+    let evendId = ''
+    let screenName = ''
+    let eventName = ''
+    let subSsectionName = ''
+
+    if (source == 'Save_Category') {
+      evendId  = '2.2.0'
+      screenName = 'Save'
+      eventName = 'Category_Filter_Appear'
+      subSsectionName = 'Category_Filter'
+
+    } else if (source == 'Task_Category') {
+      evendId  = '3.2.0'
+      screenName = 'Task'
+      eventName = 'Category_Filter_Appear'
+      subSsectionName = 'Category_Filter'
+    }
+
+
+    await AnalyticsHelper.sendEvent(
+      evendId,
+      eventName,
+      screenName,
+      subSsectionName,
+      ActionType.IMPRESSION,
+      '',
+      {}
+    );
   };
 
   return (
@@ -28,7 +64,7 @@ const DropDownList = ({ data, defaultId, onSelection }) => {
       {/* Rounded Box */}
       <TouchableOpacity
         style={styles.box}
-        onPress={() => setModalVisible(true)}
+        onPress={() => showDropDown()}
       >
         <Text style={styles.text}>
           {defaultTitle}
