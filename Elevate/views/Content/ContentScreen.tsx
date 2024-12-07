@@ -39,6 +39,11 @@ const ContentScreen = () => {
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
 
 
+  useEffect(() => {
+    fetchContentList()
+  }, [ , categoryId, navigation, tileType]);
+
+
   const fetchContentList = async () => {
     try {
         // Fetch categories from the updated path
@@ -55,6 +60,7 @@ const ContentScreen = () => {
         }));
         
         setContentList(contentList)
+        
 
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
@@ -63,42 +69,51 @@ const ContentScreen = () => {
     }
 };
 
+const loadCards = async () => {
+  console.log('Fetched list 2', contentList);
+  const savedItemsPromise = SaveHandler.getSaves();
+  const likedItemsPromise = LikeHandler.getLikes();
+
+  const [savedItems, likedItems] = await Promise.all([savedItemsPromise, likedItemsPromise]);
+
+  const savedContentIds = savedItems[categoryId] || [];
+  const likedContentIds = likedItems[categoryId] || [];
+
+  const updatedSavedCards = new Map();
+  const updatedLikedCards = new Map();
+
+  console.log('Updated Liked: contentList  Count', contentList);
+
+  contentList.forEach((item) => {
+    updatedSavedCards.set(item.id, savedContentIds.some((savedCard) => savedCard.contentId === item.id));
+    updatedLikedCards.set(item.id, likedContentIds.some((likedCard) => likedCard.contentId === item.id));
+  });
+
+  setSavedCards(updatedSavedCards);
+  setLikedCards(updatedLikedCards);
+  console.log('Updated Liked Count', updatedLikedCards);
+};
+
 
 useFocusEffect(
   useCallback(() => {
     navigation.setOptions({
       title: tileType,
     });
-    fetchContentList();
+    fetchContentList()
+  }, [ categoryId, navigation, tileType])
+);
 
-    console.log('Reload Save and Like');
-
-    const loadCards = async () => {
-      const savedItemsPromise = SaveHandler.getSaves();
-      const likedItemsPromise = LikeHandler.getLikes();
-  
-      const [savedItems, likedItems] = await Promise.all([savedItemsPromise, likedItemsPromise]);
-  
-      const savedContentIds = savedItems[categoryId] || [];
-      const likedContentIds = likedItems[categoryId] || [];
-  
-      const updatedSavedCards = new Map();
-      const updatedLikedCards = new Map();
-  
-      contentList.forEach((item) => {
-        updatedSavedCards.set(item.id, savedContentIds.some((savedCard) => savedCard.contentId === item.id));
-        updatedLikedCards.set(item.id, likedContentIds.some((likedCard) => likedCard.contentId === item.id));
-      });
-  
-      setSavedCards(updatedSavedCards);
-      setLikedCards(updatedLikedCards);
-      console.log('Updated Liked Count', updatedLikedCards);
-    };
-  
+useFocusEffect(
+  useCallback(() => {
+    navigation.setOptions({
+      title: tileType,
+    });
+    console.log('LoadCard: Fetched list', contentList);
     if (contentList.length > 0) {
-      loadCards();
+       loadCards();
     }
-  }, [contentList, categoryId, navigation, tileType])
+  }, [ contentList])
 );
   
 
