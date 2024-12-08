@@ -22,13 +22,15 @@ const GoalTaskScreen = () => {
 
 
   const [inputValue, setInputValue] = useState('');
-  const [progressValue, setProgressValue] = useState('');
+  const [progressValue, setProgressValue] = useState(0);
   const [totalProgressValue, setTotalProgress] = useState(0);
 
   // State for task records
   const [taskRecords, setTaskRecords] = useState([]);
   const [isTaskCompleted, setIsTaskCompleted] = useState(false);
   const [isSaveEnable, setIsSaveEnable] = useState(false);
+
+  const [showProgressLimitError, setShowProgressLimitError] = useState(false);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -105,10 +107,11 @@ const GoalTaskScreen = () => {
   };
 
   const onProgressInputValueChanged = (value) => {
-    setProgressValue(value);
+    setProgressValue(parseInt(value));
     const newProgess =  totalProgressValue + parseInt(value)
     const isEnable =  (newProgess < 101)
     setIsSaveEnable(isEnable)
+    setShowProgressLimitError(!isEnable)
   };
 
   // Handle saving a new record
@@ -136,6 +139,7 @@ const GoalTaskScreen = () => {
   const closeModal = () => {
     setIsModalVisible(false);
     sendCancelAddRecordEvent()
+    setShowProgressLimitError(false)
   };
 
   const closeCompleteTaskModal = () => {
@@ -466,7 +470,7 @@ const GoalTaskScreen = () => {
               placeholder="Enter progress"
               placeholderTextColor="#aaa"
         />
-     {!isSaveEnable &&  progressValue !== '' && (
+     {showProgressLimitError && (
       <Text style={styles.errorText}>
         Overall Progress cannot be greater than 100%
       </Text>
