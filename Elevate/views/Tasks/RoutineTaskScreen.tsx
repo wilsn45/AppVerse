@@ -56,7 +56,6 @@ const RoutineTaskScreen = () => {
   
       setTaskRecords(recordsWithNumbers);
       sendRecordListPresentedEvent()
-      console.log("Record Type: {re}")
 
       if (task.subType == 1) {
         setFrequencyType('Days')
@@ -80,6 +79,7 @@ const RoutineTaskScreen = () => {
 
   // Handle navigation to ContentDetailScreen
   const navigateToContentDetail = () => {
+    sendContentClickeddEvent()
     navigation.navigate('ContentDetailScreen', { itemId: task.contentId, itemTitle: task.contentTitle, categoryId:  task.categoryId });
   };
 
@@ -102,6 +102,7 @@ const RoutineTaskScreen = () => {
   const deleteTask = async () => {
     try {
          sendDeleteTaskClickdEvent()
+         setIsDeleteTaskModalVisible(false);
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
         await TaskHandler.removeTask(task.categoryId,task.id)
         navigation.navigate('HomeTabNavigator', { screen: 'Tasks' });
@@ -165,7 +166,7 @@ const RoutineTaskScreen = () => {
 
   const handleTaskOperation = async () => {
     await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
-    sendChangeTaskStatusEvent(isTaskCompleted)
+    sendChangeTaskStatusEvent(!isTaskCompleted)
     setIsTaskCompleted(!isTaskCompleted)
     setIsCompleteTaskModalVisible(false); 
   };
@@ -177,7 +178,7 @@ const RoutineTaskScreen = () => {
         <View style={styles.lineSuperView}>
           <View style={styles.lineView}></View>
           <View style={styles.circleView}>
-            <Text style={styles.circleText}>{item.no}</Text> {/* Add desired text here */}
+            <Text style={styles.circleText}>{item.no}</Text> 
           </View>
         </View>
       </View>
@@ -270,7 +271,7 @@ const RoutineTaskScreen = () => {
     );
   };
 
-  const sendChangeTaskStatusEvent = async (isDone: boolean) => {
+  const sendChangeTaskStatusEvent = async (isCompleted) => {
     await AnalyticsHelper.sendEvent(
       '6.3.1.1',
       'Change_Task_Status',
@@ -278,7 +279,7 @@ const RoutineTaskScreen = () => {
       'Change_Task_Status',
       ActionType.CLICK,
       'Change',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId,'taskId': task.id, 'isDone': isDone}
+      {'categoryId': task.categoryId, 'contentId' : task.contentId,'taskId': task.id, 'isDone': isCompleted}
     );
   };
 
@@ -363,6 +364,19 @@ const RoutineTaskScreen = () => {
       ActionType.CLICK,
       'Done',
       {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+
+  const sendContentClickeddEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.6.1',
+      'Contetn_Clicked',
+      'Routine_Task',
+      'Content_View',
+      ActionType.IMPRESSION,
+      '',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
     );
   };
 

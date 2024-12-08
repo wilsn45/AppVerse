@@ -73,6 +73,7 @@ const GoalTaskScreen = () => {
 
   // Handle navigation to ContentDetailScreen
   const navigateToContentDetail = () => {
+    sendContentClickeddEvent()
     navigation.navigate('ContentDetailScreen', { itemId: task.contentId, itemTitle: task.contentTitle });
   };
 
@@ -95,6 +96,7 @@ const GoalTaskScreen = () => {
   const deleteTask = async () => {
     try {
        sendDeleteTaskClickdEvent()
+       setIsDeleteTaskModalVisible(false);
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
         await TaskHandler.removeTask(task.categoryId,task.id)
         navigation.navigate('HomeTabNavigator', { screen: 'Tasks' });
@@ -166,7 +168,7 @@ const GoalTaskScreen = () => {
 
   const handleTaskOperation = async () => {
     await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
-    sendChangeTaskStatusEvent(isTaskCompleted)
+    sendChangeTaskStatusEvent(!isTaskCompleted)
     setIsTaskCompleted(!isTaskCompleted)
     setIsCompleteTaskModalVisible(false); 
   };
@@ -187,7 +189,6 @@ const GoalTaskScreen = () => {
         <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
       </View>
   
-      {/* Conditionally render the cross icon based on isDeleteRecordEnabled */}
       {isDeleteRecordEnable && (
         <TouchableOpacity
           onPress={() => handleDeleteRecord(item.recordId)}  // Replace with your delete logic
@@ -273,7 +274,7 @@ const GoalTaskScreen = () => {
     );
   };
 
-  const sendChangeTaskStatusEvent = async (isDone: boolean) => {
+  const sendChangeTaskStatusEvent = async (isCompleted: boolean) => {
     await AnalyticsHelper.sendEvent(
       '7.3.1.1',
       'Change_Task_Status',
@@ -281,7 +282,7 @@ const GoalTaskScreen = () => {
       'Change_Task_Status',
       ActionType.CLICK,
       'Change',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId,'taskId': task.id, 'isDone': isDone}
+      {'categoryId': task.categoryId, 'contentId' : task.contentId,'taskId': task.id, 'isDone': isCompleted}
     );
   };
 
@@ -323,7 +324,7 @@ const GoalTaskScreen = () => {
 
   const sendDeleteTaskClickdEvent = async () => {
     await AnalyticsHelper.sendEvent(
-      '6.4.1.2',
+      '7.4.1.2',
       'Delete_Task_Clicked',
       'Goal_Task',
       'Delete_View',
@@ -366,6 +367,18 @@ const GoalTaskScreen = () => {
       ActionType.CLICK,
       'Done',
       {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+  const sendContentClickeddEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '7.6.1',
+      'Contetn_Clicked',
+      'Routine_Task',
+      'Content_View',
+      ActionType.IMPRESSION,
+      '',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
     );
   };
 
