@@ -3,10 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class RoutineTaskHandler {
   static STORAGE_KEY = 'RoutineTaskRecords';
 
-  static async addRecord(taskId, message) {
+  static async addRecord(taskId, message, recordId) {
     try {
       const existingRecords = await this.getAllRecords();
-      const recordId =  new Date().getTime().toString()
       const newRecord = {
         recordId:  recordId, // Generate a unique ID for the record
         taskId,

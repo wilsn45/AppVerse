@@ -3,10 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 class GoalTaskHandler {
   static STORAGE_KEY = 'GoalTaskRecords';
 
-  static async addRecord(taskId, message,progress) {
+  static async addRecord(taskId, message,progress,recordId) {
     try {
       const existingRecords = await this.getAllRecords();
-      const recordId =  new Date().getTime().toString()
       const newRecord = {
         recordId:  recordId, // Generate a unique ID for the record
         taskId,

@@ -5,6 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import RoutineTaskHandler from '../../Handlers/Tasks/RoutineTaskHandler';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import theme from '../../Theme/Theme';
+import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
 const RoutineTaskScreen = () => {
   const route = useRoute();
@@ -54,6 +55,7 @@ const RoutineTaskScreen = () => {
       }));
   
       setTaskRecords(recordsWithNumbers);
+      sendRecordListPresentedEvent()
       console.log("Record Type: {re}")
 
       if (task.subType == 1) {
@@ -72,6 +74,7 @@ const RoutineTaskScreen = () => {
 
   // Load records on component mount and when a new record is added
   useEffect(() => {
+    sendRoutineTaskImpressionEvent()
     fetchTaskRecords();
   }, []);
 
@@ -83,18 +86,22 @@ const RoutineTaskScreen = () => {
   // Handle opening the modal
   const openModal = () => {
     setIsModalVisible(true);
+    sendAddRecordPresentedEvent()
   };
 
   const openCompleteTaskModal = () => {
+    sendChangeTaskStatusPresentedEvent()
     setIsCompleteTaskModalVisible(true);
   };
 
   const openDeleteTaskModal = () => {
+    sendDeleteViewPresentedEvent()
     setIsDeleteTaskModalVisible(true);
   };
 
   const deleteTask = async () => {
     try {
+         sendDeleteTaskClickdEvent()
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
         await TaskHandler.removeTask(task.categoryId,task.id)
         navigation.navigate('HomeTabNavigator', { screen: 'Tasks' });
@@ -107,9 +114,11 @@ const RoutineTaskScreen = () => {
   const handleSave = async () => {
     if (inputValue.trim()) {
       try {
-        await RoutineTaskHandler.addRecord(task.id, inputValue);
+        const recordId =  new Date().getTime().toString()
+        await RoutineTaskHandler.addRecord(task.id, inputValue,recordId);
         console.log('Record saved successfully');
         fetchTaskRecords(); // Refresh the records after saving
+        sendAddRecordEvent(recordId)
       } catch (error) {
         console.error('Error saving record:', error);
       }
@@ -123,33 +132,40 @@ const RoutineTaskScreen = () => {
   // Handle closing the modal
   const closeModal = () => {
     setIsModalVisible(false);
+    sendCancelAddRecordEvent()
   };
 
   const closeCompleteTaskModal = () => {
+    sendCancelChangeTaskStatusEvent()
     setIsCompleteTaskModalVisible(false);
   };
 
   const closeDeleteTaskModal = () => {
+    sendCancelDeleteClickdEvent()
     setIsDeleteTaskModalVisible(false);
   };
 
 
   const enableDeleteRecord = async () => {
+    sendDeleteRecordClickdEvent()
     setIsDeleteRecordEnable(true)
     setIsDeleteTaskModalVisible(false)
   }; 
 
   const handleDeleteDone = async () => {
+    sendDeleteRecordDoneEvent()
     setIsDeleteRecordEnable(false)
   };
 
   const handleDeleteRecord = async (recordId) => {
     await RoutineTaskHandler.removeRecord(recordId)
+    sendDeleteRecordEvent(recordId)
     fetchTaskRecords()
   };
 
   const handleTaskOperation = async () => {
     await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
+    sendChangeTaskStatusEvent(isTaskCompleted)
     setIsTaskCompleted(!isTaskCompleted)
     setIsCompleteTaskModalVisible(false); 
   };
@@ -179,6 +195,177 @@ const RoutineTaskScreen = () => {
       )}
     </View>
   );
+
+
+  //ANalytics Events
+  const sendRoutineTaskImpressionEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.0.0',
+      'Routine_Task_Appeared',
+      'Routine_Task',
+      '',
+      ActionType.IMPRESSION,
+      '',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
+    );
+  };
+
+  const sendRecordListPresentedEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.1.0',
+      'Record_List_Presented',
+      'Routine_Task',
+      'Record_List',
+      ActionType.IMPRESSION,
+      '',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
+    );
+  };
+
+  const sendAddRecordPresentedEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.2.0',
+      'Add_Recod_Presented',
+      'Routine_Task',
+      'Add_Record',
+      ActionType.IMPRESSION,
+      '',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
+    );
+  };
+
+  const sendAddRecordEvent = async (recordId: string) => {
+    await AnalyticsHelper.sendEvent(
+      '6.2.1.1',
+      'Add_New_Record',
+      'Routine_Task',
+      'Add_Record',
+      ActionType.CLICK,
+      'Add',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id, 'recordId': recordId}
+    );
+  };
+
+  const sendCancelAddRecordEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.2.1.2',
+      'Cancel_Add_New_Record',
+      'Routine_Task',
+      'Add_Record',
+      ActionType.CLICK,
+      'Cancel',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+  const sendChangeTaskStatusPresentedEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.3.0',
+      'Change_Task_Status_Presented',
+      'Routine_Task',
+      'Change_Task_Status',
+      ActionType.IMPRESSION,
+      '',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+  const sendChangeTaskStatusEvent = async (isDone: boolean) => {
+    await AnalyticsHelper.sendEvent(
+      '6.3.1.1',
+      'Change_Task_Status',
+      'Routine_Task',
+      'Change_Task_Status',
+      ActionType.CLICK,
+      'Change',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId,'taskId': task.id, 'isDone': isDone}
+    );
+  };
+
+  const sendCancelChangeTaskStatusEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.3.1.2',
+      'Cancel_Change_Task_Status',
+      'Routine_Task',
+      'Change_Task_Status',
+      ActionType.CLICK,
+      'Cancel',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+  const sendDeleteViewPresentedEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.4.0',
+      'Delete_View_Presented',
+      'Routine_Task',
+      'Delete_View',
+      ActionType.IMPRESSION,
+      '',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+  const sendDeleteRecordClickdEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.4.1.1',
+      'Delete_Record_Clicked',
+      'Routine_Task',
+      'Delete_View',
+      ActionType.CLICK,
+      'Record',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+  const sendDeleteTaskClickdEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.4.1.2',
+      'Delete_Task_Clicked',
+      'Routine_Task',
+      'Delete_View',
+      ActionType.CLICK,
+      'Task',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+  const sendCancelDeleteClickdEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.4.1.3',
+      'Cancel_Delete_Clicked',
+      'Routine_Task',
+      'Delete_View',
+      ActionType.CLICK,
+      'Cancel',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
+  const sendDeleteRecordEvent = async (recodId: string) => {
+    await AnalyticsHelper.sendEvent(
+      '6.5.1.1',
+      'Delete_Record',
+      'Routine_Task',
+      'Delete_Record',
+      ActionType.CLICK,
+      'Delete',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id, 'recordId': recodId}
+    );
+  };
+
+  const sendDeleteRecordDoneEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '6.5.1.2',
+      'Delete_Record_Done',
+      'Routine_Task',
+      'Delete_Record',
+      ActionType.CLICK,
+      'Done',
+      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
+    );
+  };
+
 
   return (
     <View style={styles.container}>
