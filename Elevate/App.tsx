@@ -106,7 +106,7 @@ const App = () => {
           component={ContentScreen}
           options={{
             headerShown: true,
-            title: 'Content',
+            title: '',
             headerBackTitle: '',
             headerTintColor: theme.colors.black,
           }}

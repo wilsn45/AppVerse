@@ -42,9 +42,9 @@ const HomeScreen = () => {
     fetchUserName();
   }, [navigation]);
 
-  const handleTilePress = (tileType: string, id: string) => {
+  const handleTilePress = (categorytitle: string, id: string) => {
     sendCategoryClickedEvent(id);
-    navigation.navigate('ContentScreen', { tileType, categoryId: id });
+    navigation.navigate('ContentScreen', { categorytitle, categoryId: id });
   };
 
   // Group the categories into rows of 2 tiles
@@ -62,7 +62,7 @@ const HomeScreen = () => {
 
   const renderTile = ({ item }: { item: { id: string; title: string } }) => (
     <TouchableOpacity
-      onPress={() => handleTilePress(item.title, item.id)}
+      onPress={() => handleTilePress(item.name, item.id)}
       accessibilityLabel={`Category tile for ${item.name}`}
       accessibilityHint="Tap to view the content in this category"
       accessibilityRole="button"
@@ -128,7 +128,7 @@ const HomeScreen = () => {
       </Text>
       <Text
         style={styles.userNameLabel}
-        accessibilityLabel={`User name label for ${userName}`}
+        accessibilityLabel={`${userName}`}
         accessibilityHint="Displays the logged-in user's name"
       >
         {userName}!

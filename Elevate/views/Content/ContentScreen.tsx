@@ -29,7 +29,7 @@ const { height } = Dimensions.get('window');
 const ContentScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { tileType, categoryId } = route.params;
+  const { categorytitle, categoryId } = route.params;
   const [contentList, setContentList] = useState<any[]>([]);
   const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
   const [likedCards, setLikedCards] = useState<Map<string, boolean>>(new Map());
@@ -39,11 +39,10 @@ const ContentScreen = () => {
   const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
 
-
   useEffect(() => {
      sendContentImpressionEvent()
     fetchContentList()
-  }, [ , categoryId, navigation, tileType]);
+  }, [ , categoryId, navigation, categorytitle]);
 
 
   const fetchContentList = async () => {
@@ -101,16 +100,16 @@ const loadCards = async () => {
 useFocusEffect(
   useCallback(() => {
     navigation.setOptions({
-      title: tileType,
+      title: categorytitle,
     });
     fetchContentList()
-  }, [ categoryId, navigation, tileType])
+  }, [ categoryId, navigation, categorytitle])
 );
 
 useFocusEffect(
   useCallback(() => {
     navigation.setOptions({
-      title: tileType,
+      title: categorytitle,
     });
     console.log('LoadCard: Fetched list', contentList);
     if (contentList.length > 0) {
@@ -379,7 +378,7 @@ const sendCancelAddTaskPEvent = async (contentId: String) => {
             <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}
                accessibilityLabel={`Content Card: ${item.title}`}>
               <Text style={styles.contentText}>{item.title}</Text>
-              <Text style={styles.contentDescription}>{item.description}</Text>
+              <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
             </TouchableOpacity>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item.id, item.title)}
