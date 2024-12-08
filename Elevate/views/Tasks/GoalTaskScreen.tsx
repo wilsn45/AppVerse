@@ -34,7 +34,8 @@ const GoalTaskScreen = () => {
     navigation.setOptions({
       headerRight: () => (
         isDeleteRecordEnable ? (
-          <TouchableOpacity onPress={handleDeleteDone} style={styles.deleteDoneButton}>
+          <TouchableOpacity onPress={handleDeleteDone} style={styles.deleteDoneButton}
+          accessibilityLabel={'Finish Record Delete'}>
             <Text style={{ color: theme.colors.primary, fontSize: 24, fontWeight: 'bold', marginRight: 10 }}>
               Done
             </Text>
@@ -191,6 +192,7 @@ const GoalTaskScreen = () => {
         <TouchableOpacity
           onPress={() => handleDeleteRecord(item.recordId)}  // Replace with your delete logic
           style={styles.deleteIconContainer}
+          accessibilityLabel={'Delete Record'}
         >
           <Ionicons name="close" size={28} color={theme.colors.red} />
         </TouchableOpacity>
@@ -410,17 +412,20 @@ const GoalTaskScreen = () => {
       <View style={styles.bottomContainer}>
         <TouchableOpacity onPress={openModal} 
              style={[styles.iconButton, (isTaskCompleted || isDeleteRecordEnable) && styles.disabledButton]}
-             disabled={isTaskCompleted || isDeleteRecordEnable} >
+             disabled={isTaskCompleted || isDeleteRecordEnable} 
+             accessibilityLabel={'Add new progress'}>
           <Ionicons name="add-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
         <TouchableOpacity onPress={openCompleteTaskModal} 
         style={[styles.iconButton, isDeleteRecordEnable && styles.disabledButton]}
-        disabled={isDeleteRecordEnable}>
+        disabled={isDeleteRecordEnable}
+        accessibilityLabel={`Mark Task ${isTaskCompleted ? 'Incompelete': 'Complete'}`}>
           <Ionicons name="checkmark-circle" size={30} color={theme.colors.white} />
         </TouchableOpacity>
         <TouchableOpacity onPress={openDeleteTaskModal} 
             style={[styles.iconButton, isDeleteRecordEnable && styles.disabledButton]}
-            disabled={isDeleteRecordEnable}>
+            disabled={isDeleteRecordEnable}
+            accessibilityLabel={'Delete Record Or Task'}>
           <Ionicons name="trash-bin" size={30} color={theme.colors.white} />
         </TouchableOpacity>
       </View>
@@ -435,7 +440,8 @@ const GoalTaskScreen = () => {
   <View style={styles.modalContainer}>
     <View style={styles.modalContent}>
       <View style={styles.modalTopHeader}>
-        <TouchableOpacity onPress={closeModal}>
+        <TouchableOpacity onPress={closeModal}
+        accessibilityLabel={'Cancel add new progress'}>
           <Ionicons name="close" size={24} color={theme.colors.grey1} />
         </TouchableOpacity>
       </View>
@@ -514,7 +520,8 @@ const GoalTaskScreen = () => {
           <View style={styles.modalContent}>
           
           <View style={styles.modalTopHeader}>
-           <TouchableOpacity onPress={closeDeleteTaskModal}>
+           <TouchableOpacity onPress={closeDeleteTaskModal}
+           accessibilityLabel={'Cancel Delete'}>
                  <Ionicons name="close" size={24} color={theme.colors.grey1} />
             </TouchableOpacity>
           </View>
