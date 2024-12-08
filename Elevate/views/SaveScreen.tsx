@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimen
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import { CategoryHandler } from '../Handlers/CategoryHandler'; 
+import { CategoryHandler } from '../Handlers/CategoryHandler';
 import { SaveHandler } from '../Handlers/SaveHandler';
-import DropDownList from './Common/DropDownList'; 
+import DropDownList from './Common/DropDownList';
 import theme from '../Theme/Theme';
 import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
 
@@ -16,15 +16,13 @@ const SaveScreen = () => {
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
 
-  // Fetch saved cards from the SaveHandler
-
   useEffect(() => {
-    sendSaveImpressionEvent(selectedCategory)
+    sendSaveImpressionEvent(selectedCategory);
     const fetchCategories = async () => {
       try {
-        const liveCategories = await CategoryHandler.getLiveCategory();  // Fetch categories from CategoryHandler
+        const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
-        sendCategoryDisplayedEvent(selectedCategory)
+        sendCategoryDisplayedEvent(selectedCategory);
       } catch (error) {
         console.error("Error fetching categories", error);
       }
@@ -42,14 +40,12 @@ const SaveScreen = () => {
     }
   };
 
-  // Re-fetch saved cards on screen focus
   useFocusEffect(
     React.useCallback(() => {
       fetchSavedCards();
     }, [])
   );
 
-  // Update filtered cards when category or saved cards change
   useEffect(() => {
     const updatedCards = allSavedCards.filter(
       (card) => selectedCategory === 0 || card.categoryId === selectedCategory.toString()
@@ -57,30 +53,26 @@ const SaveScreen = () => {
     setFilteredCards(updatedCards);
   }, [selectedCategory, allSavedCards]);
 
-  // Handle card removal
   const handleRemoveCard = async (categoryId, contentId) => {
     try {
-      sendContentRemovedEvent(categoryId,contentId)
+      sendContentRemovedEvent(categoryId, contentId);
       await SaveHandler.removeSave(categoryId, contentId);
-      fetchSavedCards(); // Re-fetch saved cards after removal
+      fetchSavedCards();
     } catch (error) {
       console.error('Error removing card:', error);
     }
   };
 
-  // Navigate to content detail page on cell click
   const handleCardPress = (itemTitle, itemId, categoryId) => {
-    sendContentOpenEvent(categoryId,itemId)
-    navigation.navigate('ContentDetailScreen', { itemTitle, itemId, categoryId }); // Pass itemTitle and itemId to the ContentDetailScreen
+    sendContentOpenEvent(categoryId, itemId);
+    navigation.navigate('ContentDetailScreen', { itemTitle, itemId, categoryId });
   };
 
+  const handleCategorySelect = (categoryID) => {
+    setSelectedCategory(categoryID);
+    sendCategoryClickedEvent(categoryID);
+  };
 
-  const handleCategorySelect  = (categoryID) => {
-      setSelectedCategory(categoryID)
-      sendCategoryClickedEvent(categoryID)
-  }
-
-  // Dropdown options for category filtering
   const categoryOptions = [
     { id: 0, title: 'All' },
     ...categories.map((category) => ({
@@ -91,9 +83,7 @@ const SaveScreen = () => {
 
   const deviceWidth = Dimensions.get('window').width;
 
-
-  //ANalytics Events
-  const sendSaveImpressionEvent = async (filteredCategoryId: number) => {
+  const sendSaveImpressionEvent = async (selectedCategoryId) => {
     await AnalyticsHelper.sendEvent(
       '2.0.0',
       'Save_Appeared',
@@ -101,86 +91,90 @@ const SaveScreen = () => {
       '',
       ActionType.IMPRESSION,
       '',
-      {'filteredCategoryId': filteredCategoryId }
+      { selectedCategoryId }
     );
   };
 
-  const sendCategoryDisplayedEvent = async (filteredCategoryId: number) => {
+  const sendCategoryDisplayedEvent = async (selectedCategoryId) => {
     await AnalyticsHelper.sendEvent(
       '2.1.0',
       'Content_Lis_Presented',
       'Save',
-      'Category_List',
+      'Content_List',
       ActionType.IMPRESSION,
       '',
-      {'filteredCategoryId': filteredCategoryId }
+      { selectedCategoryId }
     );
   };
 
-  const sendContentOpenEvent = async (categoryId: string, contentId: String) => {
+  const sendContentOpenEvent = async (categoryId, contentId) => {
     await AnalyticsHelper.sendEvent(
       '2.1.1.1',
       'Content_Clicked',
       'Save',
-      'Category_List',
+      'Content_List',
       ActionType.CLICK,
       'Open',
-      {'categoryId': categoryId, 'contentId': categoryId }
+      { categoryId, contentId }
     );
   };
 
-  const sendContentRemovedEvent = async (categoryId: string, contentId: String) => {
+  const sendContentRemovedEvent = async (categoryId, contentId) => {
     await AnalyticsHelper.sendEvent(
       '2.1.1.2',
       'Content_Save_Removed',
       'Save',
-      'Category_List',
+      'Content_List',
       ActionType.CLICK,
       'Delete',
-      {'categoryId': categoryId, 'contentId': categoryId }
+      { categoryId, contentId }
     );
   };
 
-
-  const sendCategoryClickedEvent = async (categoryId: string) => {
+  const sendCategoryClickedEvent = async (categoryId) => {
     await AnalyticsHelper.sendEvent(
       '2.2.1',
       'Categoy_Filter_Selected',
       'Save',
-      '',
+      'Category_Filter',
       ActionType.CLICK,
       '',
-      {'categoryId': categoryId }
+      { categoryId }
     );
   };
 
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Custom Dropdown Component */}
-      <Text style={styles.title}>Saved</Text>
+      <Text style={styles.title} accessibilityRole="header">
+        Saved
+      </Text>
       <View style={styles.dropdownContainer}>
         <DropDownList
-           source={'Save_Category'}
+          source={'Save_Category'}
           data={categoryOptions}
           defaultId={selectedCategory}
-          onSelection={(value) => handleCategorySelect(value)} // Callback for category selection
+          onSelection={(value) => handleCategorySelect(value)}
+          accessibilityLabel="Filter saved items by category"
+          accessibilityRole="combobox"
         />
       </View>
 
-      {/* FlatList displaying the saved cards */}
       <FlatList
         data={filteredCards}
         keyExtractor={(item) => item.contentId}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={[styles.cardContainer, { width: deviceWidth - 20 }]}
-            onPress={() => handleCardPress(item.contentTitle, item.contentId, item.categoryId)} // Pass the content title and ID
+            onPress={() => handleCardPress(item.contentTitle, item.contentId, item.categoryId)}
+            accessibilityLabel={`Open details for ${item.contentTitle}`}
+            accessibilityRole="button"
           >
             <Text style={styles.cardTitle}>{item.contentTitle}</Text>
             <TouchableOpacity
               onPress={() => handleRemoveCard(item.categoryId, item.contentId)}
               style={styles.removeButton}
+              accessibilityLabel={`Remove ${item.contentTitle} from saved items`}
+              accessibilityRole="button"
             >
               <Ionicons name="close" size={18} color={theme.colors.grey2} />
             </TouchableOpacity>
@@ -188,6 +182,8 @@ const SaveScreen = () => {
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={styles.flatListContainer}
+        accessibilityLabel="List of saved items"
+        accessibilityRole="list"
       />
     </SafeAreaView>
   );
@@ -207,7 +203,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   dropdownContainer: {
-    marginTop: 10, // 10px padding at the top
+    marginTop: 10,
     alignSelf: 'flex-end',
     marginBottom: 20,
     marginHorizontal: 10,
@@ -216,7 +212,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   separator: {
-    height: 10, // Space between items
+    height: 10,
   },
   cardContainer: {
     flexDirection: 'row',

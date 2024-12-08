@@ -58,8 +58,6 @@ const GoalTaskScreen = () => {
       setTaskRecords(records);
       setIsTaskCompleted(task.isDone)
       sendRecordListPresentedEvent()
-
-
     } catch (error) {
       console.error('Error fetching task records:', error);
     }

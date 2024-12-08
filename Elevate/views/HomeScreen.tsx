@@ -20,10 +20,10 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        sendHomeImpressionEvent()
+        sendHomeImpressionEvent();
         const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
-        sendCategoryDisplayedEvent(liveCategories)
+        sendCategoryDisplayedEvent(liveCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -31,10 +31,10 @@ const HomeScreen = () => {
 
     const fetchUserName = async () => {
       try {
-        const userName = await ProfileHandler.getUserName(); 
+        const userName = await ProfileHandler.getUserName();
         setUserName(userName);
       } catch (error) {
-        console.error("Error fetchUserName", error);
+        console.error("Error fetching user name:", error);
       }
     };
 
@@ -43,7 +43,7 @@ const HomeScreen = () => {
   }, [navigation]);
 
   const handleTilePress = (tileType: string, id: string) => {
-    sendCategoryClickedEvent(id)
+    sendCategoryClickedEvent(id);
     navigation.navigate('ContentScreen', { tileType, categoryId: id });
   };
 
@@ -61,15 +61,26 @@ const HomeScreen = () => {
   };
 
   const renderTile = ({ item }: { item: { id: string; title: string } }) => (
-    <TouchableOpacity onPress={() => handleTilePress(item.title, item.id)}>
-      <View style={[styles.tile, { width: (deviceWidth - leftPadding - rightPadding - spacing) / 2 }]}>
+    <TouchableOpacity
+      onPress={() => handleTilePress(item.title, item.id)}
+      accessibilityLabel={`Category tile for ${item.name}`}
+      accessibilityHint="Tap to view the content in this category"
+      accessibilityRole="button"
+    >
+      <View
+        style={[
+          styles.tile,
+          { width: (deviceWidth - leftPadding - rightPadding - spacing) / 2 },
+        ]}
+        accessible
+        accessibilityLabel={`Tile: ${item.name}`}
+      >
         <Text style={styles.tileText}>{item.name}</Text>
       </View>
     </TouchableOpacity>
   );
 
-
-//ANalytics Events
+  // Analytics Events
   const sendHomeImpressionEvent = async () => {
     await AnalyticsHelper.sendEvent(
       '1.0.0',
@@ -78,7 +89,7 @@ const HomeScreen = () => {
       '',
       ActionType.IMPRESSION,
       '',
-      { }
+      {}
     );
   };
 
@@ -87,49 +98,63 @@ const HomeScreen = () => {
       '1.1.0',
       'Category_Displayed',
       'Home',
-      'CategoryList',
+      'Category_List',
       ActionType.IMPRESSION,
       '',
-      {'category': categoryList }
+      { category: categoryList }
     );
   };
-
 
   const sendCategoryClickedEvent = async (categoryId: string) => {
     await AnalyticsHelper.sendEvent(
       '1.1.1',
       'Category_Clicked',
       'Home',
-      'CategoryList',
+      'Category_List',
       ActionType.CLICK,
       '',
-      {'categoryId': categoryId }
+      { categoryId }
     );
   };
 
-
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeLabel}>Welcome</Text>
-      <Text style={styles.userNameLabel}>{userName}!</Text>
+      <Text
+        style={styles.welcomeLabel}
+        accessibilityLabel="Welcome label"
+        accessibilityHint="Displays a welcome message to the user"
+      >
+        Welcome
+      </Text>
+      <Text
+        style={styles.userNameLabel}
+        accessibilityLabel={`User name label for ${userName}`}
+        accessibilityHint="Displays the logged-in user's name"
+      >
+        {userName}!
+      </Text>
       <FlatList
         data={groupCategories()}
         renderItem={({ item }) => (
-          <View style={[
-            styles.row,
-            {
-              justifyContent: item.length === 1 ? 'flex-start' : 'space-between',
-            }
-          ]}>
-            {item.map(category => renderTile({ item: category }))}
+          <View
+            style={[
+              styles.row,
+              {
+                justifyContent: item.length === 1 ? 'flex-start' : 'space-between',
+              },
+            ]}
+            accessible={false}
+          >
+            {item.map((category) => renderTile({ item: category }))}
           </View>
         )}
         keyExtractor={(item) => item[0].id}
         contentContainerStyle={styles.contentContainer}
+        accessibilityLabel="Category list"
+        accessibilityHint="Lists the categories available"
       />
     </View>
   );
-
 };
 
 const styles = StyleSheet.create({
