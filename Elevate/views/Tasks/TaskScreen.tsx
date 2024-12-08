@@ -6,7 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import { useNavigation } from '@react-navigation/native';
 import theme from '../../Theme/Theme';
-import DropDownList from '../Common/DropDownList'; 
+import DropDownList from '../Common/DropDownList';
 import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
 const TaskScreen = () => {
@@ -28,16 +28,15 @@ const TaskScreen = () => {
     }
   };
 
-
   useEffect(() => {
-    sendSaveImpressionEvent(selectedCategory, selectedTaskType)
+    sendSaveImpressionEvent(selectedCategory, selectedTaskType);
     const fetchCategories = async () => {
       try {
-        const liveCategories = await CategoryHandler.getLiveCategory();  // Fetch categories from CategoryHandler
+        const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
-        sendCategoryDisplayedEvent(selectedCategory, selectedTaskType)
+        sendCategoryDisplayedEvent(selectedCategory, selectedTaskType);
       } catch (error) {
-        console.error("Error fetching categories", error);
+        console.error('Error fetching categories', error);
       }
     };
 
@@ -63,8 +62,13 @@ const TaskScreen = () => {
   });
 
   const renderTask = ({ item }) => (
-    <View style={styles.taskItem}>
-      <TouchableOpacity onPress={() => handleTaskPress(item)}>
+    <View
+      style={styles.taskItem}
+    >
+      <TouchableOpacity
+        onPress={() => handleTaskPress(item)}
+        accessibilityLabel={`Task Button: ${item.name}`}
+      >
         <Text style={styles.taskName}>{item.name}</Text>
         <Text style={styles.taskDetails}>
           {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} |{' '}
@@ -76,7 +80,7 @@ const TaskScreen = () => {
   );
 
   const handleTaskPress = (task) => {
-    sendTaskOpenEvent(task.categoryId, task.contentId, task.id)
+    sendTaskOpenEvent(task.categoryId, task.contentId, task.id);
     if (task.type === 1) {
       navigation.navigate('RoutineTaskScreen', { task });
     } else if (task.type === 2) {
@@ -85,85 +89,57 @@ const TaskScreen = () => {
   };
 
   const handleCategorySelect = (categoryId) => {
-    setSelectedCategory(categoryId)
-    sendCategoryClickedEvent(categoryId)
-  }
-
+    setSelectedCategory(categoryId);
+    sendCategoryClickedEvent(categoryId);
+  };
 
   const handleTaskTypeSelect = (taskUd) => {
-    setSelectedTaskType(taskUd)
-    sendTaskTypeChangeEvent(taskUd)
-  }
-
-
-  //ANalytics Events
-  const sendSaveImpressionEvent = async (selectedCategoryId: number, selectedTaskType: number) => {
-    await AnalyticsHelper.sendEvent(
-      '3.0.0',
-      'Task_Appeared',
-      'Task',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      {'selectedCategoryId': selectedCategoryId, 'selectedTaskType' : selectedTaskType }
-    );
+    setSelectedTaskType(taskUd);
+    sendTaskTypeChangeEvent(taskUd);
   };
 
-  const sendCategoryDisplayedEvent = async (selectedCategoryId: number, selectedTaskType: number) => {
-    await AnalyticsHelper.sendEvent(
-      '3.1.0',
-      'Content_Lis_Presented',
-      'Task',
-      'Content_List',
-      ActionType.IMPRESSION,
-      '',
-      {'selectedCategoryId': selectedCategoryId, 'selectedTaskType' : selectedTaskType }
-    );
+  // Analytics Events
+  const sendSaveImpressionEvent = async (selectedCategoryId, selectedTaskType) => {
+    await AnalyticsHelper.sendEvent('3.0.0', 'Task_Appeared', 'Task', '', ActionType.IMPRESSION, '', {
+      selectedCategoryId,
+      selectedTaskType,
+    });
   };
 
-  const sendTaskOpenEvent = async (categoryId: string, contentId: String, taskId: String) => {
-    await AnalyticsHelper.sendEvent(
-      '3.1.1',
-      'Content_Clicked',
-      'Task',
-      'Content_List',
-      ActionType.CLICK,
-      '',
-      {'categoryId': categoryId, 'contentId': categoryId, 'taskId': taskId }
-    );
+  const sendCategoryDisplayedEvent = async (selectedCategoryId, selectedTaskType) => {
+    await AnalyticsHelper.sendEvent('3.1.0', 'Content_Lis_Presented', 'Task', 'Content_List', ActionType.IMPRESSION, '', {
+      selectedCategoryId,
+      selectedTaskType,
+    });
   };
 
-  const sendCategoryClickedEvent = async (categoryId: string) => {
-    await AnalyticsHelper.sendEvent(
-      '3.2.1',
-      'Categoy_Filter_Selected',
-      'Task',
-      'Category_Filter',
-      ActionType.CLICK,
-      '',
-      {'categoryId': categoryId }
-    );
+  const sendTaskOpenEvent = async (categoryId, contentId, taskId) => {
+    await AnalyticsHelper.sendEvent('3.1.1', 'Content_Clicked', 'Task', 'Content_List', ActionType.CLICK, '', {
+      categoryId,
+      contentId,
+      taskId,
+    });
   };
 
-  const sendTaskTypeChangeEvent = async (taskType: string) => {
-    await AnalyticsHelper.sendEvent(
-      '3.2.2',
-      'Task_Type_Changed',
-      'Task',
-      'Task_Tab',
-      ActionType.CLICK,
-      '',
-      {'taskType': taskType }
-    );
+  const sendCategoryClickedEvent = async (categoryId) => {
+    await AnalyticsHelper.sendEvent('3.2.1', 'Categoy_Filter_Selected', 'Task', 'Category_Filter', ActionType.CLICK, '', {
+      categoryId,
+    });
   };
 
-
-
+  const sendTaskTypeChangeEvent = async (taskType) => {
+    await AnalyticsHelper.sendEvent('3.2.2', 'Task_Type_Changed', 'Task', 'Task_Tab', ActionType.CLICK, '', {
+      taskType,
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header Section */}
-      <View style={styles.headerContainer}>
+      <View
+        style={styles.headerContainer}
+       
+      >
         <Text style={styles.title}>Task</Text>
         <View style={styles.taskControlContainer}>
           {/* Task Type Buttons */}
@@ -180,6 +156,8 @@ const TaskScreen = () => {
                   selectedTaskType === button.id && styles.selectedTaskTypeButton,
                 ]}
                 onPress={() => handleTaskTypeSelect(button.id)}
+                accessible
+                accessibilityLabel={`Task Type Button: ${button.title}`}
               >
                 <Text
                   style={[
@@ -194,9 +172,12 @@ const TaskScreen = () => {
           </View>
 
           {/* Category Dropdown */}
-          <View style={styles.dropdownContainer}>
+          <View
+            style={styles.dropdownContainer}
+           
+          >
             <DropDownList
-            source={'Task_Category'}
+              source={'Task_Category'}
               data={[
                 { id: 0, title: 'All' },
                 ...categories.map((category) => ({
@@ -218,7 +199,9 @@ const TaskScreen = () => {
         keyExtractor={(item) => item.taskId}
         contentContainerStyle={styles.taskList}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No tasks found.</Text>
+          <Text style={styles.emptyText} accessibilityLabel="No Tasks Found">
+            No tasks found.
+          </Text>
         }
       />
     </SafeAreaView>

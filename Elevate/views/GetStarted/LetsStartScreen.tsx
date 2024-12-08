@@ -1,19 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import ProfileHandler from '../../Handlers/ProfileHandler'; 
 import theme from '../../Theme/Theme';
+import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
 const LetsStartScreen = ({ navigation }) => {
   const [name, setName] = useState('');
+
+  useEffect(() => { 
+    sendLetsStartmpressionEvent()
+  }, [navigation]);
 
   const handleStart = async () => {
     if (name.trim()) {
       // Save the user's name and onboarding status (isOnboarded = true)
       await ProfileHandler.saveProfile(name, true);
+      sendNavigateToHomeEvent()
       navigation.navigate('HomeTabNavigator');
     } else {
+      sendWrongInputnEvent()
       alert('Please enter your name.');
     }
+  };
+
+  const sendLetsStartmpressionEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '9.0.0',
+      'LetsStart_Appeared',
+      'LetsStart',
+      '',
+      ActionType.IMPRESSION,
+      '',
+      {}
+    );
+  };
+
+  const sendWrongInputnEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '9.1.1.2',
+      'Wrong_User_Input',
+      'LetsStart',
+      '',
+      ActionType.IMPRESSION,
+      'Wrong',
+      {}
+    );
+  };
+
+  const sendNavigateToHomeEvent = async () => {
+    await AnalyticsHelper.sendEvent(
+      '9.1.1.1',
+      'Navigate_To_Home',
+      'LetsStart',
+      '',
+      ActionType.IMPRESSION,
+      'Correct',
+      {}
+    );
   };
 
   return (

@@ -193,10 +193,6 @@ const ContentDetailScreen = () => {
 
       await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, itemId,contentTitle, categoryId);
   
-      // Log the task details to console (for debugging purposes)
-      console.log(`Task Added contentTitle: ${contentTitle}`)
-      console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}, Category: ${categoryId}, ContentId: ${itemId}`);
-  
       setTaskName(''); 
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
@@ -334,14 +330,16 @@ const sendCancelAddTaskPEvent = async () => {
 
       {/* Footer Section */}
       <View style={styles.footer}>
-      <TouchableOpacity style={styles.iconButton} onPress={() => handleSave()}>
+      <TouchableOpacity style={styles.iconButton} onPress={() => handleSave()}
+        accessibilityLabel={isSaved ?`Unsave Card`: 'Save Card'}>
                 <Ionicons
                   name={isSaved ? 'bookmark' : 'bookmark-outline'}
                   size={24}
                   color={isSaved ? theme.colors.green : theme.colors.primary}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike()}>
+              <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike()}
+                accessibilityLabel={isLiked ? `Unlike Card. Total like ${likedCount}`: `Like Card. Total like ${likedCount}`}>
                 <Ionicons
                   name={isLiked ? 'heart' : 'heart-outline'}
                   size={24}
@@ -349,7 +347,8 @@ const sendCancelAddTaskPEvent = async () => {
                 />
                 <Text>{likedCount}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask()}>
+              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask()}
+                accessibilityLabel={'Add Task'}>
                 <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>
               </TouchableOpacity>
       </View>
