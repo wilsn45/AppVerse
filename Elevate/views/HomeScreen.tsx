@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CategoryHandler } from '../Handlers/CategoryHandler'; // Import CategoryHandler
 import ProfileHandler from '../Handlers/ProfileHandler'; 
 import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import theme from '../Theme/Theme';
 
@@ -19,7 +20,7 @@ const HomeScreen = () => {
 
   // Example dynamic data for the horizontal FlatLists
   const horizontalDataArray = [
-    { title: 'Popular', data: [{ id: '1', title: 'Item 1' }, { id: '2', title: 'Item 2' }] },
+    { title: 'Popular', data: [{ id: '1', title: 'Item 1' }, { id: '2', title: 'Item 2' }, { id: '3', title: 'Item 3' }] },
     { title: 'Trending', data: [{ id: '3', title: 'Item 3' }, { id: '4', title: 'Item 4' }] },
     { title: 'New Releases', data: [{ id: '5', title: 'Item 5' }, { id: '6', title: 'Item 6' }] },
     // Add more sections dynamically as needed
@@ -132,6 +133,7 @@ const HomeScreen = () => {
   };
 
   return (
+    <SafeAreaView style={styles.safeArea}>
     <View style={styles.container}>
       <Text
         style={styles.welcomeLabel}
@@ -166,6 +168,7 @@ const HomeScreen = () => {
         contentContainerStyle={styles.contentContainer}
         accessibilityLabel="Category list"
         accessibilityHint="Lists the categories available"
+        scrollEnabled={false}
       />
 
       {/* Render Static Horizontal List Titles */}
@@ -183,10 +186,15 @@ const HomeScreen = () => {
         </View>
       ))}
     </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: theme.colors.background, // Ensures safe area is styled
+  },
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -204,7 +212,7 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     fontWeight: 'bold',
     paddingLeft: 20,
-    paddingBottom: 50,
+    paddingBottom: 10,
     textAlign: 'left',
   },
   contentContainer: {
@@ -212,7 +220,6 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    marginBottom: 20,
     justifyContent: 'space-between',
   },
   tile: {
