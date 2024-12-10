@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 10,
     height: 100,
-    width: 220,
+    width: 240,
   },
   leftSection: {
     flex: 1,
@@ -285,6 +285,7 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     fontSize: 14,
     fontWeight: 'bold',
+    height: 60,
     marginBottom: 5, // Space between title and category
   },
   categoryText: {
