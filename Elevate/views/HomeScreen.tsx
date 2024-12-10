@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { CategoryHandler } from '../Handlers/CategoryHandler'; // Import CategoryHandler
 import ProfileHandler from '../Handlers/ProfileHandler'; 
@@ -16,6 +16,14 @@ const HomeScreen = () => {
   const leftPadding = 20; // Adjust these values as needed
   const rightPadding = 20;
   const spacing = 10; // Space between tiles
+
+  // Example dynamic data for the horizontal FlatLists
+  const horizontalDataArray = [
+    { title: 'Popular', data: [{ id: '1', title: 'Item 1' }, { id: '2', title: 'Item 2' }] },
+    { title: 'Trending', data: [{ id: '3', title: 'Item 3' }, { id: '4', title: 'Item 4' }] },
+    { title: 'New Releases', data: [{ id: '5', title: 'Item 5' }, { id: '6', title: 'Item 6' }] },
+    // Add more sections dynamically as needed
+  ];
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -78,6 +86,12 @@ const HomeScreen = () => {
         <Text style={styles.tileText}>{item.name}</Text>
       </View>
     </TouchableOpacity>
+  );
+
+  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string } }) => (
+    <View style={styles.horizontalTile}>
+      <Text style={styles.horizontalTileText}>{item.title}</Text>
+    </View>
   );
 
   // Analytics Events
@@ -153,6 +167,21 @@ const HomeScreen = () => {
         accessibilityLabel="Category list"
         accessibilityHint="Lists the categories available"
       />
+
+      {/* Render Static Horizontal List Titles */}
+      {horizontalDataArray.map((section, index) => (
+        <View key={index}>
+          <Text style={styles.horizontalListTitle}>{section.title}</Text>
+          <FlatList
+            data={section.data}
+            renderItem={renderHorizontalScrollList}
+            keyExtractor={(item) => item.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalListContainer}
+          />
+        </View>
+      ))}
     </View>
   );
 };
@@ -202,6 +231,30 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  horizontalListTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    color: theme.colors.black,
+    paddingLeft: 20, // Keep the title aligned with the content
+  },
+  horizontalListContainer: {
+    paddingVertical: 10,
+  },
+  horizontalTile: {
+    backgroundColor: theme.colors.white,
+    padding: 15,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: theme.colors.grey2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  horizontalTileText: {
+    color: theme.colors.primary,
+    fontSize: 16,
   },
 });
 

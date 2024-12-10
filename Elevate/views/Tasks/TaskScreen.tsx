@@ -107,7 +107,7 @@ const TaskScreen = () => {
   };
 
   const sendCategoryDisplayedEvent = async (selectedCategoryId, selectedTaskType) => {
-    await AnalyticsHelper.sendEvent('3.1.0', 'Content_Lis_Presented', 'Task', 'Content_List', ActionType.IMPRESSION, '', {
+    await AnalyticsHelper.sendEvent('3.1.0', 'Content_List_Presented', 'Task', 'Content_List', ActionType.IMPRESSION, '', {
       selectedCategoryId,
       selectedTaskType,
     });
