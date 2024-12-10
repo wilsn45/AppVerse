@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { CategoryHandler } from '../Handlers/CategoryHandler'; // Import CategoryHandler
 import ProfileHandler from '../Handlers/ProfileHandler'; 
@@ -20,9 +20,11 @@ const HomeScreen = () => {
 
   // Example dynamic data for the horizontal FlatLists
   const horizontalDataArray = [
-    { title: 'Popular', data: [{ id: '1', title: 'Item 1' }, { id: '2', title: 'Item 2' }, { id: '3', title: 'Item 3' }] },
+    { title: 'Popular', data: [{ id: '1', title: 'Unlock Your',category: 'Productivity' }, { id: '2', title: 'Why Your Mindset Shapes Your Productivity', category: 'Mental Wellness' }, { id: '3', title: 'Achieve More by Doing Less: The Secret to Prioritization', category: 'Health' }] },
     { title: 'Trending', data: [{ id: '3', title: 'Item 3' }, { id: '4', title: 'Item 4' }] },
     { title: 'New Releases', data: [{ id: '5', title: 'Item 5' }, { id: '6', title: 'Item 6' }] },
+    { title: 'New Releases 1' , data: [{ id: '5', title: 'Item 5' }, { id: '6', title: 'Item 6' }] },
+    
     // Add more sections dynamically as needed
   ];
 
@@ -89,9 +91,24 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string } }) => (
+  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string, imageUrl: string, category: string } }) => (
     <View style={styles.horizontalTile}>
-      <Text style={styles.horizontalTileText}>{item.title}</Text>
+      {/* Left Section: Title */}
+      <View style={styles.leftSection}>
+        <Text style={styles.titleText}>{item.title}</Text>
+        <Text style={styles.categoryText}>{item.category}</Text>
+      </View>
+  
+      {/* Right Section: Image and Button */}
+      <View style={styles.rightSection}>
+        <Image 
+          source={{ uri: item.imageUrl }} 
+          style={styles.tileImage} 
+        />
+        <TouchableOpacity style={styles.saveButton}>
+          <Text style={styles.saveButtonText}>Save</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -134,58 +151,45 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-    <View style={styles.container}>
-      <Text
-        style={styles.welcomeLabel}
-        accessibilityLabel="Welcome label"
-        accessibilityHint="Displays a welcome message to the user"
-      >
-        Welcome
-      </Text>
-      <Text
-        style={styles.userNameLabel}
-        accessibilityLabel={`${userName}`}
-        accessibilityHint="Displays the logged-in user's name"
-      >
-        {userName}!
-      </Text>
-      <FlatList
-        data={groupCategories()}
-        renderItem={({ item }) => (
-          <View
-            style={[
-              styles.row,
-              {
-                justifyContent: item.length === 1 ? 'flex-start' : 'space-between',
-              },
-            ]}
-            accessible={false}
-          >
-            {item.map((category) => renderTile({ item: category }))}
-          </View>
-        )}
-        keyExtractor={(item) => item[0].id}
-        contentContainerStyle={styles.contentContainer}
-        accessibilityLabel="Category list"
-        accessibilityHint="Lists the categories available"
-        scrollEnabled={false}
-      />
+      <ScrollView contentContainerStyle={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
+        <Text style={styles.welcomeLabel}>Welcome</Text>
+        <Text style={styles.userNameLabel}>{userName}!</Text>
 
-      {/* Render Static Horizontal List Titles */}
-      {horizontalDataArray.map((section, index) => (
-        <View key={index}>
-          <Text style={styles.horizontalListTitle}>{section.title}</Text>
-          <FlatList
-            data={section.data}
-            renderItem={renderHorizontalScrollList}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalListContainer}
-          />
-        </View>
-      ))}
-    </View>
+        <Text style={styles.categoryLabel}>Categories</Text>
+        <FlatList
+          data={groupCategories()}
+          renderItem={({ item }) => (
+            <View
+              style={[
+                styles.row,
+                {
+                  justifyContent: item.length === 1 ? 'flex-start' : 'space-between',
+                },
+              ]}
+              accessible={false}
+            >
+              {item.map((category) => renderTile({ item: category }))}
+            </View>
+          )}
+          keyExtractor={(item) => item[0].id}
+          contentContainerStyle={styles.contentContainer}
+          scrollEnabled={false} 
+        />
+
+        {horizontalDataArray.map((section, index) => (
+          <View key={index}>
+            <Text style={styles.horizontalListTitle}>{section.title}</Text>
+            <FlatList
+              data={section.data}
+              renderItem={renderHorizontalScrollList}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalListContainer}
+            />
+          </View>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -208,6 +212,14 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   userNameLabel: {
+    fontSize: 20,
+    color: theme.colors.black,
+    fontWeight: 'bold',
+    paddingLeft: 20,
+    paddingBottom: 20,
+    textAlign: 'left',
+  },
+  categoryLabel: {
     fontSize: 20,
     color: theme.colors.black,
     fontWeight: 'bold',
@@ -244,24 +256,62 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 10,
     color: theme.colors.black,
-    paddingLeft: 20, // Keep the title aligned with the content
+    paddingLeft: 20, 
   },
   horizontalListContainer: {
-    paddingVertical: 10,
+    paddingBottom: 20,
   },
+  
+
+
   horizontalTile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: theme.colors.white,
-    padding: 15,
-    marginHorizontal: 10,
-    borderRadius: 10,
     borderWidth: 1,
     borderColor: theme.colors.grey2,
+    borderRadius: 10,
+    padding: 10,
+    marginHorizontal: 10,
+    height: 100,
+    width: 220,
+  },
+  leftSection: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  titleText: {
+    color: theme.colors.black,
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5, // Space between title and category
+  },
+  categoryText: {
+    color: theme.colors.grey1,
+    fontSize: 10,
+  },
+  rightSection: {
     justifyContent: 'center',
     alignItems: 'center',
+    width: 60, // Ensures alignment for the right section
   },
-  horizontalTileText: {
-    color: theme.colors.primary,
-    fontSize: 16,
+  tileImage: {
+    width: 50,
+    height: 50,
+    marginBottom: 5, // Space between image and button
+    resizeMode: 'contain',
+  },
+  saveButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+  },
+  saveButtonText: {
+    color: theme.colors.white,
+    fontSize: 10,
+    textAlign: 'center',
   },
 });
 
