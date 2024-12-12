@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { CategoryHandler } from '../Handlers/CategoryHandler'; // Import CategoryHandler
+import { HomeHandler } from '../Handlers/HomeHandler'; // Import CategoryHandler
 import ProfileHandler from '../Handlers/ProfileHandler'; 
 import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const [userName, setUserName] = useState('User');
   const [categories, setCategories] = useState([]);
+  const [sectionDataModel, setSectionDataModel] = useState([]);
   const deviceWidth = Dimensions.get('window').width; // Get device width
 
   const leftPadding = 20; // Adjust these values as needed
@@ -19,21 +20,33 @@ const HomeScreen = () => {
   const spacing = 10; // Space between tiles
 
   // Example dynamic data for the horizontal FlatLists
-  const horizontalDataArray = [
-    { title: 'Popular', data: [{ id: '1', title: 'Unlock Your',category: 'Productivity' }, { id: '2', title: 'Why Your Mindset Shapes Your Productivity', category: 'Mental Wellness' }, { id: '3', title: 'Achieve More by Doing Less: The Secret to Prioritization', category: 'Health' }] },
-    { title: 'Trending', data: [{ id: '3', title: 'Item 3' }, { id: '4', title: 'Item 4' }] },
-    { title: 'New Releases', data: [{ id: '5', title: 'Item 5' }, { id: '6', title: 'Item 6' }] },
-    { title: 'New Releases 1' , data: [{ id: '5', title: 'Item 5' }, { id: '6', title: 'Item 6' }] },
-    
-    // Add more sections dynamically as needed
-  ];
+  const categoryData = [];
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         sendHomeImpressionEvent();
-        const liveCategories = await CategoryHandler.getLiveCategory();
-        setCategories(liveCategories);
+        const homeData = await HomeHandler.getHome();
+        
+        const liveCategories = homeData['Categories']
+        
+        setCategories(homeData['Categories']);
+        //console.log("Categories", liveCategories)
+
+
+        const sectionDataArray = [];
+        for (const key in homeData) {
+          if (key !== 'Categories') {
+              const sectionData = {'title': key, 'data': homeData[key] }
+              sectionDataArray.push(sectionData)
+          }
+       }
+
+       console.log('SectionDataArray', sectionDataArray)
+       setSectionDataModel(sectionDataArray)
+
+
+
         sendCategoryDisplayedEvent(liveCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -176,7 +189,7 @@ const HomeScreen = () => {
           scrollEnabled={false} 
         />
 
-        {horizontalDataArray.map((section, index) => (
+        {sectionDataModel.map((section, index) => (
           <View key={index}>
             <Text style={styles.horizontalListTitle}>{section.title}</Text>
             <FlatList

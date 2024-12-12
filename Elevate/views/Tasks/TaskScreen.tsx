@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
-import { CategoryHandler } from '../../Handlers/CategoryHandler';
+import { CategoryHandler } from '../../Handlers/HomeHandler';
 import { taskType } from '../../Data/TaskData';
 import { useFocusEffect } from '@react-navigation/native';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimen
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
-import { CategoryHandler } from '../Handlers/CategoryHandler';
+import { CategoryHandler } from '../Handlers/HomeHandler';
 import { SaveHandler } from '../Handlers/SaveHandler';
 import DropDownList from './Common/DropDownList';
 import theme from '../Theme/Theme';
