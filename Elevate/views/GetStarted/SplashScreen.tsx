@@ -44,18 +44,19 @@ const SplashScreen = () => {
                         }));
                     } else {
                         Home[category.name] = snapshot.docs.map(doc => ({
-                            docId: doc.id,
+                            id: doc.id,
                             title: doc.data().title,
                             description: doc.data().description,
                             imageUrl: doc.data().imageUrl,
                             thumbnail: doc.data().thumbnail,
                             likeCount: doc.data().likeCount,
                             category: doc.data().categoryTitle,
+                            categoryId: doc.data().categoryId,
                         }));
                     }
                 }
 
-               // console.log('Fetched Data:', Home);
+               console.log('Fetched Data:', Home);
                // sendCategoryFetchEvent();
 
                 // Save LiveCategories using CategoryHandler

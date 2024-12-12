@@ -104,7 +104,9 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string, imageUrl: string, category: string } }) => (
+  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string, thumbnail: string, category: string, categoryId: string } }) => (
+    <TouchableOpacity
+    onPress={() =>  handleCardPress(item.title, item.id, item.categoryId)}>
     <View style={styles.horizontalTile}>
       {/* Left Section: Title */}
       <View style={styles.leftSection}>
@@ -115,7 +117,7 @@ const HomeScreen = () => {
       {/* Right Section: Image and Button */}
       <View style={styles.rightSection}>
         <Image 
-          source={{ uri: item.imageUrl }} 
+          source={{ uri: item.thumbnail }} 
           style={styles.tileImage} 
         />
          {/* <TouchableOpacity style={styles.saveButton}> 
@@ -123,7 +125,16 @@ const HomeScreen = () => {
         </TouchableOpacity> */}
       </View>
     </View>
+    </TouchableOpacity>
   );
+
+  const handleCardPress = (itemTitle, itemId, categoryId) => {
+    sendContentOpenEvent(categoryId, itemId);
+    console.log("itemTitle", itemTitle)
+    console.log("itemId", itemId)
+    console.log("categoryId", categoryId)
+    navigation.navigate('ContentDetailScreen', { itemTitle, itemId, categoryId });
+  };
 
   // Analytics Events
   const sendHomeImpressionEvent = async () => {
@@ -159,6 +170,18 @@ const HomeScreen = () => {
       ActionType.CLICK,
       '',
       { categoryId }
+    );
+  };
+
+  const sendContentOpenEvent = async (categoryId, contentId) => {
+    await AnalyticsHelper.sendEvent(
+      '1.2.1',
+      'Content_Open',
+      'Save',
+      'Section_List',
+      ActionType.CLICK,
+      'Open',
+      { categoryId, contentId }
     );
   };
 
@@ -246,6 +269,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: 20
   },
   tile: {
     padding: 15,
@@ -299,6 +323,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     height: 60,
+    textAlign: 'left',
     marginBottom: 5, // Space between title and category
   },
   categoryText: {
@@ -315,6 +340,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 5,
     marginTop: 5,
+    marginRight: 5,
     marginBottom: 5, // Space between image and button
     resizeMode: 'cover',
   },

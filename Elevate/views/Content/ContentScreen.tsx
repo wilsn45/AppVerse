@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   Alert,
+  Image
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -23,7 +24,6 @@ import { useFocusEffect } from '@react-navigation/native'; // Ensure this is cor
 
 
 const { height } = Dimensions.get('window');
-
 
 
 const ContentScreen = () => {
@@ -57,7 +57,8 @@ const ContentScreen = () => {
             title: doc.data().title, 
             likeCount: doc.data().likeCount,
             description: doc.data().description,
-            index: doc.data().index
+            index: doc.data().index,
+            imageUrl:  doc.data().imageUrl
         }));
         
         setContentList(contentList)
@@ -377,6 +378,10 @@ const sendCancelAddTaskPEvent = async (contentId: String) => {
           <View style={styles.cardContainer}>
             <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}
                accessibilityLabel={`Content Card: ${item.title}`}>
+                <Image 
+                    source={{ uri: item.imageUrl }} 
+                     style={styles.tileImage} 
+                  />
               <Text style={styles.contentText}>{item.title}</Text>
               <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
             </TouchableOpacity>
@@ -503,7 +508,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 10,
     justifyContent: 'space-between',
-     padding: 20
+     paddingHorizontal: 20,
+     paddingVertical: 10
   },
   cardContent: {
     flex: 1,
@@ -658,6 +664,14 @@ const styles = StyleSheet.create({
     color: 'red', // Red text color
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  tileImage: {
+    width: '90%',
+    height: 150,
+    borderRadius: 5,
+    marginTop: 25,
+    marginBottom: 5, // Space between image and button
+    resizeMode: 'cover',
   },
 });
 
