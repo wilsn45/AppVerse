@@ -269,7 +269,8 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20
+    marginBottom: 20,
+    marginHorizontal: 10
   },
   tile: {
     padding: 15,
