@@ -118,9 +118,9 @@ const HomeScreen = () => {
           source={{ uri: item.imageUrl }} 
           style={styles.tileImage} 
         />
-        <TouchableOpacity style={styles.saveButton}>
+         {/* <TouchableOpacity style={styles.saveButton}> 
           <Text style={styles.saveButtonText}>Save</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -288,10 +288,10 @@ const styles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 10,
     height: 100,
-    width: 240,
+    width: 300,
   },
   leftSection: {
-    flex: 1,
+    flex: 0.9,
     justifyContent: 'center',
   },
   titleText: {
@@ -311,15 +311,18 @@ const styles = StyleSheet.create({
     width: 60, // Ensures alignment for the right section
   },
   tileImage: {
-    width: 50,
+    width: 70,
     height: 50,
+    borderRadius: 5,
+    marginTop: 5,
     marginBottom: 5, // Space between image and button
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   saveButton: {
     backgroundColor: theme.colors.primary,
     borderRadius: 5,
     paddingVertical: 5,
+    marginTop: 5,
     paddingHorizontal: 10,
   },
   saveButtonText: {

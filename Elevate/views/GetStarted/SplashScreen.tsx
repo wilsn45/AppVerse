@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import ProfileHandler from '../../Handlers/ProfileHandler';
 import firestore from '@react-native-firebase/firestore';
 import { HomeHandler } from '../../Handlers/HomeHandler';
+import { CategoryHandler } from '../../Handlers/CategoryHandler';
 import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
 const SplashScreen = () => {
@@ -48,7 +49,8 @@ const SplashScreen = () => {
                             description: doc.data().description,
                             imageUrl: doc.data().imageUrl,
                             thumbnail: doc.data().thumbnail,
-                            likeCount: doc.data().likeCount
+                            likeCount: doc.data().likeCount,
+                            category: doc.data().categoryTitle,
                         }));
                     }
                 }
@@ -58,6 +60,7 @@ const SplashScreen = () => {
 
                 // Save LiveCategories using CategoryHandler
                 await HomeHandler.setHomeData(Home)
+                await CategoryHandler.setLiveCategory(Home["Categories"])
 
                 //console.log("Data saved successfully.");
             } catch (error) {
