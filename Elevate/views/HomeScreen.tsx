@@ -5,6 +5,8 @@ import { HomeHandler } from '../Handlers/HomeHandler'; // Import CategoryHandler
 import ProfileHandler from '../Handlers/ProfileHandler'; 
 import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { SaveHandler } from '../Handlers/SaveHandler.tsx';
 
 import theme from '../Theme/Theme';
 
@@ -14,6 +16,7 @@ const HomeScreen = () => {
   const [categories, setCategories] = useState([]);
   const [sectionDataModel, setSectionDataModel] = useState([]);
   const deviceWidth = Dimensions.get('window').width; // Get device width
+  const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
 
   const leftPadding = 20; // Adjust these values as needed
   const rightPadding = 20;
@@ -35,19 +38,26 @@ const HomeScreen = () => {
 
 
         const sectionDataArray = [];
+        const newSavedCards = new Map();
         for (const key in homeData) {
           if (key !== 'Categories') {
-              const sectionData = {'title': key, 'data': homeData[key] }
+              const data =  homeData[key] 
+              const sectionData = {'title': key, 'data':data }
               sectionDataArray.push(sectionData)
+
+              for (const item of data) {
+                const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
+                newSavedCards.set(item.id, isSaved); 
+              }
+    
           }
        }
 
-       console.log('SectionDataArray', sectionDataArray)
+       setSavedCards(newSavedCards);
+
+      // console.log('SectionDataArray', sectionDataArray)
        setSectionDataModel(sectionDataArray)
-
-
-
-        sendCategoryDisplayedEvent(liveCategories);
+       sendCategoryDisplayedEvent(liveCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -82,6 +92,17 @@ const HomeScreen = () => {
       rows.push(categories.slice(i, i + 2)); // Create pairs of categories
     }
     return rows;
+  };
+
+  const handleSave = async (itemId, itemTitle, categoryId) => {
+    const isSaved = savedCards.get(itemId);
+    if (isSaved) {
+      await SaveHandler.removeSave(categoryId, itemId);
+    } else {
+      await SaveHandler.addSave(categoryId, itemId, itemTitle);
+    }
+    // Update only the savedCards state here
+    setSavedCards((prev) => new Map(prev).set(itemId, !isSaved));
   };
 
   const renderTile = ({ item }: { item: { id: string; title: string } }) => (
@@ -120,9 +141,15 @@ const HomeScreen = () => {
           source={{ uri: item.thumbnail }} 
           style={styles.tileImage} 
         />
-         {/* <TouchableOpacity style={styles.saveButton}> 
-          <Text style={styles.saveButtonText}>Save</Text>
-        </TouchableOpacity> */}
+
+        <TouchableOpacity  onPress={() => handleSave(item.id, item.title, item.categoryId)}
+                accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
+                <Ionicons
+                  name={ savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
+                  size={24}
+                  color={savedCards.get(item.id) ? theme.colors.green : theme.colors.red}
+                />
+          </TouchableOpacity> 
       </View>
     </View>
     </TouchableOpacity>
@@ -233,7 +260,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.colors.background, // Ensures safe area is styled
+    backgroundColor: theme.colors.backgroundGrey, // Ensures safe area is styled
   },
   container: {
     flex: 1,
@@ -278,13 +305,18 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.borderGrey,
     height: 150,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: theme.colors.shadowGrey,
+    shadowOffset: { width: 0, height: 4 }, 
+    shadowOpacity: 0.8, 
+    shadowRadius: 6, 
+    elevation: 8, 
   },
   tileText: {
-    color: theme.colors.primary,
+    color: theme.colors.primaryTheme,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -300,27 +332,30 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   
-
-
   horizontalTile: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: theme.colors.white,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.borderGrey,
     borderRadius: 10,
     padding: 10,
     marginHorizontal: 10,
     height: 100,
     width: 300,
+    shadowColor: theme.colors.shadowGrey,
+    shadowOffset: { width: 0, height: 4 }, 
+    shadowOpacity: 0.8, 
+    shadowRadius: 6, 
+    elevation: 8,
   },
   leftSection: {
     flex: 0.9,
     justifyContent: 'center',
   },
   titleText: {
-    color: theme.colors.black,
+    color: theme.colors.textPrimary,
     fontSize: 14,
     fontWeight: 'bold',
     height: 60,

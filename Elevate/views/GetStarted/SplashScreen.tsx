@@ -56,7 +56,7 @@ const SplashScreen = () => {
                     }
                 }
 
-               console.log('Fetched Data:', Home);
+               //console.log('Fetched Data:', Home);
                // sendCategoryFetchEvent();
 
                 // Save LiveCategories using CategoryHandler
