@@ -142,13 +142,14 @@ const HomeScreen = () => {
           style={styles.tileImage} 
         />
 
-        <TouchableOpacity  onPress={() => handleSave(item.id, item.title, item.categoryId)}
+        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item.id, item.title, item.categoryId)}
                 accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
                 <Ionicons
                   name={ savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
-                  size={24}
+                  size={18}
                   color={savedCards.get(item.id) ? theme.colors.green : theme.colors.red}
                 />
+                <Text>Save</Text>
           </TouchableOpacity> 
       </View>
     </View>
@@ -284,7 +285,7 @@ const styles = StyleSheet.create({
   },
   categoryLabel: {
     fontSize: 20,
-    color: theme.colors.black,
+    color: theme.colors.textHeading,
     fontWeight: 'bold',
     paddingLeft: 20,
     paddingBottom: 10,
@@ -316,7 +317,7 @@ const styles = StyleSheet.create({
     elevation: 8, 
   },
   tileText: {
-    color: theme.colors.primaryTheme,
+    color: theme.colors.black,
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -325,7 +326,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10,
-    color: theme.colors.black,
+    color: theme.colors.textHeading,
     paddingLeft: 20, 
   },
   horizontalListContainer: {
@@ -342,7 +343,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginHorizontal: 10,
-    height: 100,
+    height: 120,
     width: 300,
     shadowColor: theme.colors.shadowGrey,
     shadowOffset: { width: 0, height: 4 }, 
@@ -352,6 +353,7 @@ const styles = StyleSheet.create({
   },
   leftSection: {
     flex: 0.9,
+    gap: 20,
     justifyContent: 'center',
   },
   titleText: {
@@ -367,30 +369,26 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   rightSection: {
+    //backgroundColor: 'grey',
     justifyContent: 'center',
+    alignItems: 'flex-start',
+    width: 80, // Ensures alignment for the right section
+    gap: 5,
+  },
+  tileSaveButton: {
+    flexDirection: 'row',
     alignItems: 'center',
-    width: 60, // Ensures alignment for the right section
+    gap: 5,
+    width: 40,
+    height: 20,
+    marginLeft: 5,
   },
   tileImage: {
     width: 70,
-    height: 50,
+    height: 70,
     borderRadius: 5,
-    marginTop: 5,
-    marginRight: 5,
     marginBottom: 5, // Space between image and button
     resizeMode: 'cover',
-  },
-  saveButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 5,
-    paddingVertical: 5,
-    marginTop: 5,
-    paddingHorizontal: 10,
-  },
-  saveButtonText: {
-    color: theme.colors.white,
-    fontSize: 10,
-    textAlign: 'center',
   },
 });
 
