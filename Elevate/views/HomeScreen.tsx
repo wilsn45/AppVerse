@@ -108,21 +108,20 @@ const HomeScreen = () => {
 
   const renderTile = ({ item }: { item: { id: string; title: string } }) => (
     <TouchableOpacity
+    style={[
+      styles.tile,
+      { width: (deviceWidth - leftPadding - rightPadding - spacing) / 2 },
+    ]}
       onPress={() => handleTilePress(item.name, item.id)}
       accessibilityLabel={`Category tile for ${item.name}`}
       accessibilityHint="Tap to view the content in this category"
       accessibilityRole="button"
     >
-      <View
-        style={[
-          styles.tile,
-          { width: (deviceWidth - leftPadding - rightPadding - spacing) / 2 },
-        ]}
-        accessible
-        accessibilityLabel={`Tile: ${item.name}`}
-      >
-        <Text style={styles.tileText}>{item.name}</Text>
-      </View>
+        <Image 
+          source={{ uri: item.thumbnail }} 
+          style={styles.categoryTileImage} 
+        />
+      <Text style={styles.tileText}>{item.name}</Text>
     </TouchableOpacity>
   );
 
@@ -132,7 +131,10 @@ const HomeScreen = () => {
     <View style={styles.horizontalTile}>
       {/* Left Section: Title */}
       <View style={styles.leftSection}>
-        <Text style={styles.titleText}>{item.title}</Text>
+        <Text style={styles.titleText}
+        numberOfLines={3} 
+        ellipsizeMode="tail" 
+        >{item.title}</Text>
         <View>
         <Text style={styles.categoryText}>{item.category}</Text>
         <Text style={styles.readTimeText}>{item.readMin} min read</Text>
@@ -154,7 +156,7 @@ const HomeScreen = () => {
                   size={18}
                   color={savedCards.get(item.id) ? theme.colors.green : theme.colors.red}
                 />
-                <Text>Save</Text>
+                <Text>{savedCards.get(item.id) ? 'Saved': 'Save'}</Text>
           </TouchableOpacity> 
       </View>
     </View>
@@ -306,29 +308,39 @@ const styles = StyleSheet.create({
     marginHorizontal: 10
   },
   tile: {
-    padding: 15,
     backgroundColor: theme.colors.white,
-    margin: 5,
     borderRadius: 10,
     borderWidth: 1,
+    paddingBottom: 10,
+    justifyContent: 'space-between',
     borderColor: theme.colors.borderGrey,
-    height: 150,
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: 170,
     shadowColor: theme.colors.shadowGrey,
     shadowOffset: { width: 0, height: 4 }, 
     shadowOpacity: 0.8, 
     shadowRadius: 6, 
     elevation: 8, 
+    gap: 10,
   },
   tileText: {
     color: theme.colors.black,
     fontSize: 18,
     textAlign: 'center',
   },
+  categoryTileImage: {
+    backgroundColor: 'red',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    width: '100%',
+    height: 120,
+    resizeMode: 'cover',
+  },
+
+  
   horizontalListTitle: {
     fontSize: 18,
     marginVertical: 10,
+    fontWeight: 'bold',
     color: theme.colors.textHeading,
     paddingLeft: 20, 
   },
@@ -347,7 +359,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 10,
     height: 120,
-    width: 300,
+    width: 350,
     shadowColor: theme.colors.shadowGrey,
     shadowOffset: { width: 0, height: 4 }, 
     shadowOpacity: 0.8, 
@@ -361,20 +373,22 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: theme.colors.textPrimary,
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '500',
     height: 60,
     textAlign: 'left',
-    marginBottom: 5, // Space between title and category
+    marginBottom: 5, 
+    maxWidth: '100%',
+
   },
   categoryText: {
     color: theme.colors.textTitleLarge,
     fontWeight: 'bold',
-    fontSize: 11,
+    fontSize: 13,
   },
   readTimeText: {
     color: theme.colors.textTitleSmall,
-    fontSize: 10,
+    fontSize: 11,
   },
   rightSection: {
     //backgroundColor: 'grey',
@@ -389,7 +403,7 @@ const styles = StyleSheet.create({
     gap: 5,
     width: 40,
     height: 20,
-    marginLeft: 5,
+    marginLeft: 10,
   },
   tileImage: {
     width: 70,

@@ -42,7 +42,7 @@ const TabNavigator = () => {
         tabBarActiveTintColor: theme.colors.black,
         tabBarInactiveTintColor: theme.colors.black,
         tabBarStyle: {
-          backgroundColor: theme.colors.backgroundGrey2,
+        //  backgroundColor: theme.colors.backgroundGrey2,
         }
       })}
     >

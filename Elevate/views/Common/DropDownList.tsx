@@ -106,7 +106,6 @@ const DropDownList = ({ source, data, defaultId, onSelection }) => {
           <View
             style={styles.modalContent}
             ref={setModalFocusRef}
-            accessibilityRole="dialog"
             accessibilityLabel="Select a category from the list"
           >
             <FlatList
