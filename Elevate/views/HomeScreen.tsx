@@ -32,8 +32,10 @@ const HomeScreen = () => {
         const homeData = await HomeHandler.getHome();
         
         const liveCategories = homeData['Categories']
+
+        const sortedLiveCategories = liveCategories.sort((a, b) => a.index - b.index);
         
-        setCategories(homeData['Categories']);
+        setCategories(sortedLiveCategories);
         //console.log("Categories", liveCategories)
 
 
@@ -154,7 +156,7 @@ const HomeScreen = () => {
                 <Ionicons
                   name={ savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
                   size={18}
-                  color={savedCards.get(item.id) ? theme.colors.green : theme.colors.red}
+                  color={savedCards.get(item.id) ? theme.colors.secondaryTheme : theme.colors.primaryTheme}
                 />
                 <Text>{savedCards.get(item.id) ? 'Saved': 'Save'}</Text>
           </TouchableOpacity> 
@@ -325,10 +327,10 @@ const styles = StyleSheet.create({
   tileText: {
     color: theme.colors.black,
     fontSize: 18,
+    fontWeight: '500',
     textAlign: 'center',
   },
   categoryTileImage: {
-    backgroundColor: 'red',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     width: '100%',
@@ -336,11 +338,10 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
 
-  
   horizontalListTitle: {
-    fontSize: 18,
+    fontSize: 20,
     marginVertical: 10,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: theme.colors.textHeading,
     paddingLeft: 20, 
   },
@@ -352,11 +353,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.backgroundWhite,
     borderWidth: 1,
     borderColor: theme.colors.borderGrey,
     borderRadius: 10,
-    padding: 10,
+    padding: 12,
     marginHorizontal: 10,
     height: 120,
     width: 350,
@@ -376,18 +377,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     height: 60,
-    textAlign: 'left',
-    marginBottom: 5, 
+    textAlign: 'left', 
     maxWidth: '100%',
-
   },
   categoryText: {
-    color: theme.colors.textTitleLarge,
-    fontWeight: 'bold',
-    fontSize: 13,
+    color: theme.colors.textTitleSmall,
+    fontWeight: '400',
+    fontSize: 12,
   },
   readTimeText: {
-    color: theme.colors.textTitleSmall,
+    color: theme.colors.textTitleLarge,
     fontSize: 11,
   },
   rightSection: {

@@ -4,6 +4,8 @@ const theme = {
     colors: {
       //Base
       backgroundGrey: '#FEFEFE',
+      backgroundGrey2: '#F7F7F7',
+      backgroundWhite: '#ffffff',
       borderGrey: '#F5F5F5',
       shadowGrey: '#d3d3d3',
 
@@ -17,6 +19,7 @@ const theme = {
 
       //theme
       primaryTheme: '#DD4F5A',
+      secondaryTheme: '#377E78',
 
 
       primary: '#2355CA',

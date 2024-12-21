@@ -40,7 +40,9 @@ const SplashScreen = () => {
                     if (collectionName === 'LiveCategories') {
                         Home["Categories"] = snapshot.docs.map(doc => ({
                             id: doc.id,
-                            name: doc.data().name
+                            name: doc.data().name,
+                            thumbnail: doc.data().thumbnail,
+                            index: doc.data().index
                         }));
                     } else {
                         Home[category.name] = snapshot.docs.map(doc => ({
