@@ -294,11 +294,11 @@ const styles = StyleSheet.create({
   },
   categoryLabel: {
     fontSize: 20,
-    color: theme.colors.textHeading,
-    fontWeight: 'bold',
     paddingLeft: 20,
     paddingBottom: 10,
     textAlign: 'left',
+    fontWeight: '600',
+    color: theme.colors.textHeading,
   },
   contentContainer: {
     flexGrow: 1,
