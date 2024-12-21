@@ -52,6 +52,7 @@ const SplashScreen = () => {
                             likeCount: doc.data().likeCount,
                             category: doc.data().categoryTitle,
                             categoryId: doc.data().categoryId,
+                            readMin: doc.data().readMin
                         }));
                     }
                 }

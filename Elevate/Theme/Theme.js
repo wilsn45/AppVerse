@@ -11,6 +11,8 @@ const theme = {
       //Text
       textPrimary: '#1A1A1A',
       textHeading: '#1F1F1F',
+      textTitleLarge: '#595959',
+      textTitleSmall: '##969696',
 
 
       //theme

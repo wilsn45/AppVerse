@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from './views/HomeScreen';
 import ContentScreen from './views/Content/ContentScreen.tsx';
 import ContentDetailScreen from './views/Content/ContentDetailScreen.tsx';
@@ -25,22 +26,28 @@ const TabNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: string;
 
-          if (route.name === 'HomeTab') {
+          if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
+            //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
           } else if (route.name === 'Save') {
             iconName = focused ? 'bookmark' : 'bookmark-outline';
+            //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
           } else if (route.name === 'Tasks') {
-            iconName = focused ? 'checkbox' : 'checkbox-outline';
+            iconName = focused ? 'checkbox-marked' : 'checkbox-outline';
+            //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.grey1,
+        tabBarActiveTintColor: theme.colors.black,
+        tabBarInactiveTintColor: theme.colors.black,
+        tabBarStyle: {
+          backgroundColor: theme.colors.backgroundGrey2,
+        }
       })}
     >
       <Tab.Screen
-        name="HomeTab" // Changed name to avoid conflict
+        name="Home" // Changed name to avoid conflict
         component={HomeScreen}
         options={{ headerShown: false }}
       />
@@ -49,7 +56,7 @@ const TabNavigator = () => {
         component={SavedScreen}
         options={{
           headerShown: false,
-          title: 'Saved',
+          title: 'Saves',
         }}
       />
       <Tab.Screen

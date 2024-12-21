@@ -44,6 +44,7 @@ const HomeScreen = () => {
               const data =  homeData[key] 
               const sectionData = {'title': key, 'data':data }
               sectionDataArray.push(sectionData)
+              console.log('Section Data', data)
 
               for (const item of data) {
                 const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
@@ -125,14 +126,18 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string, thumbnail: string, category: string, categoryId: string } }) => (
+  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string, thumbnail: string, category: string, categoryId: string, readMin: string } }) => (
     <TouchableOpacity
     onPress={() =>  handleCardPress(item.title, item.id, item.categoryId)}>
     <View style={styles.horizontalTile}>
       {/* Left Section: Title */}
       <View style={styles.leftSection}>
         <Text style={styles.titleText}>{item.title}</Text>
+        <View>
         <Text style={styles.categoryText}>{item.category}</Text>
+        <Text style={styles.readTimeText}>{item.readMin} min read</Text>
+        </View>
+        
       </View>
   
       {/* Right Section: Image and Button */}
@@ -319,12 +324,10 @@ const styles = StyleSheet.create({
   tileText: {
     color: theme.colors.black,
     fontSize: 18,
-    fontWeight: 'bold',
     textAlign: 'center',
   },
   horizontalListTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
     marginVertical: 10,
     color: theme.colors.textHeading,
     paddingLeft: 20, 
@@ -353,7 +356,7 @@ const styles = StyleSheet.create({
   },
   leftSection: {
     flex: 0.9,
-    gap: 20,
+    gap: 10,
     justifyContent: 'center',
   },
   titleText: {
@@ -365,7 +368,12 @@ const styles = StyleSheet.create({
     marginBottom: 5, // Space between title and category
   },
   categoryText: {
-    color: theme.colors.grey1,
+    color: theme.colors.textTitleLarge,
+    fontWeight: 'bold',
+    fontSize: 11,
+  },
+  readTimeText: {
+    color: theme.colors.textTitleSmall,
     fontSize: 10,
   },
   rightSection: {
