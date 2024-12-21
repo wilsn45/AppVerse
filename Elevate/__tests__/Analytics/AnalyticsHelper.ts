@@ -7,7 +7,7 @@ enum ActionType {
   CLICK = 'click',
 }
 
-interface AnalyticsParams {
+interface AnalyticsParams {ā
   [key: string]: any;
 }
 
@@ -55,7 +55,7 @@ class AnalyticsHelper {
         },
       };
 
-      //console.log('Sending analytics event:', eventData);
+      console.log('Sending analytics event:', eventData);
 
       // Send data to Google Analytics using Firebase Analytics
       await analytics().logEvent(eventName, {
@@ -71,7 +71,7 @@ class AnalyticsHelper {
         deviceId: eventData.metadata.deviceId,
       });
 
-      //console.log('Event sent successfully.');
+      console.log('Event sent successfully.');
     } catch (error) {
       console.error('Error sending analytics event:', error);
     }

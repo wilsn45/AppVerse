@@ -1,64 +1,98 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import ProfileHandler from '../../Handlers/ProfileHandler'; // Import your ProfileHandler or logic for checking onboarding status
+import ProfileHandler from '../../Handlers/ProfileHandler';
 import firestore from '@react-native-firebase/firestore';
-import { CategoryHandler } from '../../Handlers/CategoryHandler'; // Import CategoryHandler
+import { HomeHandler } from '../../Handlers/HomeHandler';
+import { CategoryHandler } from '../../Handlers/CategoryHandler';
 import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
 const SplashScreen = () => {
-    const [loading, setLoading] = useState(true); // Track loading state
-    const navigation = useNavigation(); // For navigation to the next screen
+    const [loading, setLoading] = useState(true);
+    const navigation = useNavigation();
 
     useEffect(() => {
-        sendSplashImpressionEvent()
-        const fetchLiveCategory = async () => {
-            try {
-                // Fetch categories from the updated path
-                const snapshot = await firestore().collection('Category').doc('LiveCategory').collection('List').get();
-                
-                // Map the fetched documents to include doc.id and category name
-                const liveCategories = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    name: doc.data().name, // Assuming the document has a "name" field
-                }));
-                
-                console.log('Live Categories:', liveCategories);
+       // sendSplashImpressionEvent();
 
-                // Save categories using CategoryHandler's setLiveCategory method
-                sendCategoryFetchEvent()
-                await CategoryHandler.setLiveCategory(liveCategories);
-                console.log("Categories saved successfully.");
+        const fetchHomeData = async () => {
+            try {
+                // Fetch category list from Home collection
+                const categorySnapshot = await firestore().collection('Home').get();
+
+                // Sort categories by index in ascending order
+                const categories = categorySnapshot.docs
+                    .map(doc => ({
+                        id: doc.id,
+                        name: doc.data().name,
+                        index: doc.data().index,
+                    }))
+                    .sort((a, b) => a.index - b.index);
+
+                const Home = {};
+
+                //console.log("Categories", categories)
+
+                for (const category of categories) {
+                    const collectionName = category.id;
+                    const colRef = firestore().collection(`Home/${collectionName}/List`);
+                    const snapshot = await colRef.get();
+
+                    if (collectionName === 'LiveCategories') {
+                        Home["Categories"] = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            name: doc.data().name,
+                            thumbnail: doc.data().thumbnail,
+                            index: doc.data().index
+                        }));
+                    } else {
+                        Home[category.name] = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            title: doc.data().title,
+                            description: doc.data().description,
+                            imageUrl: doc.data().imageUrl,
+                            thumbnail: doc.data().thumbnail,
+                            likeCount: doc.data().likeCount,
+                            category: doc.data().categoryTitle,
+                            categoryId: doc.data().categoryId,
+                            readMin: doc.data().readMin
+                        }));
+                    }
+                }
+
+               //console.log('Fetched Data:', Home);
+               // sendCategoryFetchEvent();
+
+                // Save LiveCategories using CategoryHandler
+                await HomeHandler.setHomeData(Home)
+                await CategoryHandler.setLiveCategory(Home["Categories"])
+
+                //console.log("Data saved successfully.");
             } catch (error) {
-                console.error('Error fetching LiveCategory:', error);
-                // Optional: Show an error message or retry logic here
+                console.error('Error fetching data:', error);
             } finally {
-                // Once the categories are saved, check the onboarding status
-                checkOnboardingStatus();
-                setLoading(false);
+               checkOnboardingStatus();
+               setLoading(false);
             }
         };
 
         const checkOnboardingStatus = async () => {
             try {
-                const isOnboarded = await ProfileHandler.getIsOnboarded(); // Replace with your onboarding check logic
+                const isOnboarded = await ProfileHandler.getIsOnboarded();
+               // console.log('is onboarded:', isOnboarded);
                 if (isOnboarded) {
-                    sendNavigateToHomeEvent()
-                    navigation.navigate('HomeTabNavigator'); // Navigate to Home if onboarded
+                    sendNavigateToHomeEvent();
+                    navigation.navigate('HomeTabNavigator');
                 } else {
-                    sendNavigateToLetsStartEvent()
-                    navigation.navigate('LetsStartScreen'); // Navigate to onboarding if not onboarded
+                    sendNavigateToLetsStartEvent();
+                    navigation.navigate('LetsStartScreen');
                 }
             } catch (error) {
                 console.error("Error checking onboarding status:", error);
             }
         };
 
-        // Fetch categories and then check onboarding status
-        fetchLiveCategory();
-
+        fetchHomeData();
     }, [navigation]);
-
 
     const sendSplashImpressionEvent = async () => {
         await AnalyticsHelper.sendEvent(
@@ -70,9 +104,9 @@ const SplashScreen = () => {
           '',
           {}
         );
-      };
+    };
 
-      const sendCategoryFetchEvent = async () => {
+    const sendCategoryFetchEvent = async () => {
         await AnalyticsHelper.sendEvent(
           '8.0.0.1',
           'Categories_Fetched',
@@ -82,9 +116,9 @@ const SplashScreen = () => {
           '',
           {}
         );
-      };
+    };
 
-      const sendNavigateToLetsStartEvent = async () => {
+    const sendNavigateToLetsStartEvent = async () => {
         await AnalyticsHelper.sendEvent(
           '8.1.0.1',
           'Navigate_LetsStart',
@@ -94,9 +128,9 @@ const SplashScreen = () => {
           '',
           {}
         );
-      };
+    };
 
-      const sendNavigateToHomeEvent = async () => {
+    const sendNavigateToHomeEvent = async () => {
         await AnalyticsHelper.sendEvent(
           '8.1.0.2',
           'Navigate_Home',
@@ -106,7 +140,7 @@ const SplashScreen = () => {
           '',
           {}
         );
-      };
+    };
 
     return (
         <View style={styles.container}>

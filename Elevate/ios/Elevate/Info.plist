@@ -38,6 +38,9 @@
 		<string>FontAwesome.ttf</string>
 		<string>MaterialIcons.ttf</string>
 		<string>Ionicons.ttf</string>
+		<string>Octicons.ttf</string>
+		<string>Feather.ttf</string>
+		<string>MaterialCommunityIcons.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

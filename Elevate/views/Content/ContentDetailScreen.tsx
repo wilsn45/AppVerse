@@ -33,7 +33,6 @@ const ContentDetailScreen = () => {
   const [htmlContent, setHtmlContent] = useState('');
   
 
-
   useEffect(() => {
     sendContentImpressionEvent()
     const checkIfLiked = async () => {
