@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimensions, Image, TextInput, Animated } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { CategoryHandler } from '../Handlers/CategoryHandler';
 import { SaveHandler } from '../Handlers/SaveHandler';
 import DropDownList from './Common/DropDownList';
@@ -119,7 +118,7 @@ const SaveScreen = () => {
         onPress={() => handleRemoveCard(item.categoryId, item.contentId)}
       >
         <Animated.View style={{ transform: [{ scale }] }}>
-          <Ionicons name="trash" size={30} color="#fff" />
+          <Ionicons name="trash" size={30} color={theme.colors.white} />
         </Animated.View>
       </TouchableOpacity>
     );
@@ -285,9 +284,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingBottom: 20,
   },
-  separator: {
-    height: 10,
-  },
   cardTitle: {
     color: theme.colors.black,
     fontSize: 18,
@@ -305,10 +301,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 10,
-    paddingBottom: 10,
+    paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.borderGrey2,
-    height: 110
+    height: 120,
   },
   leftCardView: {
     flex: 0.9,
@@ -366,7 +362,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   deleteButton: {
-    backgroundColor: '#ff3b30',
+    backgroundColor: theme.colors.red,
     justifyContent: 'center',
     alignItems: 'center',
     width: 80,
