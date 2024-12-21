@@ -28,6 +28,9 @@ export class SaveHandler {
           categoryId,
           contentId: savedCard.contentId,
           contentTitle: savedCard.contentTitle,
+          categoryTitle: savedCard.categoryTitle,
+          thumbnail: savedCard.thumbnail,
+          readMin: savedCard.readMin
         });
       });
     });
@@ -36,10 +39,10 @@ export class SaveHandler {
   }
 
   // Add save
-  static async addSave(categoryId, contentId, contentTitle) {
+  static async addSave(categoryId, contentId, contentTitle, categoryTitle, thumbnail,readMin) {
     const savedItems = await this.getSaves();
     if (!savedItems[categoryId]) savedItems[categoryId] = [];
-    savedItems[categoryId].push({ contentId, contentTitle }); // Save both contentId and contentTitle
+    savedItems[categoryId].push({ contentId, contentTitle, categoryTitle, thumbnail,readMin }); 
     await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedItems));
   }
 

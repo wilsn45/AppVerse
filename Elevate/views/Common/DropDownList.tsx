@@ -135,14 +135,14 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: theme.colors.backgroundGreen, 
+    borderRadius: 15,
   },
   box: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
+    borderRadius: 15,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    backgroundColor: theme.colors.grey3,
+    backgroundColor: theme.colors.backgroundGreen,
     flexDirection: 'row',
     alignItems: 'center',
     width: 'auto',
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: theme.colors.black,
+    color: theme.colors.secondaryTheme,
     flexShrink: 1,
   },
   arrow: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   item: {
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.grey2,
+    borderBottomColor: theme.colors.backgroundGreen,
   },
   itemText: {
     fontSize: 16,

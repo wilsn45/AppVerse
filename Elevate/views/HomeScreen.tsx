@@ -97,12 +97,12 @@ const HomeScreen = () => {
     return rows;
   };
 
-  const handleSave = async (itemId, itemTitle, categoryId) => {
+  const handleSave = async (itemId, itemTitle, categoryId, categoryTitle, thumbnail,readMin) => {
     const isSaved = savedCards.get(itemId);
     if (isSaved) {
       await SaveHandler.removeSave(categoryId, itemId);
     } else {
-      await SaveHandler.addSave(categoryId, itemId, itemTitle);
+      await SaveHandler.addSave(categoryId, itemId, itemTitle, categoryTitle, thumbnail, readMin);
     }
     // Update only the savedCards state here
     setSavedCards((prev) => new Map(prev).set(itemId, !isSaved));
@@ -151,7 +151,7 @@ const HomeScreen = () => {
           style={styles.tileImage} 
         />
 
-        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item.id, item.title, item.categoryId)}
+        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item.id, item.title, item.categoryId, item.category, item.thumbnail, item.readMin)}
                 accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
                 <Ionicons
                   name={ savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}

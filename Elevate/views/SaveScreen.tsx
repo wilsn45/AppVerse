@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -13,8 +13,10 @@ const SaveScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [allSavedCards, setAllSavedCards] = useState([]);
   const [filteredCards, setFilteredCards] = useState([]);
+  const [searchedCards, setSearchedCards] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     sendSaveImpressionEvent(selectedCategory);
@@ -35,6 +37,7 @@ const SaveScreen = () => {
     try {
       const savedCards = await SaveHandler.getSavedCards();
       setAllSavedCards(savedCards);
+      console.log('Saved Card', savedCards)
     } catch (error) {
       console.error('Error fetching saved cards:', error);
     }
@@ -51,6 +54,7 @@ const SaveScreen = () => {
       (card) => selectedCategory === 0 || card.categoryId === selectedCategory.toString()
     );
     setFilteredCards(updatedCards);
+    setSearchedCards(updatedCards)
   }, [selectedCategory, allSavedCards]);
 
   const handleRemoveCard = async (categoryId, contentId) => {
@@ -81,7 +85,20 @@ const SaveScreen = () => {
     })),
   ];
 
-  const deviceWidth = Dimensions.get('window').width;
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+
+    const filtered = filteredCards.filter((item) =>
+      item.contentTitle.toLowerCase().includes(query.toLowerCase())
+    );
+    setSearchedCards(filtered);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchedCards(filteredCards);
+  };
 
   const sendSaveImpressionEvent = async (selectedCategoryId) => {
     await AnalyticsHelper.sendEvent(
@@ -145,9 +162,6 @@ const SaveScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title} accessibilityRole="header">
-        Saved
-      </Text>
       <View style={styles.dropdownContainer}>
         <DropDownList
           source={'Save_Category'}
@@ -159,25 +173,55 @@ const SaveScreen = () => {
         />
       </View>
 
+      <View style={styles.searchBar}>
+        {/* Search Icon */}
+        <Ionicons name="search" size={20} color="#aaa" style={styles.searchIcon} />
+
+        <TextInput
+          value={searchQuery}
+          onChangeText={handleSearch}
+          placeholder="Search by title..."
+          placeholderTextColor="#aaa"
+          style={styles.searchInput}
+        />
+
+        {/* Cross Button */}
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+            <Ionicons name="close" size={20} color="#aaa" />
+          </TouchableOpacity>
+        )}
+      </View>
+
       <FlatList
-        data={filteredCards}
+        data={searchedCards}
         keyExtractor={(item) => item.contentId}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={[styles.cardContainer, { width: deviceWidth - 20 }]}
+            style={[styles.cardView]}
             onPress={() => handleCardPress(item.contentTitle, item.contentId, item.categoryId)}
             accessibilityLabel={`Open details for ${item.contentTitle}`}
             accessibilityRole="button"
           >
-            <Text style={styles.cardTitle}>{item.contentTitle}</Text>
-            <TouchableOpacity
-              onPress={() => handleRemoveCard(item.categoryId, item.contentId)}
-              style={styles.removeButton}
-              accessibilityLabel={`Remove ${item.contentTitle} from saved items`}
-              accessibilityRole="button"
-            >
-              <Ionicons name="close" size={18} color={theme.colors.grey2} />
-            </TouchableOpacity>
+           <View style = {styles.leftCardView}>
+                <Text style={styles.cardTitle}  
+                      numberOfLines={3} 
+                     ellipsizeMode="tail" >{item.contentTitle}</Text>
+                <View style = {styles.leftBottomView}>
+                 <Text style={styles.cardCategoryText}>{item.categoryTitle}</Text>
+                 <Text style={styles.cardReadMeText}>{item.readMin} min read</Text>
+                </View>
+              </View>
+              
+              <View style = {styles.rightCardView}>
+              <Image 
+                source={{ uri: item.thumbnail }} 
+                style={styles.tileImage} 
+               />
+                
+            </View>
+            
+           
           </TouchableOpacity>
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -192,7 +236,7 @@ const SaveScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.backgroundWhite,
     padding: 10,
   },
   title: {
@@ -204,30 +248,21 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     marginTop: 10,
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-start',
     marginBottom: 20,
     marginHorizontal: 10,
   },
   flatListContainer: {
+    marginTop: 20,
     paddingBottom: 20,
   },
   separator: {
     height: 10,
   },
-  cardContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 8,
-    alignSelf: 'center',
-    backgroundColor: theme.colors.white,
-    borderWidth: 1,
-    borderColor: theme.colors.grey2,
-  },
   cardTitle: {
     color: theme.colors.black,
     fontSize: 18,
+    fontWeight: '500',
     flex: 1,
     flexWrap: 'wrap',
   },
@@ -235,6 +270,72 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  cardView: {
+    //backgroundColor: 'red',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.borderGrey2,
+    height: 110
+  },
+  leftCardView: {
+    flex: 0.9,
+
+   // backgroundColor: 'red',
+    flexDirection: 'column',
+    gap: 10
+  },
+  leftBottomView: {
+    width: 200,
+    gap: 4,
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  rightCardView: {
+    //backgroundColor: 'green',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  cardCategoryText: {
+    color: theme.colors.textGrey1,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  cardReadMeText: {
+    color: theme.colors.textGrey1,
+    fontSize: 12,
+  },
+  tileImage: {
+    width: 90,
+    height: 70,
+    borderRadius: 5,
+    marginBottom: 5, // Space between image and button
+    resizeMode: 'cover',
+  },
+
+  searchBar: {
+    paddingHorizontal: 5,
+    paddingVertical: 4,
+    margin: 10,
+    borderRadius: 8,
+    backgroundColor: theme.colors.backgroundGrey3,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    fontSize: 16,
+    color: '#333',
+  },
+  clearButton: {
+    padding: 5,
   },
 });
 
