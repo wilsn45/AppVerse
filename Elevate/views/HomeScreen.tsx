@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HomeHandler } from '../Handlers/HomeHandler'; // Import CategoryHandler
@@ -52,7 +53,6 @@ const HomeScreen = () => {
                 const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
                 newSavedCards.set(item.id, isSaved); 
               }
-    
           }
        }
 
@@ -78,6 +78,35 @@ const HomeScreen = () => {
     fetchCategories();
     fetchUserName();
   }, [navigation]);
+
+
+  const updateSavedCard = async () => {
+    try {
+      console.log("Updated Saved Card")
+      const newSavedCards = new Map();
+  
+      for (const section of sectionDataModel) {
+        const data = section.data;
+  
+        // Use a for...of loop to handle async operations properly
+        for (const item of data) {
+          const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
+          newSavedCards.set(item.id, isSaved);
+        }
+      }
+  
+      setSavedCards(newSavedCards);
+    } catch (error) {
+      console.error("Error fetching saved cards:", error);
+    }
+  };
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      updateSavedCard();
+    }, [])
+  );
+
 
   const handleTilePress = (categorytitle: string, id: string) => {
     sendCategoryClickedEvent(id);

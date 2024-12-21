@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimensions, Image, TextInput, Animated } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -8,6 +8,7 @@ import { SaveHandler } from '../Handlers/SaveHandler';
 import DropDownList from './Common/DropDownList';
 import theme from '../Theme/Theme';
 import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const SaveScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -98,6 +99,30 @@ const SaveScreen = () => {
   const clearSearch = () => {
     setSearchQuery('');
     setSearchedCards(filteredCards);
+  };
+
+
+  const handleDelete = (contentId: string) => {
+    //setCards(cards.filter((card) => card.contentId !== contentId));
+  };
+
+  const renderRightActions = (progress: Animated.AnimatedInterpolation, item: any) => {
+    const scale = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0.5, 1],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleRemoveCard(item.categoryId, item.contentId)}
+      >
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <Ionicons name="trash" size={30} color="#fff" />
+        </Animated.View>
+      </TouchableOpacity>
+    );
   };
 
   const sendSaveImpressionEvent = async (selectedCategoryId) => {
@@ -197,6 +222,9 @@ const SaveScreen = () => {
         data={searchedCards}
         keyExtractor={(item) => item.contentId}
         renderItem={({ item }) => (
+          <Swipeable
+            renderRightActions={(progress) => renderRightActions(progress, item)}
+          >
           <TouchableOpacity
             style={[styles.cardView]}
             onPress={() => handleCardPress(item.contentTitle, item.contentId, item.categoryId)}
@@ -223,6 +251,7 @@ const SaveScreen = () => {
             
            
           </TouchableOpacity>
+          </Swipeable>
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={styles.flatListContainer}
@@ -283,7 +312,6 @@ const styles = StyleSheet.create({
   },
   leftCardView: {
     flex: 0.9,
-
    // backgroundColor: 'red',
     flexDirection: 'column',
     gap: 10
@@ -336,6 +364,15 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     padding: 5,
+  },
+  deleteButton: {
+    backgroundColor: '#ff3b30',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    height: '100%',
+    borderRadius: 10,
+    paddingVertical: 5,
   },
 });
 
