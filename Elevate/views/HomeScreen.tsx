@@ -34,20 +34,25 @@ const HomeScreen = () => {
         
         const liveCategories = homeData['Categories']
 
+        if (!liveCategories || liveCategories.length === 0) {
+          console.log("liveCategories is empty. Exiting function.");
+          return; 
+        }
+
         const sortedLiveCategories = liveCategories.sort((a, b) => a.index - b.index);
         
         setCategories(sortedLiveCategories);
         //console.log("Categories", liveCategories)
 
-
         const sectionDataArray = [];
         const newSavedCards = new Map();
+
+        console.log("Saved Home Data", homeData)
         for (const key in homeData) {
           if (key !== 'Categories') {
               const data =  homeData[key] 
               const sectionData = {'title': key, 'data':data }
               sectionDataArray.push(sectionData)
-              console.log('Section Data', data)
 
               for (const item of data) {
                 const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
@@ -75,15 +80,28 @@ const HomeScreen = () => {
       }
     };
 
+    const fetchLatestHomeData = async() => {
+      let isSuccess = await HomeHandler.fetchLatestHomeData()
+      console.log("Latest Home data resp", isSuccess)
+      if (isSuccess == true) {
+        fetchCategories()
+        updateSavedCard()
+      }
+    }
+
     fetchCategories();
     fetchUserName();
+    fetchLatestHomeData()
   }, [navigation]);
 
 
   const updateSavedCard = async () => {
     try {
-      console.log("Updated Saved Card")
       const newSavedCards = new Map();
+      if (!sectionDataModel || sectionDataModel.length === 0) {
+        console.log("sectionDataModel is empty. Exiting function.");
+        return; 
+      }
   
       for (const section of sectionDataModel) {
         const data = section.data;
@@ -254,8 +272,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
-        <Text style={styles.welcomeLabel}>Welcome</Text>
-        <Text style={styles.userNameLabel}>{userName}!</Text>
+        <Text style={styles.userNameLabel}>Hi, There!</Text>
 
         <Text style={styles.categoryLabel}>Categories</Text>
         <FlatList
@@ -318,7 +335,7 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     fontWeight: 'bold',
     paddingLeft: 20,
-    paddingBottom: 20,
+    paddingVertical: 15,
     textAlign: 'left',
   },
   categoryLabel: {
