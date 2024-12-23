@@ -72,9 +72,10 @@ const TaskScreen = () => {
       >
         <Text style={styles.taskName}>{item.name}</Text>
         <Text style={styles.taskDetails}>
-          {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} |{' '}
+          
           {categories.find((c) => c.id === item.categoryId)?.name ||
-            'Unknown'}
+            'Unknown'} {'  '}
+          {taskType.find((t) => t.id === item.type)?.title || 'Unknown'}
         </Text>
       </TouchableOpacity>
     </View>
