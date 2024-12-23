@@ -41,7 +41,7 @@ const RoutineTaskScreen = () => {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={openCompleteTaskModal}>
-              <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.primaryTheme, fontSize: 20, marginRight: 15, fontWeight: 'bold' }}>
+              <Text style={{ color: isTaskCompleted ? theme.colors.secondaryTheme : theme.colors.yellow, fontSize: 18, marginRight: 15, fontWeight: 'bold' }}>
                 {isTaskCompleted ? 'Done' : 'In Progress'}
              </Text>
           </TouchableOpacity>
@@ -70,7 +70,6 @@ const RoutineTaskScreen = () => {
       } else {
         setFrequencyType('Months')
       }
-      setIsTaskCompleted(task.isDone)
 
     } catch (error) {
       console.error('Error fetching task records:', error);
@@ -81,6 +80,7 @@ const RoutineTaskScreen = () => {
   useEffect(() => {
     sendRoutineTaskImpressionEvent()
     fetchTaskRecords();
+    setIsTaskCompleted(task.isDone)
   }, []);
 
   // Handle navigation to ContentDetailScreen
@@ -666,7 +666,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: theme.colors.grey2,
-    bottom: 20,
   },
   iconButton: {
     padding: 10,
