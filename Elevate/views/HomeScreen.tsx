@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HomeHandler } from '../Handlers/HomeHandler'; // Import CategoryHandler
@@ -52,7 +53,6 @@ const HomeScreen = () => {
                 const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
                 newSavedCards.set(item.id, isSaved); 
               }
-    
           }
        }
 
@@ -79,6 +79,35 @@ const HomeScreen = () => {
     fetchUserName();
   }, [navigation]);
 
+
+  const updateSavedCard = async () => {
+    try {
+      console.log("Updated Saved Card")
+      const newSavedCards = new Map();
+  
+      for (const section of sectionDataModel) {
+        const data = section.data;
+  
+        // Use a for...of loop to handle async operations properly
+        for (const item of data) {
+          const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
+          newSavedCards.set(item.id, isSaved);
+        }
+      }
+  
+      setSavedCards(newSavedCards);
+    } catch (error) {
+      console.error("Error fetching saved cards:", error);
+    }
+  };
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      updateSavedCard();
+    }, [])
+  );
+
+
   const handleTilePress = (categorytitle: string, id: string) => {
     sendCategoryClickedEvent(id);
     navigation.navigate('ContentScreen', { categorytitle, categoryId: id });
@@ -97,12 +126,12 @@ const HomeScreen = () => {
     return rows;
   };
 
-  const handleSave = async (itemId, itemTitle, categoryId) => {
+  const handleSave = async (itemId, itemTitle, categoryId, categoryTitle, thumbnail,readMin) => {
     const isSaved = savedCards.get(itemId);
     if (isSaved) {
       await SaveHandler.removeSave(categoryId, itemId);
     } else {
-      await SaveHandler.addSave(categoryId, itemId, itemTitle);
+      await SaveHandler.addSave(categoryId, itemId, itemTitle, categoryTitle, thumbnail, readMin);
     }
     // Update only the savedCards state here
     setSavedCards((prev) => new Map(prev).set(itemId, !isSaved));
@@ -151,7 +180,7 @@ const HomeScreen = () => {
           style={styles.tileImage} 
         />
 
-        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item.id, item.title, item.categoryId)}
+        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item.id, item.title, item.categoryId, item.category, item.thumbnail, item.readMin)}
                 accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
                 <Ionicons
                   name={ savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}

@@ -5,8 +5,11 @@ const theme = {
       //Base
       backgroundGrey: '#FEFEFE',
       backgroundGrey2: '#F7F7F7',
+      backgroundGrey3: '#f0f0f0',
       backgroundWhite: '#ffffff',
+      backgroundGreen: '#EBF6F6',
       borderGrey: '#F5F5F5',
+      borderGrey2: '#EBEBEB',
       shadowGrey: '#d3d3d3',
 
 
@@ -14,12 +17,14 @@ const theme = {
       textPrimary: '#1A1A1A',
       textHeading: '#1F1F1F',
       textTitleLarge: '#595959',
-      textTitleSmall: '##969696',
+      textTitleSmall: '#969696',
+      textGrey1: '#c8c8c8',
+      textGrey2: '#7D7D7D',
 
 
       //theme
-      primaryTheme: '#DD4F5A',
-      secondaryTheme: '#377E78',
+      primaryTheme: '#DD4F5A', 
+      secondaryTheme: '#37817B',
 
 
       primary: '#2355CA',
