@@ -82,7 +82,7 @@ const DropDownList = ({ source, data, defaultId, onSelection }) => {
         <Ionicons
           name="chevron-down"
           size={16}
-          color={theme.colors.black}
+          color={theme.colors.secondaryTheme}
           style={styles.arrow}
           accessibilityLabel="Dropdown icon"
         />
