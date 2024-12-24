@@ -72,7 +72,6 @@ const TaskScreen = () => {
       >
         <Text style={styles.taskName}>{item.name}</Text>
         <Text style={styles.taskDetails}>
-          
           {categories.find((c) => c.id === item.categoryId)?.name ||
             'Unknown'} {'  '}
           {taskType.find((t) => t.id === item.type)?.title || 'Unknown'}
@@ -265,7 +264,7 @@ const styles = StyleSheet.create({
   taskItem: {
     backgroundColor: theme.colors.white,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.borderGrey,
     padding: 15,
     borderRadius: 5,
     marginBottom: 10,

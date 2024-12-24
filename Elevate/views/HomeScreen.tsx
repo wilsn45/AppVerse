@@ -97,6 +97,7 @@ const HomeScreen = () => {
 
   const updateSavedCard = async () => {
     try {
+      console.log("Updating saved card")
       const newSavedCards = new Map();
       if (!sectionDataModel || sectionDataModel.length === 0) {
         console.log("sectionDataModel is empty. Exiting function.");
@@ -316,7 +317,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.colors.backgroundGrey, // Ensures safe area is styled
+    backgroundColor: theme.colors.white, // Ensures safe area is styled
   },
   container: {
     flex: 1,
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20, 
   },
   horizontalListContainer: {
-    paddingBottom: 20,
+    paddingBottom: 30,
   },
   
   horizontalTile: {
@@ -405,7 +406,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     marginHorizontal: 10,
-    height: 120,
+    height: 150,
     width: 350,
     shadowColor: theme.colors.shadowGrey,
     shadowOffset: { width: 0, height: 4 }, 
@@ -420,9 +421,9 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: theme.colors.textPrimary,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
-    height: 60,
+    height: 80,
     textAlign: 'left', 
     maxWidth: '100%',
   },
@@ -436,11 +437,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   rightSection: {
-    //backgroundColor: 'grey',
-    justifyContent: 'center',
+   //backgroundColor: 'grey',
+    justifyContent: 'space-between',
     alignItems: 'flex-start',
     width: 80, // Ensures alignment for the right section
-    gap: 5,
+    gap: 10,
+    height: '100%'
   },
   tileSaveButton: {
     flexDirection: 'row',

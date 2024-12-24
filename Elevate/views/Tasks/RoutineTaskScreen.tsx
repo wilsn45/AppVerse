@@ -114,6 +114,7 @@ const RoutineTaskScreen = () => {
     try {
          sendDeleteTaskClickdEvent()
          setIsDeleteTaskModalVisible(false);
+         setIsDeleteTaskConfirmTaskVisible(false)
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
         await TaskHandler.removeTask(task.categoryId,task.id)
         navigation.navigate('HomeTabNavigator', { screen: 'Tasks' });
@@ -493,7 +494,7 @@ const RoutineTaskScreen = () => {
           <View style={styles.modalContent}>
           
           <View style={styles.modalTitleHeader}>
-            <Text style={styles.modalTitle}>{!isTaskCompleted ? 'Mark Task Done' : 'Mark Task Undone'}</Text>
+            <Text style={styles.modalTitle}>{!isTaskCompleted ? 'Mark This Task Done' : 'Mark Task Undone'}</Text>
            </View>
 
            <View style={styles.completeTaskOptions}>
@@ -598,7 +599,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.borderGrey,
     borderRadius: 8,
     backgroundColor: theme.colors.white,
   },
