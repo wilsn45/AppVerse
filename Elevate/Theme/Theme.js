@@ -14,7 +14,14 @@ const theme = {
 
 
       //Grey
+      greyLight1: '#f4f4f71',
+      greyLight2: '#F5F5F5',  //Border
+      grey: '#d3d3d3',
+      greyDark1: '#969696',
+      greyDark2: '#595959',
+
       greyLight: '#EBEBEB',
+
       greyDark: '#5A5A5A',
       grey: '#272727',
 
@@ -30,15 +37,17 @@ const theme = {
 
 
       //Black
+      black: '#000000',
+      blackLight1: '#1F1F1F',
 
 
 
       //White
+      white: '#ffffff',
 
 
       //Text
       textPrimary: '#1A1A1A',
-      textHeading: '#1F1F1F',
       textTitleLarge: '#595959',
       textTitleSmall: '#969696',
       textGrey1: '#c8c8c8',
@@ -55,12 +64,12 @@ const theme = {
       primary: '#2355CA',
       primaryDisabled: '#b2c3eb',
       background: '#F5F7F9',
-      white: '#ffffff',
-      grey1: '#f4f4f71',
+      
+  
       grey2: '#dcdef4',
       grey3: '#f8f8f8',
       greyText: '#6D6D6D',
-      black: '#000000',
+
       error: '#e74c3c',
       red: '#ff3131',
       green: '#4CAF50',
