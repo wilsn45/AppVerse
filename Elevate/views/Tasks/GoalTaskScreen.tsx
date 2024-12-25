@@ -677,7 +677,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: theme.colors.grey2,
+    borderTopColor: theme.colors.borderGrey,
   },
   iconButton: {
     padding: 10,

@@ -317,11 +317,10 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.colors.white, // Ensures safe area is styled
+    backgroundColor: theme.colors.white,
   },
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
     padding: 10,
   },
   welcomeLabel: {
