@@ -18,6 +18,7 @@ import theme from '../../Theme/Theme';
 import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import { ContentHandler } from '../../Handlers/ContentHandler';
 
 const ContentDetailScreen = () => {
   const route = useRoute();
@@ -50,44 +51,16 @@ const ContentDetailScreen = () => {
     checkIfSaved();
 
     const fetchContent = async () => {
-      try {
-        const contetnDocSnapshot = await firestore()
-        .collection('Content')
-        .doc('List') 
-        .collection(content.categoryId)
-        .doc(content.id)
-        .get();
-
-      if (contetnDocSnapshot.exists) {
-        const data = contetnDocSnapshot.data();
-        setLikedCount(data?.likeCount || 0)
-      } else {
-        console.log('Like Document not found!');
-      }
-      } catch (error) {
-        console.error('Like Error fetching content:', error);
-      }
-
-        const docSnapshot = await firestore()
-          .collection('Content')
-          .doc('Doc') 
-          .collection(content.categoryId)
-          .doc(content.id)
-          .get();
-
-          console.log('Category id', content.categoryId);
-          console.log('Item id', content.id);
-
-        if (docSnapshot.exists) {
-          const data = docSnapshot.data();
-          setHtmlContent(data?.htmlContent || ''); 
-          sendContentListPresentedEvent()
-        } else {
-          console.log('Document not found!');
-        }
-
-
-       
+      
+      const contentData = await ContentHandler.fetchContent(content.id, content.categoryId)
+      //console.log('Content contentData', contentData);
+      setLikedCount(contentData?.likeCount || 0)
+     
+     
+      const doc = await ContentHandler.fetchContentDoc(content.id, content.categoryId)
+      console.log('Content Doc', doc);
+      console.log('Item id', content.id);
+      setHtmlContent(doc?.htmlContent || '');   
     };
 
     fetchContent();

@@ -70,12 +70,16 @@ const TaskScreen = () => {
         onPress={() => handleTaskPress(item)}
         accessibilityLabel={`Task Button: ${item.name}`}
       >
+       
         <Text style={styles.taskName}>{item.name}</Text>
-        <Text style={styles.taskDetails}>
-          {categories.find((c) => c.id === item.categoryId)?.name ||
-            'Unknown'} {'  '}
+
+        <View style={styles.taskDetailView}>
+          <Text style={styles.categoryText}>{item.content.categoryTitle}</Text>
+          <Text style={styles.taskTypeText}>
           {taskType.find((t) => t.id === item.type)?.title || 'Unknown'}
         </Text>
+        </View>
+        
       </TouchableOpacity>
     </View>
   );
@@ -274,7 +278,19 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     fontWeight: 'bold',
   },
-  taskDetails: {
+  taskDetailView: {
+    paddingTop: 10,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 5,
+    flexDirection: 'row'
+  },
+  categoryText: {
+    color: theme.colors.greyLight3,
+    fontWeight: '800',
+    fontSize: 14,
+  },
+  taskTypeText: {
     color: theme.colors.greyLight3,
     fontWeight: '600',
     fontSize: 14,

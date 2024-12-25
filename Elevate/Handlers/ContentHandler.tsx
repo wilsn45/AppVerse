@@ -38,4 +38,55 @@ export class ContentHandler {
       } 
   }
 
+  static async fetchContent(contentId, categoryId) {
+    try {
+        // Fetch category list from Home collection
+        const contetnDocSnapshot = await firestore()
+        .collection('Content')
+        .doc('List') 
+        .collection(categoryId)
+        .doc(contentId)
+        .get();
+
+        //console.log("Fetched Content data", contetnDocSnapshot.data())
+
+        if (contetnDocSnapshot.exists) { 
+            return contetnDocSnapshot.data()
+        }
+        else {
+            return null
+        }
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return null
+    } 
+}
+
+static async fetchContentDoc(contentId, categoryId) {
+    try {
+        // Fetch category list from Home collection
+        const contetnDocSnapshot = await firestore()
+        .collection('Content')
+        .doc('Doc') 
+        .collection(categoryId)
+        .doc(contentId)
+        .get();
+
+        console.log("Fetched Content doc", contetnDocSnapshot.data())
+
+        if (contetnDocSnapshot.exists) { 
+            console.log("Fetched data", contetnDocSnapshot.data())
+            return contetnDocSnapshot.data()
+        } else {
+            return null
+        }
+       
+
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return null
+    } 
+}
+
 }

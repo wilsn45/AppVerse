@@ -210,7 +210,7 @@ const RoutineTaskScreen = () => {
       </View>
       <View style={styles.recordItem}>
         <Text style={styles.recordText}>{item.message}</Text>
-        <Text style={styles.recordDate}>{new Date(item.date).toLocaleString()}</Text>
+        <Text style={styles.recordDate}>{new Date(item.time).toLocaleString()}</Text>
       </View>
       {isDeleteRecordEnable && (
         <TouchableOpacity
