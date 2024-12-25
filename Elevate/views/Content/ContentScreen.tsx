@@ -36,7 +36,7 @@ const ContentScreen = () => {
   const [likedCards, setLikedCards] = useState<Map<string, boolean>>(new Map());
   const [isModalVisible, setModalVisible] = useState(false);
   const [taskName, setTaskName] = useState('');
-  const [selectedContentid, setSelectedContendid] = useState(""); // Default to "Routine"
+  const [selectedContent, setSelectedContent] = useState(null); // Default to "Routine"
   const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
 
@@ -210,10 +210,10 @@ useFocusEffect(
     navigation.navigate('ContentDetailScreen', { content });
   };
 
-  const handleAddTask = (itemId: string) => {
-    setSelectedContendid(itemId)
+  const handleAddTask = (item) => {
+    setSelectedContent(item)
     setModalVisible(true);
-    sendAddTaskPresentedEvent(itemId)
+    sendAddTaskPresentedEvent(item.id)
   };
 
   const handleCancelAddTask = async () => { 
@@ -221,7 +221,7 @@ useFocusEffect(
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
       setModalVisible(false); 
-      sendCancelAddTaskPEvent(selectedContentid)
+      sendCancelAddTaskPEvent(selectedContent.id)
   }
 
   const handleSubmitTask = async () => {
@@ -231,21 +231,17 @@ useFocusEffect(
     }
   
     try {
-      // Call the addTask method from TaskHandler to save the task
-      const content = contentList.find((item) => item.id === selectedContentid) ;
-      const contentTitle  = content ? content.title : '';
-
-      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, selectedContentid,contentTitle, categoryId);
+      
+      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, selectedContent);
   
       // Log the task details to console (for debugging purposes)
-      console.log(`Task Added contentTitle: ${contentTitle}`)
-      console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}, Category: ${categoryId}, ContentId: ${selectedContentid}`);
-  
+      console.log(`Task Added selectedContent: ${selectedContent}`)
+      
       setTaskName(''); 
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
       setModalVisible(false); 
-      sendAddTaskEvent(selectedContentid, selectedTaskType, selectedSubTaskType)
+      sendAddTaskEvent(selectedContent.id, selectedTaskType, selectedSubTaskType)
     } catch (error) {
       console.error("Error adding task:", error);
       Alert.alert('Error', 'Something went wrong while adding the task.');
@@ -395,7 +391,7 @@ const sendCancelAddTaskPEvent = async (contentId: String) => {
                 />
                 <Text>{item.likeCount}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item.id)}
+              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item)}
                  accessibilityLabel={'Add Task'}>
                 <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>
               </TouchableOpacity>

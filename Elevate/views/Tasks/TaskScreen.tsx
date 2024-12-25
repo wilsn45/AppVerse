@@ -209,7 +209,7 @@ const TaskScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.backgroundWhite,
+    backgroundColor: theme.colors.white,
     padding: 10,
   },
   headerContainer: {
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   taskTypeButton: {
-    backgroundColor: theme.colors.backgroundWhite,
+    backgroundColor: theme.colors.white,
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 13,
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   taskItem: {
     backgroundColor: theme.colors.white,
     borderWidth: 1,
-    borderColor: theme.colors.borderGrey,
+    borderColor: theme.colors.greyLight2,
     padding: 15,
     borderRadius: 5,
     marginBottom: 10,
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   taskDetails: {
-    color: theme.colors.textGrey1,
+    color: theme.colors.greyLight3,
     fontWeight: '600',
     fontSize: 14,
   },

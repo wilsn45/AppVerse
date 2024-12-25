@@ -95,13 +95,12 @@ const HomeScreen = () => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log("Updated savedCards:", savedCards);
+    
   }, [savedCards]);
 
 
   const updateSavedCard = async () => {
     try {
-      console.log("Updating saved card")
       
       const newSavedCards = new Map();
       if (!sectionDataModel || sectionDataModel.length === 0) {
@@ -126,7 +125,6 @@ const HomeScreen = () => {
       }
   
       setSavedCards(newSavedCards);
-      console.log("sectionDataModel savedCards", savedCards)
     } catch (error) {
       console.error("Error fetching saved cards:", error);
     }

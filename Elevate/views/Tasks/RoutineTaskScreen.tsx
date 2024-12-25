@@ -6,6 +6,7 @@ import RoutineTaskHandler from '../../Handlers/Tasks/RoutineTaskHandler';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import theme from '../../Theme/Theme';
 import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
+import { TaskProgress } from '../../Data/DataModel';
 
 const RoutineTaskScreen = () => {
   const route = useRoute();
@@ -86,7 +87,7 @@ const RoutineTaskScreen = () => {
   // Handle navigation to ContentDetailScreen
   const navigateToContentDetail = () => {
     sendContentClickeddEvent()
-    navigation.navigate('ContentDetailScreen', { itemId: task.contentId, itemTitle: task.contentTitle, categoryId:  task.categoryId });
+    navigation.navigate('ContentDetailScreen', { content: task.content });
   };
 
   // Handle opening the modal
@@ -128,7 +129,8 @@ const RoutineTaskScreen = () => {
     if (inputValue.trim()) {
       try {
         const recordId =  new Date().getTime().toString()
-        await RoutineTaskHandler.addRecord(task.id, inputValue,recordId);
+        const newProgress = new TaskProgress(recordId,task.id,inputValue, '', new Date().toISOString())
+        await RoutineTaskHandler.addRecord(newProgress);
         console.log('Record saved successfully');
         fetchTaskRecords(); // Refresh the records after saving
         sendAddRecordEvent(recordId)
@@ -405,7 +407,7 @@ const RoutineTaskScreen = () => {
       {/* Rounded corner title */}
       <View style={styles.topHeaderView}>
       <TouchableOpacity onPress={navigateToContentDetail} style={styles.roundedTitleContainer}>
-        <Text style={styles.title}>{task.contentTitle}</Text>
+        <Text style={styles.title}>{task.content.title}</Text>
         <Ionicons name="chevron-forward" size={24} color={theme.colors.grey1} />
       </TouchableOpacity>
       </View>

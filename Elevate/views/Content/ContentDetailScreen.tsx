@@ -191,9 +191,8 @@ const ContentDetailScreen = () => {
     try {
       // Call the addTask method from TaskHandler to save the task
       const contentTitle  = content.title
+      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, content);
 
-      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, content.id,contentTitle, content.categoryId);
-  
       setTaskName(''); 
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
