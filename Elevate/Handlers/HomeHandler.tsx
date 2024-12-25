@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import { CategoryHandler } from './CategoryHandler';
+import { ContentData, CategoryData } from '../Data/DataModel';
 
 export class HomeHandler {
   // Define the key for storing live categories in AsyncStorage
@@ -31,24 +32,24 @@ export class HomeHandler {
               const snapshot = await colRef.get();
 
               if (collectionName === 'LiveCategories') {
-                  Home["Categories"] = snapshot.docs.map(doc => ({
-                      id: doc.id,
-                      name: doc.data().name,
-                      thumbnail: doc.data().thumbnail,
-                      index: doc.data().index
-                  }));
+                Home["Categories"] = snapshot.docs.map(doc => 
+                  new CategoryData(doc.id, doc.data().index, doc.data().name, doc.data().thumbnail)
+              );
               } else {
-                  Home[category.name] = snapshot.docs.map(doc => ({
-                      id: doc.id,
-                      title: doc.data().title,
-                      description: doc.data().description,
-                      imageUrl: doc.data().imageUrl,
-                      thumbnail: doc.data().thumbnail,
-                      likeCount: doc.data().likeCount,
-                      category: doc.data().categoryTitle,
-                      categoryId: doc.data().categoryId,
-                      readMin: doc.data().readMin
-                  }));
+                Home[category.name] = snapshot.docs.map(doc => 
+                  new ContentData(
+                      doc.id,
+                      doc.data().index,
+                      doc.data().title,
+                      doc.data().description,
+                      doc.data().categoryId,
+                      doc.data().categoryTitle,
+                      doc.data().likeCount,
+                      doc.data().readMin,
+                      doc.data().imageUrl,
+                      doc.data().thumbnail
+                  )
+              );
               }
           }
 

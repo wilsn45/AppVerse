@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
 import { CategoryHandler } from '../../Handlers/CategoryHandler';
-import { taskType } from '../../Data/TaskData';
+import { taskType } from '../../Data/DataModel';
 import { useFocusEffect } from '@react-navigation/native';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import { useNavigation } from '@react-navigation/native';

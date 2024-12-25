@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TaskData } from '../../Data/TaskData';
+import { TaskData } from '../../Data/DataModel';
 
 export class TaskHandler {
   static STORAGE_KEY = 'tasks'; 

@@ -37,7 +37,7 @@ const SaveScreen = () => {
     try {
       const savedCards = await SaveHandler.getSavedCards();
       setAllSavedCards(savedCards);
-      console.log('Saved Card', savedCards)
+      console.log('Fetched Saved Card', savedCards)
     } catch (error) {
       console.error('Error fetching saved cards:', error);
     }
@@ -57,19 +57,19 @@ const SaveScreen = () => {
     setSearchedCards(updatedCards)
   }, [selectedCategory, allSavedCards]);
 
-  const handleRemoveCard = async (categoryId, contentId) => {
+  const handleRemoveCard = async (categoryId, id) => {
     try {
-      sendContentRemovedEvent(categoryId, contentId);
-      await SaveHandler.removeSave(categoryId, contentId);
+      sendContentRemovedEvent(categoryId, id);
+      await SaveHandler.removeSave(categoryId, id);
       fetchSavedCards();
     } catch (error) {
       console.error('Error removing card:', error);
     }
   };
 
-  const handleCardPress = (itemTitle, itemId, categoryId) => {
-    sendContentOpenEvent(categoryId, itemId);
-    navigation.navigate('ContentDetailScreen', { itemTitle, itemId, categoryId });
+  const handleCardPress = (item) => {
+    sendContentOpenEvent(item.categoryId, item.id);
+    navigation.navigate('ContentDetailScreen', { item });
   };
 
   const handleCategorySelect = (categoryID) => {
@@ -90,7 +90,7 @@ const SaveScreen = () => {
     setSearchQuery(query);
 
     const filtered = filteredCards.filter((item) =>
-      item.contentTitle.toLowerCase().includes(query.toLowerCase())
+      item.title.toLowerCase().includes(query.toLowerCase())
     );
     setSearchedCards(filtered);
   };
@@ -115,7 +115,7 @@ const SaveScreen = () => {
     return (
       <TouchableOpacity
         style={styles.deleteButton}
-        onPress={() => handleRemoveCard(item.categoryId, item.contentId)}
+        onPress={() => handleRemoveCard(item.categoryId, item.id)}
       >
         <Animated.View style={{ transform: [{ scale }] }}>
           <Ionicons name="trash" size={30} color={theme.colors.white} />
@@ -219,21 +219,21 @@ const SaveScreen = () => {
 
       <FlatList
         data={searchedCards}
-        keyExtractor={(item) => item.contentId}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Swipeable
             renderRightActions={(progress) => renderRightActions(progress, item)}
           >
           <TouchableOpacity
             style={[styles.cardView]}
-            onPress={() => handleCardPress(item.contentTitle, item.contentId, item.categoryId)}
-            accessibilityLabel={`Open details for ${item.contentTitle}`}
+            onPress={() => handleCardPress(item)}
+            accessibilityLabel={`Open details for ${item.title}`}
             accessibilityRole="button"
           >
            <View style = {styles.leftCardView}>
                 <Text style={styles.cardTitle}  
                       numberOfLines={3} 
-                     ellipsizeMode="tail" >{item.contentTitle}</Text>
+                     ellipsizeMode="tail" >{item.title}</Text>
                 <View style = {styles.leftBottomView}>
                  <Text style={styles.cardCategoryText}>{item.categoryTitle}</Text>
                  <Text style={styles.cardReadMeText}>{item.readMin} min read</Text>
@@ -264,7 +264,7 @@ const SaveScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.backgroundWhite,
+    backgroundColor: theme.colors.white,
     padding: 10,
   },
   title: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.borderGrey2,
+    borderBottomColor: theme.colors.greyLight,
     height: 120,
   },
   leftCardView: {
@@ -325,12 +325,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   cardCategoryText: {
-    color: theme.colors.textGrey1,
+    color: theme.colors.greyLight3,
     fontWeight: '600',
     fontSize: 14,
   },
   cardReadMeText: {
-    color: theme.colors.textGrey1,
+    color: theme.colors.greyLight3,
     fontSize: 12,
   },
   tileImage: {
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     margin: 10,
     borderRadius: 8,
-    backgroundColor: theme.colors.backgroundGrey3,
+    backgroundColor: theme.colors.greyLight4,
     flexDirection: 'row',
     alignItems: 'center',
   },

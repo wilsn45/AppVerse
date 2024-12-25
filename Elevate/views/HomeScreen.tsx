@@ -8,6 +8,7 @@ import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SaveHandler } from '../Handlers/SaveHandler.tsx';
+import { ContentData, CategoryData } from '../Data/DataModel';
 
 import theme from '../Theme/Theme';
 
@@ -27,7 +28,7 @@ const HomeScreen = () => {
   const categoryData = [];
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchHomeData = async () => {
       try {
         sendHomeImpressionEvent();
         const homeData = await HomeHandler.getHome();
@@ -47,13 +48,13 @@ const HomeScreen = () => {
         const sectionDataArray = [];
         const newSavedCards = new Map();
 
-        console.log("Saved Home Data", homeData)
+        //console.log("Saved Home Data", homeData)
         for (const key in homeData) {
           if (key !== 'Categories') {
               const data =  homeData[key] 
-              const sectionData = {'title': key, 'data':data }
+              const sectionData = {'title': key, 'data': data}
               sectionDataArray.push(sectionData)
-
+              
               for (const item of data) {
                 const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
                 newSavedCards.set(item.id, isSaved); 
@@ -84,13 +85,12 @@ const HomeScreen = () => {
       let isSuccess = await HomeHandler.fetchLatestHomeData()
       console.log("Latest Home data resp", isSuccess)
       if (isSuccess == true) {
-        fetchCategories()
+        fetchHomeData()
         updateSavedCard()
       }
     }
 
-    fetchCategories();
-    fetchUserName();
+    fetchHomeData();
     fetchLatestHomeData()
   }, [navigation]);
 
@@ -110,6 +110,8 @@ const HomeScreen = () => {
         // Use a for...of loop to handle async operations properly
         for (const item of data) {
           const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
+          // console.log("item", item)
+          // console.log("Is saved", isSaved)
           newSavedCards.set(item.id, isSaved);
         }
       }
@@ -145,15 +147,15 @@ const HomeScreen = () => {
     return rows;
   };
 
-  const handleSave = async (itemId, itemTitle, categoryId, categoryTitle, thumbnail,readMin) => {
-    const isSaved = savedCards.get(itemId);
+  const handleSave = async (item) => {
+    const isSaved = savedCards.get(item.id);
     if (isSaved) {
-      await SaveHandler.removeSave(categoryId, itemId);
+      await SaveHandler.removeSave(item.categoryId, item.id);
     } else {
-      await SaveHandler.addSave(categoryId, itemId, itemTitle, categoryTitle, thumbnail, readMin);
+      await SaveHandler.addSave(item);
     }
     // Update only the savedCards state here
-    setSavedCards((prev) => new Map(prev).set(itemId, !isSaved));
+    setSavedCards((prev) => new Map(prev).set(item.id, !isSaved));
   };
 
   const renderTile = ({ item }: { item: { id: string; title: string } }) => (
@@ -186,7 +188,7 @@ const HomeScreen = () => {
         ellipsizeMode="tail" 
         >{item.title}</Text>
         <View>
-        <Text style={styles.categoryText}>{item.category}</Text>
+        <Text style={styles.categoryText}>{item.categoryTitle}</Text>
         <Text style={styles.readTimeText}>{item.readMin} min read</Text>
         </View>
         
@@ -199,7 +201,7 @@ const HomeScreen = () => {
           style={styles.tileImage} 
         />
 
-        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item.id, item.title, item.categoryId, item.category, item.thumbnail, item.readMin)}
+        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item)}
                 accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
                 <Ionicons
                   name={ savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}

@@ -14,13 +14,14 @@ const theme = {
 
 
       //Grey
-      greyLight1: '#f4f4f71',
+      greyLight1: '#f4f4f71',  
       greyLight2: '#F5F5F5',  //Border
-      grey: '#d3d3d3',
-      greyDark1: '#969696',
-      greyDark2: '#595959',
-
-      greyLight: '#EBEBEB',
+      greyLight3: '#c8c8c8',  //Save List Sub text
+      greyLight4: '#f0f0f0',  //Search bar background
+      grey: '#d3d3d3',        //Shadow 
+      greyDark1: '#969696',   //SubText 1
+      greyDark2: '#595959',   //SubText 2
+      greyLight: '#EBEBEB',    
 
       greyDark: '#5A5A5A',
       grey: '#272727',
@@ -38,12 +39,16 @@ const theme = {
 
       //Black
       black: '#000000',
-      blackLight1: '#1F1F1F',
+      blackLight1: '#1F1F1F',   //Heading Label
 
 
 
       //White
       white: '#ffffff',
+
+
+      //red
+      red: '#ff3131',
 
 
       //Text
@@ -71,7 +76,7 @@ const theme = {
       greyText: '#6D6D6D',
 
       error: '#e74c3c',
-      red: '#ff3131',
+     
       green: '#4CAF50',
       yellow: '#D4AF37',
       selected1: '#0097b2',
