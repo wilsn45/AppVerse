@@ -40,3 +40,13 @@ export const taskType: TaskType[] = [
       this.isDone = false
     }
   }
+
+  export class TaskProgress {
+    constructor(id, taskId, message, progress, date) {
+      this.id = id;
+      this.taskId = taskId;
+      this.message = message;
+      this.progress = progress;
+      this.time = date;
+    }
+  }

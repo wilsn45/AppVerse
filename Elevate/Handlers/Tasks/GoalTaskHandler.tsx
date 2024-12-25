@@ -1,24 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TaskProgress } from '../../Data/DataModel';
 
 class GoalTaskHandler {
   static STORAGE_KEY = 'GoalTaskRecords';
 
-  static async addRecord(taskId, message,progress,recordId) {
+  static async addRecord(newProgress) {
     try {
       const existingRecords = await this.getAllRecords();
-      const newRecord = {
-        recordId:  recordId, // Generate a unique ID for the record
-        taskId,
-        message,
-        progress,
-        dateAdded: new Date().toISOString(), // Add the current date in ISO format
-      };
-
-      const updatedRecords = [...existingRecords, newRecord];
+      const updatedRecords = [...existingRecords, newProgress];
 
       // Save the updated records back to AsyncStorage
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedRecords));
-      console.log(`Record added successfully for recordId: ${recordId}`);
+      console.log(`Record added successfully for recordId: ${newProgress.recordId}`);
     } catch (error) {
       console.error('Error adding record:', error);
     }
@@ -79,7 +72,7 @@ class GoalTaskHandler {
       const allRecords = await this.getAllRecords();
 
       // Filter out the record with the given recordId
-      const updatedRecords = allRecords.filter(record => record.recordId !== recordId);
+      const updatedRecords = allRecords.filter(record => record.id !== recordId);
 
       // Save the updated records back to AsyncStorage
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedRecords));

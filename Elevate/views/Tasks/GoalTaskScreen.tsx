@@ -7,6 +7,7 @@ import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import theme from '../../Theme/Theme';
 import GoalTaskHandler from '../../Handlers/Tasks/GoalTaskHandler';
 import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
+import { TaskProgress } from '../../Data/DataModel';
 
 const GoalTaskScreen = () => {
   const route = useRoute();
@@ -62,6 +63,7 @@ const GoalTaskScreen = () => {
       
       setTotalProgress(totalProgress)
       setTaskRecords(records);
+      console.log("task records", records)
       setIsTaskCompleted(task.isDone)
       sendRecordListPresentedEvent()
     } catch (error) {
@@ -78,7 +80,7 @@ const GoalTaskScreen = () => {
   // Handle navigation to ContentDetailScreen
   const navigateToContentDetail = () => {
     sendContentClickeddEvent()
-    navigation.navigate('ContentDetailScreen', { itemId: task.contentId, itemTitle: task.contentTitle });
+    navigation.navigate('ContentDetailScreen', { content: task.content });
   };
 
   // Handle opening the modal
@@ -128,8 +130,11 @@ const GoalTaskScreen = () => {
     if (inputValue.trim()) {
       try {
         const recordId =  new Date().getTime().toString()
-        await GoalTaskHandler.addRecord(task.id, inputValue, progressValue,recordId);
-        console.log('Record saved successfully');
+        const date = new Date().toISOString() 
+        const newProgress = new TaskProgress(recordId,task.id,inputValue, progressValue, date)
+        await GoalTaskHandler.addRecord(newProgress);
+
+
         fetchTaskRecords(); // Refresh the records after saving
         sendAddRecordEvent(recordId)
       } catch (error) {
@@ -203,12 +208,12 @@ const GoalTaskScreen = () => {
       </View>
       <View style={styles.recordItem}>
         <Text style={styles.recordText}>{item.message}</Text>
-        <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
+        <Text style={styles.recordDate}>{new Date(item.time).toLocaleString()}</Text>
       </View>
   
       {isDeleteRecordEnable && (
         <TouchableOpacity
-          onPress={() => handleDeleteRecord(item.recordId)}  // Replace with your delete logic
+          onPress={() => handleDeleteRecord(item.id)}  // Replace with your delete logic
           style={styles.deleteIconContainer}
           accessibilityLabel={'Delete Record'}
         >
@@ -406,7 +411,7 @@ const GoalTaskScreen = () => {
       {/* Rounded corner title */}
       <View style={styles.topHeaderView}>
       <TouchableOpacity onPress={navigateToContentDetail} style={styles.roundedTitleContainer}>
-        <Text style={styles.title}>{task.contentTitle}</Text>
+        <Text style={styles.title}>{task.content.title}</Text>
         <Ionicons name="chevron-forward" size={24} color={theme.colors.grey1} />
       </TouchableOpacity>
       </View>
@@ -610,7 +615,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: theme.colors.borderGrey,
+    borderColor: theme.colors.greyLight2,
     borderRadius: 8,
     backgroundColor: theme.colors.white,
   },
@@ -625,7 +630,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 0,
     paddingVertical: 10,
-    backgroundColor: theme.colors.grey1, // Optional background for the header
+   // backgroundColor: theme.colors.grey1, // Optional background for the header
   },
   leftHeaderText: {
     textAlign: 'center',
@@ -646,7 +651,7 @@ const styles = StyleSheet.create({
   },
   recordItem: {
     paddingVertical: 15,
-    borderBottomColor: theme.colors.grey1,
+    //borderBottomColor: theme.colors.grey1,
     paddingRight: 15,
     gap: 5
   },
@@ -657,7 +662,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
   recordDate: {
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight3,
     fontSize: 12,
     marginTop: 5,
   },
@@ -677,7 +682,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: theme.colors.borderGrey,
+    borderTopColor: theme.colors.greyLight2,
   },
   iconButton: {
     padding: 10,
@@ -690,7 +695,7 @@ const styles = StyleSheet.create({
   iconButtonText: {
     fontSize: 12,
     textAlign: 'center',
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight1,
   },
   iconButtonTextDisabled: {
     color: theme.colors.greyLight,
@@ -731,7 +736,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    backgroundColor: theme.colors.grey1,
+    backgroundColor: theme.colors.greyLight1,
     color: theme.colors.black,
     height: 80,
     padding: 10,
@@ -741,7 +746,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   progressInput: {
-    backgroundColor:  theme.colors.grey1,
+    backgroundColor: theme.colors.greyLight1,
     borderWidth: 1,
     borderColor: theme.colors.grey2,
     padding: 10,
@@ -788,7 +793,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteRecordButtonDisable: {
-    backgroundColor: theme.colors.primaryDisabled,
+    backgroundColor: theme.colors.blueDisabled,
   },
  deleteTaskButton: {
     backgroundColor: theme.colors.red,

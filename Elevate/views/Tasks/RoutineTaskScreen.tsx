@@ -129,8 +129,13 @@ const RoutineTaskScreen = () => {
     if (inputValue.trim()) {
       try {
         const recordId =  new Date().getTime().toString()
-        const newProgress = new TaskProgress(recordId,task.id,inputValue, '', new Date().toISOString())
+        const date = new Date().toISOString()
+        console.log('Record date', date);
+        const newProgress = new TaskProgress(recordId,task.id,inputValue, '', date)
+        console.log('Record newProgress', newProgress);
         await RoutineTaskHandler.addRecord(newProgress);
+
+
         console.log('Record saved successfully');
         fetchTaskRecords(); // Refresh the records after saving
         sendAddRecordEvent(recordId)
@@ -179,6 +184,7 @@ const RoutineTaskScreen = () => {
   };
 
   const handleDeleteRecord = async (recordId) => {
+    console.log("Delete Record", recordId)
     await RoutineTaskHandler.removeRecord(recordId)
     sendDeleteRecordEvent(recordId)
     fetchTaskRecords()
@@ -204,11 +210,11 @@ const RoutineTaskScreen = () => {
       </View>
       <View style={styles.recordItem}>
         <Text style={styles.recordText}>{item.message}</Text>
-        <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
+        <Text style={styles.recordDate}>{new Date(item.date).toLocaleString()}</Text>
       </View>
       {isDeleteRecordEnable && (
         <TouchableOpacity
-          onPress={() => handleDeleteRecord(item.recordId)}  // Replace with your delete logic
+          onPress={() => handleDeleteRecord(item.id)}  // Replace with your delete logic
           style={styles.deleteIconContainer}
           accessibilityLabel={'Delete Record'}
         >
@@ -601,7 +607,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: theme.colors.borderGrey,
+    borderColor: theme.colors.greyLight2,
     borderRadius: 8,
     backgroundColor: theme.colors.white,
   },
@@ -616,7 +622,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 0,
     paddingVertical: 10,
-    backgroundColor: theme.colors.grey1, // Optional background for the header
+    //backgroundColor: theme.colors.grey1, // Optional background for the header
   },
   leftHeaderText: {
     textAlign: 'center',
@@ -637,7 +643,7 @@ const styles = StyleSheet.create({
   },
   recordItem: {
     paddingVertical: 15,
-    borderBottomColor: theme.colors.grey1,
+   // borderBottomColor: theme.colors.grey1,
     paddingRight: 15,
     gap: 5
   },
@@ -648,7 +654,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
   recordDate: {
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight3,
     fontSize: 12,
     marginTop: 5,
   },
@@ -659,7 +665,7 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -12 }],  // Adjust for exact vertical centering
   },
   emptyText: {
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight3,
     textAlign: 'center',
     marginTop: 20,
   },
@@ -668,7 +674,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: theme.colors.borderGrey,
+    borderTopColor: theme.colors.greyLight2,
   },
   iconButton: {
     padding: 10,
@@ -681,7 +687,7 @@ const styles = StyleSheet.create({
   iconButtonText: {
     fontSize: 12,
     textAlign: 'center',
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight1,
   },
   iconButtonTextDisabled: {
     color: theme.colors.greyLight,
@@ -722,7 +728,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    backgroundColor: theme.colors.grey1,
+    backgroundColor: theme.colors.greyLight1,
     color: theme.colors.black,
     height: 80,
     padding: 10,
@@ -757,14 +763,14 @@ const styles = StyleSheet.create({
   },
 
   deleteRecordButton:  {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.blue,
     padding: 15,
     marginTop: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
   deleteRecordButtonDisable: {
-    backgroundColor: theme.colors.primaryDisabled,
+    backgroundColor: theme.colors.blueDisabled,
   },
  deleteTaskButton: {
     backgroundColor: theme.colors.red,

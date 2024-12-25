@@ -29,6 +29,8 @@ const theme = {
 
       //Blue
       lightBlue: '#0cc0df',
+      blue: '#2355CA',
+      blueDisabled: '#b2c3eb',
 
 
       //Primary
