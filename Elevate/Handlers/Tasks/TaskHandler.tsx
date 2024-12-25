@@ -72,10 +72,10 @@ export class TaskHandler {
   
           console.log(`Task with ID: ${taskId} marked as done in category: ${categoryId}`);
         } else {
-          console.warn(`Task with ID: ${taskId} not found in category: ${categoryId}`);
+          console.log(`Task with ID: ${taskId} not found in category: ${categoryId}`);
         }
       } else {
-        console.warn(`No tasks found for category ID: ${categoryId}`);
+        console.log(`No tasks found for category ID: ${categoryId}`);
       }
     } catch (error) {
       console.error('Error updating task:', error);

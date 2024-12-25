@@ -13,6 +13,29 @@ const theme = {
       shadowGrey: '#d3d3d3',
 
 
+      //Grey
+      greyLight: '#EBEBEB',
+      greyDark: '#5A5A5A',
+      grey: '#272727',
+
+
+      //Blue
+      lightBlue: '#0cc0df',
+
+
+      //Primary
+
+
+      //Secondary 
+
+
+      //Black
+
+
+
+      //White
+
+
       //Text
       textPrimary: '#1A1A1A',
       textHeading: '#1F1F1F',
@@ -25,6 +48,8 @@ const theme = {
       //theme
       primaryTheme: '#DD4F5A', 
       secondaryTheme: '#37817B',
+      secondaryThemeDisabled: '#A9C2BF',
+ 
 
 
       primary: '#2355CA',

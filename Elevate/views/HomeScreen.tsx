@@ -34,20 +34,25 @@ const HomeScreen = () => {
         
         const liveCategories = homeData['Categories']
 
+        if (!liveCategories || liveCategories.length === 0) {
+          console.log("liveCategories is empty. Exiting function.");
+          return; 
+        }
+
         const sortedLiveCategories = liveCategories.sort((a, b) => a.index - b.index);
         
         setCategories(sortedLiveCategories);
         //console.log("Categories", liveCategories)
 
-
         const sectionDataArray = [];
         const newSavedCards = new Map();
+
+        console.log("Saved Home Data", homeData)
         for (const key in homeData) {
           if (key !== 'Categories') {
               const data =  homeData[key] 
               const sectionData = {'title': key, 'data':data }
               sectionDataArray.push(sectionData)
-              console.log('Section Data', data)
 
               for (const item of data) {
                 const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
@@ -75,15 +80,29 @@ const HomeScreen = () => {
       }
     };
 
+    const fetchLatestHomeData = async() => {
+      let isSuccess = await HomeHandler.fetchLatestHomeData()
+      console.log("Latest Home data resp", isSuccess)
+      if (isSuccess == true) {
+        fetchCategories()
+        updateSavedCard()
+      }
+    }
+
     fetchCategories();
     fetchUserName();
+    fetchLatestHomeData()
   }, [navigation]);
 
 
   const updateSavedCard = async () => {
     try {
-      console.log("Updated Saved Card")
+      console.log("Updating saved card")
       const newSavedCards = new Map();
+      if (!sectionDataModel || sectionDataModel.length === 0) {
+        console.log("sectionDataModel is empty. Exiting function.");
+        return; 
+      }
   
       for (const section of sectionDataModel) {
         const data = section.data;
@@ -254,8 +273,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
-        <Text style={styles.welcomeLabel}>Welcome</Text>
-        <Text style={styles.userNameLabel}>{userName}!</Text>
+        <Text style={styles.userNameLabel}>Hi, There!</Text>
 
         <Text style={styles.categoryLabel}>Categories</Text>
         <FlatList
@@ -299,11 +317,10 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.colors.backgroundGrey, // Ensures safe area is styled
+    backgroundColor: theme.colors.white,
   },
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
     padding: 10,
   },
   welcomeLabel: {
@@ -318,7 +335,7 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     fontWeight: 'bold',
     paddingLeft: 20,
-    paddingBottom: 20,
+    paddingVertical: 15,
     textAlign: 'left',
   },
   categoryLabel: {
@@ -375,7 +392,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20, 
   },
   horizontalListContainer: {
-    paddingBottom: 20,
+    paddingBottom: 30,
   },
   
   horizontalTile: {
@@ -388,7 +405,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     marginHorizontal: 10,
-    height: 120,
+    height: 150,
     width: 350,
     shadowColor: theme.colors.shadowGrey,
     shadowOffset: { width: 0, height: 4 }, 
@@ -403,9 +420,9 @@ const styles = StyleSheet.create({
   },
   titleText: {
     color: theme.colors.textPrimary,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
-    height: 60,
+    height: 80,
     textAlign: 'left', 
     maxWidth: '100%',
   },
@@ -419,11 +436,12 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   rightSection: {
-    //backgroundColor: 'grey',
-    justifyContent: 'center',
+   //backgroundColor: 'grey',
+    justifyContent: 'space-between',
     alignItems: 'flex-start',
     width: 80, // Ensures alignment for the right section
-    gap: 5,
+    gap: 10,
+    height: '100%'
   },
   tileSaveButton: {
     flexDirection: 'row',

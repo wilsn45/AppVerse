@@ -19,6 +19,8 @@ const RoutineTaskScreen = () => {
   const [isDeleteTaskModalVisible, setIsDeleteTaskModalVisible] = useState(false);
   const [isDeleteRecordEnable, setIsDeleteRecordEnable] = useState(false);
 
+  const [isDeleteTaskConfirmVisible, setIsDeleteTaskConfirmTaskVisible] = useState(false);
+
 
   const [inputValue, setInputValue] = useState('');
 
@@ -38,9 +40,12 @@ const RoutineTaskScreen = () => {
             </Text>
           </TouchableOpacity>
         ) : (
-          <Text style={{ color: isTaskCompleted ? theme.colors.green : theme.colors.yellow, fontSize: 20, marginRight: 15, fontWeight: 'bold' }}>
-            {isTaskCompleted ? 'Done' : 'In Progress'}
-          </Text>
+          <TouchableOpacity onPress={openCompleteTaskModal}>
+              <Text style={{ color: isTaskCompleted ? theme.colors.secondaryTheme : theme.colors.yellow, fontSize: 18, marginRight: 15, fontWeight: 'bold' }}>
+                {isTaskCompleted ? 'Done' : 'In Progress'}
+             </Text>
+          </TouchableOpacity>
+         
         )
       ),
     });
@@ -65,7 +70,6 @@ const RoutineTaskScreen = () => {
       } else {
         setFrequencyType('Months')
       }
-      setIsTaskCompleted(task.isDone)
 
     } catch (error) {
       console.error('Error fetching task records:', error);
@@ -76,6 +80,7 @@ const RoutineTaskScreen = () => {
   useEffect(() => {
     sendRoutineTaskImpressionEvent()
     fetchTaskRecords();
+    setIsTaskCompleted(task.isDone)
   }, []);
 
   // Handle navigation to ContentDetailScreen
@@ -100,10 +105,16 @@ const RoutineTaskScreen = () => {
     setIsDeleteTaskModalVisible(true);
   };
 
+  const openDeleteTaskConfirmView = () => {
+    setIsDeleteTaskModalVisible(false);
+    setIsDeleteTaskConfirmTaskVisible(true)
+  }
+
   const deleteTask = async () => {
     try {
          sendDeleteTaskClickdEvent()
          setIsDeleteTaskModalVisible(false);
+         setIsDeleteTaskConfirmTaskVisible(false)
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
         await TaskHandler.removeTask(task.categoryId,task.id)
         navigation.navigate('HomeTabNavigator', { screen: 'Tasks' });
@@ -140,6 +151,12 @@ const RoutineTaskScreen = () => {
   const closeCompleteTaskModal = () => {
     sendCancelChangeTaskStatusEvent()
     setIsCompleteTaskModalVisible(false);
+  };
+
+
+  const closeDeleteTaskConfirm = () => {
+    //sendCancelChangeTaskStatusEvent()
+    setIsDeleteTaskConfirmTaskVisible(false);
   };
 
   const closeDeleteTaskModal = () => {
@@ -411,22 +428,19 @@ const RoutineTaskScreen = () => {
       {/* Bottom View with buttons */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity onPress={openModal} 
-             style={[styles.iconButton, (isTaskCompleted || isDeleteRecordEnable) && styles.disabledButton]}
+             style={styles.iconButton}
              disabled={isTaskCompleted || isDeleteRecordEnable} 
              accessibilityLabel={'Add new progress'}>
-          <Ionicons name="add-circle" size={30} color={theme.colors.white} />
+          <Ionicons name="add-outline" size={40} color={(isTaskCompleted || isDeleteRecordEnable) ? theme.colors.greyLight : theme.colors.grey} />
+          <Text style={[styles.iconButtonText, (isTaskCompleted || isDeleteRecordEnable) && styles.iconButtonTextDisabled]}>Add Record</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={openCompleteTaskModal} 
-        style={[styles.iconButton, isDeleteRecordEnable && styles.disabledButton]}
-        disabled={isDeleteRecordEnable}
-        accessibilityLabel={`Mark Task ${isTaskCompleted ? 'Incompelete': 'Complete'}`}>
-          <Ionicons name="checkmark-circle" size={30} color={theme.colors.white} />
-        </TouchableOpacity>
+        
         <TouchableOpacity onPress={openDeleteTaskModal} 
-            style={[styles.iconButton, isDeleteRecordEnable && styles.disabledButton]}
+            style={styles.iconButton}
             disabled={isDeleteRecordEnable}
             accessibilityLabel={'Delete Record Or Task'}>
-          <Ionicons name="trash-bin" size={30} color={theme.colors.white} />
+          <Ionicons name="trash-outline" size={40} color={(isDeleteRecordEnable) ? theme.colors.greyLight : theme.colors.grey} />
+          <Text style={[styles.iconButtonText, (isDeleteRecordEnable) && styles.iconButtonTextDisabled]}>Delete</Text>
         </TouchableOpacity>
       </View>
 
@@ -480,7 +494,7 @@ const RoutineTaskScreen = () => {
           <View style={styles.modalContent}>
           
           <View style={styles.modalTitleHeader}>
-            <Text style={styles.modalTitle}>{!isTaskCompleted ? 'Mark Task Done' : 'Mark Task Undone'}</Text>
+            <Text style={styles.modalTitle}>{!isTaskCompleted ? 'Mark This Task Done' : 'Mark Task Undone'}</Text>
            </View>
 
            <View style={styles.completeTaskOptions}>
@@ -490,6 +504,37 @@ const RoutineTaskScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity onPress={closeCompleteTaskModal} style={styles.noButton}
              accessibilityLabel={'Cancel Change Task Status'}>
+              <Text style={styles.saveButtonText}>No</Text>
+            </TouchableOpacity>
+           </View>
+           
+          </View>
+        </View>
+      </Modal>
+
+
+
+      <Modal
+        visible={isDeleteTaskConfirmVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeDeleteTaskConfirm}
+      >
+        <View style={styles.modalContainer}
+         accessibilityLabel={'Delete Task'}>
+          <View style={styles.modalContent}>
+          
+          <View style={styles.modalTitleHeader}>
+            <Text style={styles.modalTitle}>Confirm Delete Task</Text>
+           </View>
+
+           <View style={styles.completeTaskOptions}>
+           <TouchableOpacity onPress={deleteTask} style={styles.noButton}
+            accessibilityLabel={`Confirm Delete Task'}`}>
+              <Text style={styles.saveButtonText}>Yes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={closeDeleteTaskConfirm} style={styles.yesButton}
+             accessibilityLabel={'Close Delete Task View'}>
               <Text style={styles.saveButtonText}>No</Text>
             </TouchableOpacity>
            </View>
@@ -526,7 +571,7 @@ const RoutineTaskScreen = () => {
                 >
               <Text style={styles.deleteButtonText}>Delete Records</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={deleteTask} style={styles.deleteTaskButton}>
+            <TouchableOpacity onPress={openDeleteTaskConfirmView} style={styles.deleteTaskButton}>
               <Text style={styles.deleteButtonText}>Delete Task</Text>
             </TouchableOpacity>
            </View>
@@ -554,7 +599,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.borderGrey,
     borderRadius: 8,
     backgroundColor: theme.colors.white,
   },
@@ -573,17 +618,17 @@ const styles = StyleSheet.create({
   },
   leftHeaderText: {
     textAlign: 'center',
-    color: theme.colors.primary,
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: theme.colors.secondaryTheme,
+    fontSize: 18,
+    fontWeight: '500',
   },
   centerHeaderText: {
     marginLeft: 10,
     flex: 1,
     textAlign: 'left',
-    color: theme.colors.primary,
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: theme.colors.secondaryTheme,
+    fontSize: 18,
+    fontWeight: '500',
   },
   recordList: {
     paddingHorizontal: 20,
@@ -592,12 +637,13 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomColor: theme.colors.grey1,
     paddingRight: 15,
+    gap: 5
   },
   recordText: {
     color: theme.colors.black,
     fontSize: 16,
+    fontWeight: '600',
     paddingRight: 15,
-    
   },
   recordDate: {
     color: theme.colors.grey1,
@@ -619,19 +665,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    position: 'absolute',
-    bottom: 20,
-    left: 10,
-    right: 10,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.borderGrey,
   },
   iconButton: {
     padding: 10,
     borderRadius: 50,
-    color:   theme.colors.primary,
-    backgroundColor: theme.colors.primary,
+    color:   theme.colors.primaryTheme,
+    justifyContent: 'center',
+    alignItems: 'center'
+    //backgroundColor: theme.colors.primaryTheme,
+  },
+  iconButtonText: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: theme.colors.grey1,
+  },
+  iconButtonTextDisabled: {
+    color: theme.colors.greyLight,
   },
   disabledButton: {
-    backgroundColor: theme.colors.primaryDisabled,
+    backgroundColor: theme.colors.secondaryThemeDisabled,
   },
   modalContainer: {
     flex: 1,
@@ -676,7 +730,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   saveButton: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.secondaryTheme,
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
@@ -742,15 +796,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Ensures vertical alignment
   },
   lineView: {
-    width: 5,
+    width: 1,
     flex: 1,
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.greyDark,
   },
   circleView: {
     height: 40,
     width: 40,
     borderRadius: 20,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.greyDark,
     borderWidth: 1,
     backgroundColor: theme.colors.white,
     position: 'absolute',
@@ -759,8 +813,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   circleText: {
-    color: theme.colors.black, 
-    fontSize: 14, 
+    color: theme.colors.greyDark, 
+    fontSize: 16, 
     fontWeight: 'bold', 
   },
   deleteDoneButton: {

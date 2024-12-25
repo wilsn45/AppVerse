@@ -34,6 +34,7 @@ const TaskScreen = () => {
       try {
         const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
+        console.log("Live Categories", liveCategories)
         sendCategoryDisplayedEvent(selectedCategory, selectedTaskType);
       } catch (error) {
         console.error('Error fetching categories', error);
@@ -71,9 +72,9 @@ const TaskScreen = () => {
       >
         <Text style={styles.taskName}>{item.name}</Text>
         <Text style={styles.taskDetails}>
-          {taskType.find((t) => t.id === item.type)?.title || 'Unknown'} |{' '}
-          {categories.find((c) => c.id === parseInt(item.categoryId))?.title ||
-            'Unknown'}
+          {categories.find((c) => c.id === item.categoryId)?.name ||
+            'Unknown'} {'  '}
+          {taskType.find((t) => t.id === item.type)?.title || 'Unknown'}
         </Text>
       </TouchableOpacity>
     </View>
@@ -137,10 +138,7 @@ const TaskScreen = () => {
     <SafeAreaView style={styles.container}>
       {/* Header Section */}
       <View
-        style={styles.headerContainer}
-       
-      >
-        <Text style={styles.title}>Task</Text>
+        style={styles.headerContainer}>
         <View style={styles.taskControlContainer}>
           {/* Task Type Buttons */}
           <View style={styles.buttonGroup}>
@@ -211,10 +209,11 @@ const TaskScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.backgroundWhite,
     padding: 10,
   },
   headerContainer: {
+    marginTop: 20,
     marginBottom: 20,
     marginHorizontal: 10,
   },
@@ -236,24 +235,24 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   taskTypeButton: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.backgroundWhite,
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 13,
     marginHorizontal: 5,
-    borderColor: theme.colors.primary,
-    borderWidth: 1,
+    borderColor: theme.colors.primaryTheme,
+    //borderWidth: 1,
   },
   selectedTaskTypeButton: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.primaryTheme,
   },
   taskTypeButtonText: {
-    color: theme.colors.primary,
-    fontSize: 14,
+    fontWeight: 'bold',
+    color: theme.colors.primaryTheme,
+    fontSize: 18,
   },
   selectedTaskTypeButtonText: {
     color: theme.colors.white,
-    fontWeight: 'bold',
   },
   dropdownContainer: {
     flex: 1,
@@ -265,7 +264,7 @@ const styles = StyleSheet.create({
   taskItem: {
     backgroundColor: theme.colors.white,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.borderGrey,
     padding: 15,
     borderRadius: 5,
     marginBottom: 10,
@@ -276,8 +275,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   taskDetails: {
+    color: theme.colors.textGrey1,
+    fontWeight: '600',
     fontSize: 14,
-    color: theme.colors.grey1,
   },
   emptyText: {
     textAlign: 'center',

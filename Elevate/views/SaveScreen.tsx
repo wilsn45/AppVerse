@@ -276,12 +276,13 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     marginTop: 10,
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-end',
     marginBottom: 20,
     marginHorizontal: 10,
   },
   flatListContainer: {
     marginTop: 20,
+    marginHorizontal: 20,
     paddingBottom: 20,
   },
   cardTitle: {

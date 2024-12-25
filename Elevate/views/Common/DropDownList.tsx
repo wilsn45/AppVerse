@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     width: 'auto',
   },
   text: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.secondaryTheme,
     flexShrink: 1,
