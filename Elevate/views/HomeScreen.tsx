@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { HomeHandler } from '../Handlers/HomeHandler'; // Import CategoryHandler
+import { HomeHandler } from '../Handlers/HomeHandler'; 
 import ProfileHandler from '../Handlers/ProfileHandler'; 
 import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -94,10 +94,15 @@ const HomeScreen = () => {
     fetchLatestHomeData()
   }, [navigation]);
 
+  useEffect(() => {
+    console.log("Updated savedCards:", savedCards);
+  }, [savedCards]);
+
 
   const updateSavedCard = async () => {
     try {
       console.log("Updating saved card")
+      
       const newSavedCards = new Map();
       if (!sectionDataModel || sectionDataModel.length === 0) {
         console.log("sectionDataModel is empty. Exiting function.");
@@ -106,10 +111,14 @@ const HomeScreen = () => {
   
       for (const section of sectionDataModel) {
         const data = section.data;
+
+        
   
         // Use a for...of loop to handle async operations properly
         for (const item of data) {
+          //console.log("sectionDataModel item", item)
           const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
+         // console.log("sectionDataModel isSaved", isSaved)
           // console.log("item", item)
           // console.log("Is saved", isSaved)
           newSavedCards.set(item.id, isSaved);
@@ -117,6 +126,7 @@ const HomeScreen = () => {
       }
   
       setSavedCards(newSavedCards);
+      console.log("sectionDataModel savedCards", savedCards)
     } catch (error) {
       console.error("Error fetching saved cards:", error);
     }
@@ -131,7 +141,7 @@ const HomeScreen = () => {
 
   const handleTilePress = (categorytitle: string, id: string) => {
     sendCategoryClickedEvent(id);
-    navigation.navigate('ContentScreen', { categorytitle, categoryId: id });
+     navigation.navigate('ContentScreen', { categorytitle, categoryId: id });
   };
 
   // Group the categories into rows of 2 tiles
@@ -177,9 +187,9 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string, thumbnail: string, category: string, categoryId: string, readMin: string } }) => (
+  const renderHorizontalScrollList = ({ item }) => (
     <TouchableOpacity
-    onPress={() =>  handleCardPress(item.title, item.id, item.categoryId)}>
+    onPress={() =>  handleCardPress(item)}>
     <View style={styles.horizontalTile}>
       {/* Left Section: Title */}
       <View style={styles.leftSection}>
@@ -215,12 +225,9 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  const handleCardPress = (itemTitle, itemId, categoryId) => {
-    sendContentOpenEvent(categoryId, itemId);
-    console.log("itemTitle", itemTitle)
-    console.log("itemId", itemId)
-    console.log("categoryId", categoryId)
-    navigation.navigate('ContentDetailScreen', { itemTitle, itemId, categoryId });
+  const handleCardPress = (content) => {
+    sendContentOpenEvent(content.categoryId, content.id);
+    navigation.navigate('ContentDetailScreen', { content });
   };
 
   // Analytics Events

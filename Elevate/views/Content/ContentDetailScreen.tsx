@@ -22,7 +22,7 @@ import firestore from '@react-native-firebase/firestore';
 const ContentDetailScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { itemTitle, itemId,categoryId } = route.params; // Access the item title and ID passed as parameters
+  const { content } = route.params; // Access the item title and ID passed as parameters
   const [isLiked, setIsLiked] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
   const [likedCount, setLikedCount] = useState(0)
@@ -34,14 +34,15 @@ const ContentDetailScreen = () => {
   
 
   useEffect(() => {
+    console.log("Content Data", content)
     sendContentImpressionEvent()
     const checkIfLiked = async () => {
-      const liked = await LikeHandler.isCardLiked(categoryId, itemId); // Check if the card is liked using categoryId and itemId
+      const liked = await LikeHandler.isCardLiked(content.categoryId, content.id); // Check if the card is liked using categoryId and itemId
       setIsLiked(liked);
     };
 
     const checkIfSaved = async () => {
-      const liked = await SaveHandler.isCardSaved(categoryId, itemId); // Check if the card is liked using categoryId and itemId
+      const liked = await SaveHandler.isCardSaved(content.categoryId, content.id); // Check if the card is liked using categoryId and itemId
       setIsSaved(liked);
     };
 
@@ -53,8 +54,8 @@ const ContentDetailScreen = () => {
         const contetnDocSnapshot = await firestore()
         .collection('Content')
         .doc('List') 
-        .collection(categoryId)
-        .doc(itemId)
+        .collection(content.categoryId)
+        .doc(content.id)
         .get();
 
       if (contetnDocSnapshot.exists) {
@@ -70,12 +71,12 @@ const ContentDetailScreen = () => {
         const docSnapshot = await firestore()
           .collection('Content')
           .doc('Doc') 
-          .collection(categoryId)
-          .doc(itemId)
+          .collection(content.categoryId)
+          .doc(content.id)
           .get();
 
-          console.log('Category id', categoryId);
-          console.log('Item id', itemId);
+          console.log('Category id', content.categoryId);
+          console.log('Item id', content.id);
 
         if (docSnapshot.exists) {
           const data = docSnapshot.data();
@@ -91,15 +92,15 @@ const ContentDetailScreen = () => {
 
     fetchContent();
 
-  }, [itemId, categoryId]);
+  }, [content]);
 
 
   const handleSave = async () => {
     sendContentSavedEvent(isSaved)
     if (isSaved) {
-      await SaveHandler.removeSave(categoryId, itemId);
+      await SaveHandler.removeSave(content.categoryId, content.id);
     } else {
-      await SaveHandler.addSave(categoryId, itemId, itemTitle);
+      await SaveHandler.addSave(content);
     }
     // Update only the savedCards state here
     setIsSaved(!isSaved)
@@ -109,18 +110,18 @@ const ContentDetailScreen = () => {
     sendContentLikedEvent(isLiked)
     if (isLiked) {
       setIsLiked(false)
-      await LikeHandler.removeLike(categoryId, itemId);
-      dencreaseLikeCount(itemId)
+      await LikeHandler.removeLike(content.categoryId, content.id);
+      dencreaseLikeCount(content.id)
     } else {
       setIsLiked(true)
-      await LikeHandler.addLike(categoryId, itemId, itemTitle);
-      increaseLikeCount(itemId)
+      await LikeHandler.addLike(content.categoryId, content.id, content.title);
+      increaseLikeCount(content.id)
     }
   };
 
   const increaseLikeCount = (id) => {
     setLikedCount(likedCount+1)
-    const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
+    const docRef = firestore().collection('Content').doc('List').collection(content.categoryId).doc(id);
     docRef.update({
       likeCount: firestore.FieldValue.increment(1)  // Increments the count by 1
     })
@@ -133,7 +134,8 @@ const ContentDetailScreen = () => {
   };
 
   const dencreaseLikeCount = async (id) => {
-    const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
+    console.log("Content Data", content)
+    const docRef = firestore().collection('Content').doc('List').collection(content.categoryId).doc(id);
   
     // Fetch the current likeCount before decreasing it
     try {
@@ -188,9 +190,9 @@ const ContentDetailScreen = () => {
   
     try {
       // Call the addTask method from TaskHandler to save the task
-      const contentTitle  = itemTitle
+      const contentTitle  = content.title
 
-      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, itemId,contentTitle, categoryId);
+      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, content.id,contentTitle, content.categoryId);
   
       setTaskName(''); 
       setSelectedSubTaskType(1)
@@ -213,7 +215,7 @@ const ContentDetailScreen = () => {
       '',
       ActionType.IMPRESSION,
       '',
-      { 'categoryId': categoryId, contentId: itemId}
+      { 'categoryId': content.categoryId, contentId: content.id}
    );
   };
 
@@ -225,7 +227,7 @@ const ContentDetailScreen = () => {
       'Content',
       ActionType.IMPRESSION,
       '',
-      { 'categoryId': categoryId, contentId: itemId}
+      { 'categoryId': content.categoryId, contentId: content.id}
    );
   };
 
@@ -240,7 +242,7 @@ const ContentDetailScreen = () => {
       'Save',
       ActionType.CLICK,
       optionType,
-      { 'categoryId': categoryId, 'contentId': itemId}
+      { 'categoryId': content.categoryId, 'contentId': content.id}
    );
   };
 
@@ -255,7 +257,7 @@ const ContentDetailScreen = () => {
      'Like',
      ActionType.CLICK,
      optionType,
-     { 'categoryId': categoryId, 'contentId': itemId}
+     { 'categoryId': content.categoryId, 'contentId': content.id}
   );
  };
 
@@ -268,7 +270,7 @@ const ContentDetailScreen = () => {
    'Add_Task',
    ActionType.IMPRESSION,
    '',
-   { 'categoryId': categoryId, 'contentId': itemId}
+   { 'categoryId': content.categoryId, 'contentId': content.id}
 );
 };
 
@@ -281,7 +283,7 @@ const sendAddTaskEvent = async (taskType: number, freqType: number) => {
     'Add_Task',
     ActionType.CLICK,
     'Cancel',
-    { 'categoryId': categoryId, 'contentId': itemId, 'taskType': taskType, 'freqType': freqType}
+    { 'categoryId': content.categoryId, 'contentId': content.id, 'taskType': taskType, 'freqType': freqType}
  );
  };
 
@@ -294,7 +296,7 @@ const sendCancelAddTaskPEvent = async () => {
     'Add_Task',
     ActionType.CLICK,
     'Cancel',
-    { 'categoryId': categoryId, 'contentId': itemId}
+    { 'categoryId': content.categoryId, 'contentId': content.id}
  );
  };
 
@@ -308,7 +310,7 @@ const sendCancelAddTaskPEvent = async () => {
     'Header',
     ActionType.CLICK,
     'Back',
-    { 'categoryId': categoryId}
+    { 'categoryId': content.categoryId}
  );
  };
 

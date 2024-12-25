@@ -37,7 +37,7 @@ const SaveScreen = () => {
     try {
       const savedCards = await SaveHandler.getSavedCards();
       setAllSavedCards(savedCards);
-      console.log('Fetched Saved Card', savedCards)
+      //console.log('Fetched Saved Card', savedCards)
     } catch (error) {
       console.error('Error fetching saved cards:', error);
     }
@@ -67,9 +67,10 @@ const SaveScreen = () => {
     }
   };
 
-  const handleCardPress = (item) => {
-    sendContentOpenEvent(item.categoryId, item.id);
-    navigation.navigate('ContentDetailScreen', { item });
+  const handleCardPress = (content) => {
+    console.log("Opening Card", content)
+    sendContentOpenEvent(content.categoryId, content.id);
+    navigation.navigate('ContentDetailScreen', { content });
   };
 
   const handleCategorySelect = (categoryID) => {

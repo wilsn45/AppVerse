@@ -26,7 +26,7 @@ export class LikeHandler {
         // Push contentId, categoryId, and contentTitle
         cards.push({
           categoryId,
-          contentId: likedCard.contentId,
+          id: likedCard.id,
           contentTitle: likedCard.contentTitle,
         });
       });
@@ -35,25 +35,30 @@ export class LikeHandler {
     return cards;
   }
 
+  static async getLikedCardByCategory(categoryId) {
+    const likedItems = await this.getLikes();
+    return likedItems[categoryId]
+  }
+
   // Add save
-  static async addLike(categoryId, contentId, contentTitle) {
+  static async addLike(categoryId, id, contentTitle) {
     const likedItems = await this.getLikes();
     if (!likedItems[categoryId]) likedItems[categoryId] = [];
-    likedItems[categoryId].push({ contentId, contentTitle }); // Save both contentId and contentTitle
+    likedItems[categoryId].push({ id, contentTitle }); // Save both contentId and contentTitle
     await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(likedItems));
   }
 
   // Remove save
-  static async removeLike(categoryId, contentId) {
+  static async removeLike(categoryId, id) {
     const likedItems = await this.getLikes();
     if (likedItems[categoryId]) {
-      likedItems[categoryId] = likedItems[categoryId].filter((card) => card.contentId !== contentId);
+      likedItems[categoryId] = likedItems[categoryId].filter((card) => card.id !== id);
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(likedItems));
     }
   }
 
-  static async isCardLiked(categoryId, contentId) {
+  static async isCardLiked(categoryId, id) {
     const savedItems = await this.getLikes();
-    return savedItems[categoryId]?.some((card) => card.contentId === contentId) || false;
+    return savedItems[categoryId]?.some((card) => card.id === id) || false;
   }
 }

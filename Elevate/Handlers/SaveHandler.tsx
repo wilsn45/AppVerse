@@ -19,28 +19,49 @@ export class SaveHandler {
   // Get saved cards (contentId, categoryId, and contentTitle)
   static async getSavedCards() {
     const savedItems = await this.getSaves();
-    console.log("All savedItems", savedItems)
+    //console.log("All savedItems", savedItems)
     let cards = [];
 
     // Loop through all categories to gather the saved cards
     Object.keys(savedItems).forEach(categoryId => {
-      cards = savedItems[categoryId]
+      cards = cards.concat(savedItems[categoryId]);
     });
 
+    //console.log("Fetched saved cards", cards)
+
     return cards;
+  }
+
+
+  static async getSavedCardByCategory(categoryId) {
+    const savedItems = await this.getSaves();
+    return savedItems[categoryId]
   }
 
   // Add save
   static async addSave(item) {
     const savedItems = await this.getSaves();
-    console.log("Before Save ", savedItems)
-    if (!savedItems[item.categoryId]) savedItems[item.categoryId] = [];
-    //console.log("Saving  Item ", item)
-    savedItems[item.categoryId].push(item); 
-    // console.log("Saved Iten", item)
-    // console.log("Saved Iten categoryId", item.categoryId)
-
-    console.log("After Save ", savedItems)
+  
+    //console.log("Before Save:", savedItems);
+  
+    // Remove any existing item with the same ID in the category
+    if (savedItems[item.categoryId]) {
+      savedItems[item.categoryId] = savedItems[item.categoryId].filter(
+        (savedItem) => savedItem.id !== item.id
+      );
+    }
+  
+    //console.log("After removing duplicate Save:", savedItems);
+  
+    // Add the new item to the category
+    if (!savedItems[item.categoryId]) {
+      savedItems[item.categoryId] = [];
+    }
+    savedItems[item.categoryId].push(item);
+  
+    //console.log("After Final Save:", savedItems);
+  
+    // Save back to AsyncStorage
     await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedItems));
   }
 
