@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ContentData } from '../Data/DataModel';
+import {  SavedContentData } from '../Data/DataModel';
 
 export class SaveHandler {
   // Helper function to get the current saved items from AsyncStorage
@@ -32,7 +32,6 @@ export class SaveHandler {
     return cards;
   }
 
-
   static async getSavedCardByCategory(categoryId) {
     const savedItems = await this.getSaves();
     return savedItems[categoryId]
@@ -40,26 +39,29 @@ export class SaveHandler {
 
   // Add save
   static async addSave(item) {
+    const newSavedItem = new SavedContentData(item.id, item.title, item.categoryId, item.categoryTitle, item.readMin, item.thumbnail)
     const savedItems = await this.getSaves();
   
-    //console.log("Before Save:", savedItems);
+    console.log("Before Save:", savedItems);
+
+    console.log("Before Save newSavedItem:", newSavedItem);
   
     // Remove any existing item with the same ID in the category
-    if (savedItems[item.categoryId]) {
-      savedItems[item.categoryId] = savedItems[item.categoryId].filter(
+    if (savedItems[newSavedItem.categoryId]) {
+      savedItems[newSavedItem.categoryId] = savedItems[newSavedItem.categoryId].filter(
         (savedItem) => savedItem.id !== item.id
       );
     }
   
-    //console.log("After removing duplicate Save:", savedItems);
+    console.log("After removing duplicate Save:", savedItems);
   
     // Add the new item to the category
-    if (!savedItems[item.categoryId]) {
-      savedItems[item.categoryId] = [];
+    if (!savedItems[newSavedItem.categoryId]) {
+      savedItems[newSavedItem.categoryId] = [];
     }
-    savedItems[item.categoryId].push(item);
+    savedItems[newSavedItem.categoryId].push(newSavedItem);
   
-    //console.log("After Final Save:", savedItems);
+    console.log("After Final Save:", newSavedItem);
   
     // Save back to AsyncStorage
     await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedItems));

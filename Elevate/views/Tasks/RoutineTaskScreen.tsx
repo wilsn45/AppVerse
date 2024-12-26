@@ -132,13 +132,13 @@ const RoutineTaskScreen = () => {
       try {
         const recordId =  new Date().getTime().toString()
         const date = new Date().toISOString()
-        console.log('Record date', date);
+        //console.log('Record date', date);
         const newProgress = new TaskProgress(recordId,task.id,inputValue, '', date)
-        console.log('Record newProgress', newProgress);
+       // console.log('Record newProgress', newProgress);
         await RoutineTaskHandler.addRecord(newProgress);
 
 
-        console.log('Record saved successfully');
+       // console.log('Record saved successfully');
         fetchTaskRecords(); // Refresh the records after saving
         anlaytics.sendAddRecordEvent(recordId)
       } catch (error) {

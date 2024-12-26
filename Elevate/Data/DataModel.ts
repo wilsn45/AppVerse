@@ -19,6 +19,27 @@ export const taskType: TaskType[] = [
   }
 
 
+  export class SavedContentData {
+    constructor(id, title, categoryId, categoryTitle, readMin, thumbnail) {
+      this.id = id;
+      this.title = title;
+      this.categoryId = categoryId;
+      this.categoryTitle = categoryTitle;
+      this.thumbnail = thumbnail
+      this.readMin = readMin
+    }
+  }
+
+  export class TaskContentData {
+    constructor(id, title, categoryId, categoryTitle) {
+      this.id = id;
+      this.title = title;
+      this.categoryId = categoryId;
+      this.categoryTitle = categoryTitle;
+    }
+  }
+
+
   export class CategoryData {
     constructor(id, index, name, thumbnail) {
       this.id = id;

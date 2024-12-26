@@ -11,7 +11,7 @@ class RoutineTaskHandler {
 
       // Save the updated records back to AsyncStorage
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedRecords));
-      console.log(`Record added successfully for recordId: ${newProgress.recordId}`);
+     // console.log(`Record added successfully for recordId: ${newProgress.recordId}`);
     } catch (error) {
       console.error('Error adding record:', error);
     }
