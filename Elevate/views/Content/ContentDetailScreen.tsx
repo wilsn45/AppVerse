@@ -71,7 +71,8 @@ const ContentDetailScreen = () => {
 
 
   const handleSave = async () => {
-    analytics.sendContentSavedEvent(isSaved)
+    //analytics.sendContentSavedEvent(isSaved)
+    console.log("Is card saved", isSaved)
     if (isSaved) {
       await SaveHandler.removeSave(content.categoryId, content.id);
     } else {

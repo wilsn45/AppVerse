@@ -44,7 +44,7 @@ const ContentScreen = () => {
 
   useEffect(() => {
      analytics.sendContentImpressionEvent()
-     console.log("Fetched categoryId:", categoryId)
+     //console.log("Fetched categoryId:", categoryId)
 
     fetchContentList()
   }, [ , categoryId, navigation, categorytitle]);

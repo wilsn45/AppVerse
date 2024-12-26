@@ -48,6 +48,21 @@ export class ContentAnalytics {
   );
   }
 
+  async sendContentSavedEvent(isSave) {
+   const optionType =  isSave ? 'Save' : 'Unsave'
+   const eventId =  isSave ? '5.1.1.1' : '5.1.1.2'
+    const eventName =  isSave ? 'Content_Saved' : 'Content_Saved_Removed'
+  await AnalyticsHelper.sendEvent(
+    eventId,
+    eventName,
+    'Content_Detail',
+    'Like',
+    ActionType.CLICK,
+    optionType,
+    { 'categoryId': this.content.categoryId, 'contentId': this.content.id}
+  );
+}
+
   async sendContentLikedEvent(isLike) {
     const optionType =  isLike ? 'Like' : 'Remove'
     const eventId =  isLike ? '5.2.1.1' : '5.2.1.2'
