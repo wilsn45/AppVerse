@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
 import { CategoryHandler } from '../../Handlers/CategoryHandler';
-import { taskType } from '../../Data/TaskData';
+import { taskType } from '../../Data/DataModel';
 import { useFocusEffect } from '@react-navigation/native';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import { useNavigation } from '@react-navigation/native';
 import theme from '../../Theme/Theme';
 import DropDownList from '../Common/DropDownList';
-import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
+import { TaskAnalytics } from '../../Analytics/TaskAnalytics';
 
 const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -15,6 +15,7 @@ const TaskScreen = () => {
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
+  const analytics = new TaskAnalytics()
 
   const fetchTasks = async () => {
     try {
@@ -29,13 +30,13 @@ const TaskScreen = () => {
   };
 
   useEffect(() => {
-    sendSaveImpressionEvent(selectedCategory, selectedTaskType);
+    analytics.sendSaveImpressionEvent(selectedCategory, selectedTaskType);
     const fetchCategories = async () => {
       try {
         const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
         console.log("Live Categories", liveCategories)
-        sendCategoryDisplayedEvent(selectedCategory, selectedTaskType);
+        analytics.sendCategoryDisplayedEvent(selectedCategory, selectedTaskType);
       } catch (error) {
         console.error('Error fetching categories', error);
       }
@@ -70,18 +71,22 @@ const TaskScreen = () => {
         onPress={() => handleTaskPress(item)}
         accessibilityLabel={`Task Button: ${item.name}`}
       >
+       
         <Text style={styles.taskName}>{item.name}</Text>
-        <Text style={styles.taskDetails}>
-          {categories.find((c) => c.id === item.categoryId)?.name ||
-            'Unknown'} {'  '}
+
+        <View style={styles.taskDetailView}>
+          <Text style={styles.categoryText}>{item.content.categoryTitle}</Text>
+          <Text style={styles.taskTypeText}>
           {taskType.find((t) => t.id === item.type)?.title || 'Unknown'}
         </Text>
+        </View>
+        
       </TouchableOpacity>
     </View>
   );
 
   const handleTaskPress = (task) => {
-    sendTaskOpenEvent(task.categoryId, task.contentId, task.id);
+    analytics.sendTaskOpenEvent(task.content.categoryId, task.content.id, task.id);
     if (task.type === 1) {
       navigation.navigate('RoutineTaskScreen', { task });
     } else if (task.type === 2) {
@@ -91,48 +96,14 @@ const TaskScreen = () => {
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
-    sendCategoryClickedEvent(categoryId);
+    analytics.sendCategoryClickedEvent(categoryId);
   };
 
   const handleTaskTypeSelect = (taskUd) => {
     setSelectedTaskType(taskUd);
-    sendTaskTypeChangeEvent(taskUd);
+    analytics.sendTaskTypeChangeEvent(taskUd);
   };
 
-  // Analytics Events
-  const sendSaveImpressionEvent = async (selectedCategoryId, selectedTaskType) => {
-    await AnalyticsHelper.sendEvent('3.0.0', 'Task_Appeared', 'Task', '', ActionType.IMPRESSION, '', {
-      selectedCategoryId,
-      selectedTaskType,
-    });
-  };
-
-  const sendCategoryDisplayedEvent = async (selectedCategoryId, selectedTaskType) => {
-    await AnalyticsHelper.sendEvent('3.1.0', 'Content_List_Presented', 'Task', 'Content_List', ActionType.IMPRESSION, '', {
-      selectedCategoryId,
-      selectedTaskType,
-    });
-  };
-
-  const sendTaskOpenEvent = async (categoryId, contentId, taskId) => {
-    await AnalyticsHelper.sendEvent('3.1.1', 'Content_Clicked', 'Task', 'Content_List', ActionType.CLICK, '', {
-      categoryId,
-      contentId,
-      taskId,
-    });
-  };
-
-  const sendCategoryClickedEvent = async (categoryId) => {
-    await AnalyticsHelper.sendEvent('3.2.1', 'Categoy_Filter_Selected', 'Task', 'Category_Filter', ActionType.CLICK, '', {
-      categoryId,
-    });
-  };
-
-  const sendTaskTypeChangeEvent = async (taskType) => {
-    await AnalyticsHelper.sendEvent('3.2.2', 'Task_Type_Changed', 'Task', 'Task_Tab', ActionType.CLICK, '', {
-      taskType,
-    });
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -209,7 +180,7 @@ const TaskScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.backgroundWhite,
+    backgroundColor: theme.colors.white,
     padding: 10,
   },
   headerContainer: {
@@ -235,7 +206,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   taskTypeButton: {
-    backgroundColor: theme.colors.backgroundWhite,
+    backgroundColor: theme.colors.white,
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 13,
@@ -264,7 +235,7 @@ const styles = StyleSheet.create({
   taskItem: {
     backgroundColor: theme.colors.white,
     borderWidth: 1,
-    borderColor: theme.colors.borderGrey,
+    borderColor: theme.colors.greyLight2,
     padding: 15,
     borderRadius: 5,
     marginBottom: 10,
@@ -274,8 +245,20 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     fontWeight: 'bold',
   },
-  taskDetails: {
-    color: theme.colors.textGrey1,
+  taskDetailView: {
+    paddingTop: 10,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 5,
+    flexDirection: 'row'
+  },
+  categoryText: {
+    color: theme.colors.greyLight3,
+    fontWeight: '800',
+    fontSize: 14,
+  },
+  taskTypeText: {
+    color: theme.colors.greyLight3,
     fontWeight: '600',
     fontSize: 14,
   },

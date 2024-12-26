@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { HomeHandler } from '../Handlers/HomeHandler'; // Import CategoryHandler
+import { HomeHandler } from '../Handlers/HomeHandler'; 
 import ProfileHandler from '../Handlers/ProfileHandler'; 
-import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
+import { HomeAnalytics } from '../Analytics/HomeAnalytics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SaveHandler } from '../Handlers/SaveHandler.tsx';
+import { ContentData, CategoryData } from '../Data/DataModel';
 
 import theme from '../Theme/Theme';
 
@@ -22,14 +23,15 @@ const HomeScreen = () => {
   const leftPadding = 20; // Adjust these values as needed
   const rightPadding = 20;
   const spacing = 10; // Space between tiles
+  const analytics = new HomeAnalytics();
 
   // Example dynamic data for the horizontal FlatLists
   const categoryData = [];
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchHomeData = async () => {
       try {
-        sendHomeImpressionEvent();
+        analytics.sendHomeImpressionEvent()
         const homeData = await HomeHandler.getHome();
         
         const liveCategories = homeData['Categories']
@@ -47,13 +49,13 @@ const HomeScreen = () => {
         const sectionDataArray = [];
         const newSavedCards = new Map();
 
-        console.log("Saved Home Data", homeData)
+        //console.log("Saved Home Data", homeData)
         for (const key in homeData) {
           if (key !== 'Categories') {
               const data =  homeData[key] 
-              const sectionData = {'title': key, 'data':data }
+              const sectionData = {'title': key, 'data': data}
               sectionDataArray.push(sectionData)
-
+              
               for (const item of data) {
                 const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
                 newSavedCards.set(item.id, isSaved); 
@@ -65,7 +67,7 @@ const HomeScreen = () => {
 
       // console.log('SectionDataArray', sectionDataArray)
        setSectionDataModel(sectionDataArray)
-       sendCategoryDisplayedEvent(liveCategories);
+       analytics.sendCategoryDisplayedEvent(liveCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -84,20 +86,23 @@ const HomeScreen = () => {
       let isSuccess = await HomeHandler.fetchLatestHomeData()
       console.log("Latest Home data resp", isSuccess)
       if (isSuccess == true) {
-        fetchCategories()
+        fetchHomeData()
         updateSavedCard()
       }
     }
 
-    fetchCategories();
-    fetchUserName();
+    fetchHomeData();
     fetchLatestHomeData()
   }, [navigation]);
+
+  useEffect(() => {
+    
+  }, [savedCards]);
 
 
   const updateSavedCard = async () => {
     try {
-      console.log("Updating saved card")
+      
       const newSavedCards = new Map();
       if (!sectionDataModel || sectionDataModel.length === 0) {
         console.log("sectionDataModel is empty. Exiting function.");
@@ -106,10 +111,16 @@ const HomeScreen = () => {
   
       for (const section of sectionDataModel) {
         const data = section.data;
+
+        
   
         // Use a for...of loop to handle async operations properly
         for (const item of data) {
+          //console.log("sectionDataModel item", item)
           const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
+         // console.log("sectionDataModel isSaved", isSaved)
+          // console.log("item", item)
+          // console.log("Is saved", isSaved)
           newSavedCards.set(item.id, isSaved);
         }
       }
@@ -128,8 +139,8 @@ const HomeScreen = () => {
 
 
   const handleTilePress = (categorytitle: string, id: string) => {
-    sendCategoryClickedEvent(id);
-    navigation.navigate('ContentScreen', { categorytitle, categoryId: id });
+    analytics.sendCategoryClickedEvent(id);
+     navigation.navigate('ContentScreen', { categorytitle, categoryId: id });
   };
 
   // Group the categories into rows of 2 tiles
@@ -145,15 +156,15 @@ const HomeScreen = () => {
     return rows;
   };
 
-  const handleSave = async (itemId, itemTitle, categoryId, categoryTitle, thumbnail,readMin) => {
-    const isSaved = savedCards.get(itemId);
+  const handleSave = async (item) => {
+    const isSaved = savedCards.get(item.id);
     if (isSaved) {
-      await SaveHandler.removeSave(categoryId, itemId);
+      await SaveHandler.removeSave(item.categoryId, item.id);
     } else {
-      await SaveHandler.addSave(categoryId, itemId, itemTitle, categoryTitle, thumbnail, readMin);
+      await SaveHandler.addSave(item);
     }
     // Update only the savedCards state here
-    setSavedCards((prev) => new Map(prev).set(itemId, !isSaved));
+    setSavedCards((prev) => new Map(prev).set(item.id, !isSaved));
   };
 
   const renderTile = ({ item }: { item: { id: string; title: string } }) => (
@@ -175,9 +186,9 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  const renderHorizontalScrollList = ({ item }: { item: { id: string; title: string, thumbnail: string, category: string, categoryId: string, readMin: string } }) => (
+  const renderHorizontalScrollList = ({ item }) => (
     <TouchableOpacity
-    onPress={() =>  handleCardPress(item.title, item.id, item.categoryId)}>
+    onPress={() =>  handleCardPress(item)}>
     <View style={styles.horizontalTile}>
       {/* Left Section: Title */}
       <View style={styles.leftSection}>
@@ -186,7 +197,7 @@ const HomeScreen = () => {
         ellipsizeMode="tail" 
         >{item.title}</Text>
         <View>
-        <Text style={styles.categoryText}>{item.category}</Text>
+        <Text style={styles.categoryText}>{item.categoryTitle}</Text>
         <Text style={styles.readTimeText}>{item.readMin} min read</Text>
         </View>
         
@@ -199,7 +210,7 @@ const HomeScreen = () => {
           style={styles.tileImage} 
         />
 
-        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item.id, item.title, item.categoryId, item.category, item.thumbnail, item.readMin)}
+        <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item)}
                 accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
                 <Ionicons
                   name={ savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
@@ -213,61 +224,9 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  const handleCardPress = (itemTitle, itemId, categoryId) => {
-    sendContentOpenEvent(categoryId, itemId);
-    console.log("itemTitle", itemTitle)
-    console.log("itemId", itemId)
-    console.log("categoryId", categoryId)
-    navigation.navigate('ContentDetailScreen', { itemTitle, itemId, categoryId });
-  };
-
-  // Analytics Events
-  const sendHomeImpressionEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '1.0.0',
-      'Home_Appeared',
-      'Home',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      {}
-    );
-  };
-
-  const sendCategoryDisplayedEvent = async (categoryList: [string]) => {
-    await AnalyticsHelper.sendEvent(
-      '1.1.0',
-      'Category_Displayed',
-      'Home',
-      'Category_List',
-      ActionType.IMPRESSION,
-      '',
-      { category: categoryList }
-    );
-  };
-
-  const sendCategoryClickedEvent = async (categoryId: string) => {
-    await AnalyticsHelper.sendEvent(
-      '1.1.1',
-      'Category_Clicked',
-      'Home',
-      'Category_List',
-      ActionType.CLICK,
-      '',
-      { categoryId }
-    );
-  };
-
-  const sendContentOpenEvent = async (categoryId, contentId) => {
-    await AnalyticsHelper.sendEvent(
-      '1.2.1',
-      'Content_Open',
-      'Save',
-      'Section_List',
-      ActionType.CLICK,
-      'Open',
-      { categoryId, contentId }
-    );
+  const handleCardPress = (content) => {
+    analytics.sendContentOpenEvent(content.categoryId, content.id);
+    navigation.navigate('ContentDetailScreen', { content });
   };
 
   return (
@@ -325,7 +284,7 @@ const styles = StyleSheet.create({
   },
   welcomeLabel: {
     fontSize: 20,
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight1,
     paddingTop: 20,
     paddingLeft: 20,
     textAlign: 'left',
@@ -344,7 +303,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     textAlign: 'left',
     fontWeight: '600',
-    color: theme.colors.textHeading,
+    color: theme.colors.blackLight1,
   },
   contentContainer: {
     flexGrow: 1,
@@ -361,9 +320,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingBottom: 10,
     justifyContent: 'space-between',
-    borderColor: theme.colors.borderGrey,
+    borderColor: theme.colors.greyLight2,
     height: 170,
-    shadowColor: theme.colors.shadowGrey,
+    shadowColor: theme.colors.grey,
     shadowOffset: { width: 0, height: 4 }, 
     shadowOpacity: 0.8, 
     shadowRadius: 6, 
@@ -388,7 +347,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginVertical: 10,
     fontWeight: '600',
-    color: theme.colors.textHeading,
+    color: theme.colors.blackLight1,
     paddingLeft: 20, 
   },
   horizontalListContainer: {
@@ -399,15 +358,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: theme.colors.backgroundWhite,
+    backgroundColor: theme.colors.white,
     borderWidth: 1,
-    borderColor: theme.colors.borderGrey,
+    borderColor: theme.colors.greyLight2,
     borderRadius: 10,
     padding: 12,
     marginHorizontal: 10,
     height: 150,
     width: 350,
-    shadowColor: theme.colors.shadowGrey,
+    shadowColor: theme.colors.grey,
     shadowOffset: { width: 0, height: 4 }, 
     shadowOpacity: 0.8, 
     shadowRadius: 6, 
@@ -419,7 +378,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titleText: {
-    color: theme.colors.textPrimary,
+    color: theme.colors.blackLight1,
     fontSize: 18,
     fontWeight: '500',
     height: 80,
@@ -427,12 +386,12 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   categoryText: {
-    color: theme.colors.textTitleSmall,
+    color: theme.colors.greyDark1,
     fontWeight: '400',
     fontSize: 12,
   },
   readTimeText: {
-    color: theme.colors.textTitleLarge,
+    color: theme.colors.greyDark2,
     fontSize: 11,
   },
   rightSection: {

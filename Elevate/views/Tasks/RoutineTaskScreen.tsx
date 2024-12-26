@@ -5,7 +5,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import RoutineTaskHandler from '../../Handlers/Tasks/RoutineTaskHandler';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import theme from '../../Theme/Theme';
-import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
+import { TaskDetailAnalytics } from '../../Analytics/TaskDetailAnalytics';
+import { TaskProgress } from '../../Data/DataModel';
 
 const RoutineTaskScreen = () => {
   const route = useRoute();
@@ -28,6 +29,8 @@ const RoutineTaskScreen = () => {
   const [taskRecords, setTaskRecords] = useState([]);
   const [frequencyType, setFrequencyType] = useState('Days');
   const [isTaskCompleted, setIsTaskCompleted] = useState(false);
+
+  const anlaytics = new TaskDetailAnalytics(task, true)
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -61,7 +64,7 @@ const RoutineTaskScreen = () => {
       }));
   
       setTaskRecords(recordsWithNumbers);
-      sendRecordListPresentedEvent()
+      anlaytics.sendRecordListPresentedEvent()
 
       if (task.subType == 1) {
         setFrequencyType('Days')
@@ -78,30 +81,30 @@ const RoutineTaskScreen = () => {
 
   // Load records on component mount and when a new record is added
   useEffect(() => {
-    sendRoutineTaskImpressionEvent()
+    anlaytics.sendTaskDetailImpressionEvent()
     fetchTaskRecords();
     setIsTaskCompleted(task.isDone)
   }, []);
 
   // Handle navigation to ContentDetailScreen
   const navigateToContentDetail = () => {
-    sendContentClickeddEvent()
-    navigation.navigate('ContentDetailScreen', { itemId: task.contentId, itemTitle: task.contentTitle, categoryId:  task.categoryId });
+    anlaytics.sendContentClickeddEvent()
+    navigation.navigate('ContentDetailScreen', { content: task.content });
   };
 
   // Handle opening the modal
   const openModal = () => {
     setIsModalVisible(true);
-    sendAddRecordPresentedEvent()
+    anlaytics.sendAddRecordPresentedEvent()
   };
 
   const openCompleteTaskModal = () => {
-    sendChangeTaskStatusPresentedEvent()
+    anlaytics.sendChangeTaskStatusPresentedEvent()
     setIsCompleteTaskModalVisible(true);
   };
 
   const openDeleteTaskModal = () => {
-    sendDeleteViewPresentedEvent()
+    anlaytics.sendDeleteViewPresentedEvent()
     setIsDeleteTaskModalVisible(true);
   };
 
@@ -112,7 +115,7 @@ const RoutineTaskScreen = () => {
 
   const deleteTask = async () => {
     try {
-         sendDeleteTaskClickdEvent()
+         anlaytics.sendDeleteTaskClickdEvent()
          setIsDeleteTaskModalVisible(false);
          setIsDeleteTaskConfirmTaskVisible(false)
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
@@ -128,10 +131,16 @@ const RoutineTaskScreen = () => {
     if (inputValue.trim()) {
       try {
         const recordId =  new Date().getTime().toString()
-        await RoutineTaskHandler.addRecord(task.id, inputValue,recordId);
-        console.log('Record saved successfully');
+        const date = new Date().toISOString()
+        //console.log('Record date', date);
+        const newProgress = new TaskProgress(recordId,task.id,inputValue, '', date)
+       // console.log('Record newProgress', newProgress);
+        await RoutineTaskHandler.addRecord(newProgress);
+
+
+       // console.log('Record saved successfully');
         fetchTaskRecords(); // Refresh the records after saving
-        sendAddRecordEvent(recordId)
+        anlaytics.sendAddRecordEvent(recordId)
       } catch (error) {
         console.error('Error saving record:', error);
       }
@@ -145,11 +154,11 @@ const RoutineTaskScreen = () => {
   // Handle closing the modal
   const closeModal = () => {
     setIsModalVisible(false);
-    sendCancelAddRecordEvent()
+    anlaytics.sendCancelAddRecordEvent()
   };
 
   const closeCompleteTaskModal = () => {
-    sendCancelChangeTaskStatusEvent()
+    anlaytics.sendCancelChangeTaskStatusEvent()
     setIsCompleteTaskModalVisible(false);
   };
 
@@ -160,31 +169,32 @@ const RoutineTaskScreen = () => {
   };
 
   const closeDeleteTaskModal = () => {
-    sendCancelDeleteClickdEvent()
+    anlaytics.sendCancelDeleteClickdEvent()
     setIsDeleteTaskModalVisible(false);
   };
 
 
   const enableDeleteRecord = async () => {
-    sendDeleteRecordClickdEvent()
+    anlaytics.sendDeleteRecordClickdEvent()
     setIsDeleteRecordEnable(true)
     setIsDeleteTaskModalVisible(false)
   }; 
 
   const handleDeleteDone = async () => {
-    sendDeleteRecordDoneEvent()
+    anlaytics.sendDeleteRecordDoneEvent()
     setIsDeleteRecordEnable(false)
   };
 
   const handleDeleteRecord = async (recordId) => {
+    console.log("Delete Record", recordId)
     await RoutineTaskHandler.removeRecord(recordId)
-    sendDeleteRecordEvent(recordId)
+    anlaytics.sendDeleteRecordEvent(recordId)
     fetchTaskRecords()
   };
 
   const handleTaskOperation = async () => {
     await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
-    sendChangeTaskStatusEvent(!isTaskCompleted)
+    anlaytics.sendChangeTaskStatusEvent(!isTaskCompleted)
     setIsTaskCompleted(!isTaskCompleted)
     setIsCompleteTaskModalVisible(false); 
   };
@@ -202,11 +212,11 @@ const RoutineTaskScreen = () => {
       </View>
       <View style={styles.recordItem}>
         <Text style={styles.recordText}>{item.message}</Text>
-        <Text style={styles.recordDate}>{new Date(item.dateAdded).toLocaleString()}</Text>
+        <Text style={styles.recordDate}>{new Date(item.time).toLocaleString()}</Text>
       </View>
       {isDeleteRecordEnable && (
         <TouchableOpacity
-          onPress={() => handleDeleteRecord(item.recordId)}  // Replace with your delete logic
+          onPress={() => handleDeleteRecord(item.id)}  // Replace with your delete logic
           style={styles.deleteIconContainer}
           accessibilityLabel={'Delete Record'}
         >
@@ -215,197 +225,14 @@ const RoutineTaskScreen = () => {
       )}
     </View>
   );
-
-
-  //ANalytics Events
-  const sendRoutineTaskImpressionEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.0.0',
-      'Routine_Task_Appeared',
-      'Routine_Task',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
-    );
-  };
-
-  const sendRecordListPresentedEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.1.0',
-      'Record_List_Presented',
-      'Routine_Task',
-      'Record_List',
-      ActionType.IMPRESSION,
-      '',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
-    );
-  };
-
-  const sendAddRecordPresentedEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.2.0',
-      'Add_Recod_Presented',
-      'Routine_Task',
-      'Add_Record',
-      ActionType.IMPRESSION,
-      '',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
-    );
-  };
-
-  const sendAddRecordEvent = async (recordId: string) => {
-    await AnalyticsHelper.sendEvent(
-      '6.2.1.1',
-      'Add_New_Record',
-      'Routine_Task',
-      'Add_Record',
-      ActionType.CLICK,
-      'Add',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id, 'recordId': recordId}
-    );
-  };
-
-  const sendCancelAddRecordEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.2.1.2',
-      'Cancel_Add_New_Record',
-      'Routine_Task',
-      'Add_Record',
-      ActionType.CLICK,
-      'Cancel',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
-    );
-  };
-
-  const sendChangeTaskStatusPresentedEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.3.0',
-      'Change_Task_Status_Presented',
-      'Routine_Task',
-      'Change_Task_Status',
-      ActionType.IMPRESSION,
-      '',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
-    );
-  };
-
-  const sendChangeTaskStatusEvent = async (isCompleted) => {
-    await AnalyticsHelper.sendEvent(
-      '6.3.1.1',
-      'Change_Task_Status',
-      'Routine_Task',
-      'Change_Task_Status',
-      ActionType.CLICK,
-      'Change',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId,'taskId': task.id, 'isDone': isCompleted}
-    );
-  };
-
-  const sendCancelChangeTaskStatusEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.3.1.2',
-      'Cancel_Change_Task_Status',
-      'Routine_Task',
-      'Change_Task_Status',
-      ActionType.CLICK,
-      'Cancel',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
-    );
-  };
-
-  const sendDeleteViewPresentedEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.4.0',
-      'Delete_View_Presented',
-      'Routine_Task',
-      'Delete_View',
-      ActionType.IMPRESSION,
-      '',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
-    );
-  };
-
-  const sendDeleteRecordClickdEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.4.1.1',
-      'Delete_Record_Clicked',
-      'Routine_Task',
-      'Delete_View',
-      ActionType.CLICK,
-      'Record',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
-    );
-  };
-
-  const sendDeleteTaskClickdEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.4.1.2',
-      'Delete_Task_Clicked',
-      'Routine_Task',
-      'Delete_View',
-      ActionType.CLICK,
-      'Task',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
-    );
-  };
-
-  const sendCancelDeleteClickdEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.4.1.3',
-      'Cancel_Delete_Clicked',
-      'Routine_Task',
-      'Delete_View',
-      ActionType.CLICK,
-      'Cancel',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
-    );
-  };
-
-  const sendDeleteRecordEvent = async (recodId: string) => {
-    await AnalyticsHelper.sendEvent(
-      '6.5.1.1',
-      'Delete_Record',
-      'Routine_Task',
-      'Delete_Record',
-      ActionType.CLICK,
-      'Delete',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id, 'recordId': recodId}
-    );
-  };
-
-  const sendDeleteRecordDoneEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.5.1.2',
-      'Delete_Record_Done',
-      'Routine_Task',
-      'Delete_Record',
-      ActionType.CLICK,
-      'Done',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id}
-    );
-  };
-
-
-  const sendContentClickeddEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '6.6.1',
-      'Contetn_Clicked',
-      'Routine_Task',
-      'Content_View',
-      ActionType.IMPRESSION,
-      '',
-      {'categoryId': task.categoryId, 'contentId' : task.contentId, 'taskId': task.id }
-    );
-  };
-
+  
 
   return (
     <View style={styles.container}>
       {/* Rounded corner title */}
       <View style={styles.topHeaderView}>
       <TouchableOpacity onPress={navigateToContentDetail} style={styles.roundedTitleContainer}>
-        <Text style={styles.title}>{task.contentTitle}</Text>
+        <Text style={styles.title}>{task.content.title}</Text>
         <Ionicons name="chevron-forward" size={24} color={theme.colors.grey1} />
       </TouchableOpacity>
       </View>
@@ -599,7 +426,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: theme.colors.borderGrey,
+    borderColor: theme.colors.greyLight2,
     borderRadius: 8,
     backgroundColor: theme.colors.white,
   },
@@ -614,7 +441,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 0,
     paddingVertical: 10,
-    backgroundColor: theme.colors.grey1, // Optional background for the header
+    //backgroundColor: theme.colors.grey1, // Optional background for the header
   },
   leftHeaderText: {
     textAlign: 'center',
@@ -635,7 +462,7 @@ const styles = StyleSheet.create({
   },
   recordItem: {
     paddingVertical: 15,
-    borderBottomColor: theme.colors.grey1,
+   // borderBottomColor: theme.colors.grey1,
     paddingRight: 15,
     gap: 5
   },
@@ -646,7 +473,7 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
   recordDate: {
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight3,
     fontSize: 12,
     marginTop: 5,
   },
@@ -657,7 +484,7 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -12 }],  // Adjust for exact vertical centering
   },
   emptyText: {
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight3,
     textAlign: 'center',
     marginTop: 20,
   },
@@ -666,7 +493,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: theme.colors.borderGrey,
+    borderTopColor: theme.colors.greyLight2,
   },
   iconButton: {
     padding: 10,
@@ -679,7 +506,7 @@ const styles = StyleSheet.create({
   iconButtonText: {
     fontSize: 12,
     textAlign: 'center',
-    color: theme.colors.grey1,
+    color: theme.colors.greyLight1,
   },
   iconButtonTextDisabled: {
     color: theme.colors.greyLight,
@@ -720,7 +547,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    backgroundColor: theme.colors.grey1,
+    backgroundColor: theme.colors.greyLight1,
     color: theme.colors.black,
     height: 80,
     padding: 10,
@@ -755,14 +582,14 @@ const styles = StyleSheet.create({
   },
 
   deleteRecordButton:  {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.blue,
     padding: 15,
     marginTop: 10,
     borderRadius: 8,
     alignItems: 'center',
   },
   deleteRecordButtonDisable: {
-    backgroundColor: theme.colors.primaryDisabled,
+    backgroundColor: theme.colors.blueDisabled,
   },
  deleteTaskButton: {
     backgroundColor: theme.colors.red,

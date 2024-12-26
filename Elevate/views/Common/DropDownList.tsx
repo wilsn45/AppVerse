@@ -135,14 +135,14 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.backgroundGreen, 
+    backgroundColor: theme.colors.secondaryThemeLight, 
     borderRadius: 15,
   },
   box: {
     borderRadius: 15,
     paddingVertical: 10,
     paddingHorizontal: 12,
-    backgroundColor: theme.colors.backgroundGreen,
+    backgroundColor: theme.colors.secondaryThemeLight,
     flexDirection: 'row',
     alignItems: 'center',
     width: 'auto',
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   item: {
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.backgroundGreen,
+    borderBottomColor: theme.colors.secondaryThemeLight,
   },
   itemText: {
     fontSize: 16,

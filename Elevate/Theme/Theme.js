@@ -14,31 +14,51 @@ const theme = {
 
 
       //Grey
-      greyLight: '#EBEBEB',
+      greyLight1: '#f4f4f71',  
+      greyLight2: '#F5F5F5',  //Border
+      greyLight3: '#c8c8c8',  //Save List Sub text
+      greyLight4: '#f0f0f0',  //Search bar background
+      grey: '#d3d3d3',        //Shadow 
+      greyDark1: '#969696',   //SubText 1
+      greyDark2: '#595959',   //SubText 2
+      greyLight: '#EBEBEB',    
+
       greyDark: '#5A5A5A',
       grey: '#272727',
 
 
       //Blue
       lightBlue: '#0cc0df',
+      blue: '#2355CA',
+      blueDisabled: '#b2c3eb',
 
 
       //Primary
 
 
       //Secondary 
+      secondaryTheme: '#37817B',
+      secondaryThemeLight: '#EBF6F6',
 
 
       //Black
+      black: '#000000',
+      blackLight1: '#1F1F1F',   //Heading Label
 
 
 
       //White
+      white: '#ffffff',
+
+
+      //red
+      red: '#ff3131',
+
+
 
 
       //Text
       textPrimary: '#1A1A1A',
-      textHeading: '#1F1F1F',
       textTitleLarge: '#595959',
       textTitleSmall: '#969696',
       textGrey1: '#c8c8c8',
@@ -47,7 +67,6 @@ const theme = {
 
       //theme
       primaryTheme: '#DD4F5A', 
-      secondaryTheme: '#37817B',
       secondaryThemeDisabled: '#A9C2BF',
  
 
@@ -55,14 +74,14 @@ const theme = {
       primary: '#2355CA',
       primaryDisabled: '#b2c3eb',
       background: '#F5F7F9',
-      white: '#ffffff',
-      grey1: '#f4f4f71',
+      
+  
       grey2: '#dcdef4',
       grey3: '#f8f8f8',
       greyText: '#6D6D6D',
-      black: '#000000',
+
       error: '#e74c3c',
-      red: '#ff3131',
+     
       green: '#4CAF50',
       yellow: '#D4AF37',
       selected1: '#0097b2',

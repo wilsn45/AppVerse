@@ -17,10 +17,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
-import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
+import { ContentListAnalytics } from '../../Analytics/ContentListAnalytics';
 import theme from '../../Theme/Theme.js';
 import firestore from '@react-native-firebase/firestore';
-import { useFocusEffect } from '@react-navigation/native'; // Ensure this is correctly imported
+import { useFocusEffect } from '@react-navigation/native'; 
+import { ContentHandler } from '../../Handlers/ContentHandler';
 
 
 const { height } = Dimensions.get('window');
@@ -30,41 +31,33 @@ const ContentScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { categorytitle, categoryId } = route.params;
-  const [contentList, setContentList] = useState<any[]>([]);
+  const [contentList, setContentList] = useState([]);
   const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
   const [likedCards, setLikedCards] = useState<Map<string, boolean>>(new Map());
   const [isModalVisible, setModalVisible] = useState(false);
   const [taskName, setTaskName] = useState('');
-  const [selectedContentid, setSelectedContendid] = useState(""); // Default to "Routine"
+  const [selectedContent, setSelectedContent] = useState(null); // Default to "Routine"
   const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
 
+  const analytics = new ContentListAnalytics(categoryId)
+
   useEffect(() => {
-     sendContentImpressionEvent()
+     analytics.sendContentImpressionEvent()
+     console.log("Fetched categoryId:", categoryId)
+
     fetchContentList()
   }, [ , categoryId, navigation, categorytitle]);
 
 
   const fetchContentList = async () => {
     try {
-        // Fetch categories from the updated path
-        console.log('Category id', categoryId);
-        const snapshot = await firestore().collection('Content').doc('List').collection(categoryId).get();
         
         // Map the fetched documents to include doc.id and category name
-        const contentList = snapshot.docs.map(doc => ({
-            id: doc.id,
-            title: doc.data().title, 
-            likeCount: doc.data().likeCount,
-            description: doc.data().description,
-            index: doc.data().index,
-            imageUrl:  doc.data().imageUrl
-        }));
-        
+        const contentList  = await ContentHandler.fetchContentByCategory(categoryId);
+        //console.log("Fetched ContentList:", contentList)
         setContentList(contentList)
-       sendContentListPresentedEvent()
-        
-
+      analytics.sendContentListPresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
     } finally {
@@ -73,28 +66,28 @@ const ContentScreen = () => {
 };
 
 const loadCards = async () => {
-  console.log('Fetched list 2', contentList);
-  const savedItemsPromise = SaveHandler.getSaves();
-  const likedItemsPromise = LikeHandler.getLikes();
-
-  const [savedItems, likedItems] = await Promise.all([savedItemsPromise, likedItemsPromise]);
-
-  const savedContentIds = savedItems[categoryId] || [];
-  const likedContentIds = likedItems[categoryId] || [];
+  //console.log('Fetched list 2', contentList);
+  
+  const savedContentIds = await SaveHandler.getSavedCardByCategory(categoryId) || [];
+  const likedContentIds =  await LikeHandler.getLikedCardByCategory(categoryId) || [];
+  //console.log("savedContentIds", savedContentIds)
+  //console.log("likedContentIds", likedContentIds)
 
   const updatedSavedCards = new Map();
   const updatedLikedCards = new Map();
 
-  console.log('Updated Liked: contentList  Count', contentList);
+  //console.log('Updated Liked: contentList  Count', contentList);
+
+  //console.log("contentList length:", contentList.length);
 
   contentList.forEach((item) => {
-    updatedSavedCards.set(item.id, savedContentIds.some((savedCard) => savedCard.contentId === item.id));
-    updatedLikedCards.set(item.id, likedContentIds.some((likedCard) => likedCard.contentId === item.id));
+    updatedSavedCards.set(item.id, savedContentIds.some((savedCard) => savedCard.id === item.id));
+    updatedLikedCards.set(item.id, likedContentIds.some((likedCard) => likedCard.id === item.id));
   });
 
   setSavedCards(updatedSavedCards);
   setLikedCards(updatedLikedCards);
-  console.log('Updated Liked Count', updatedLikedCards);
+ // console.log('updatedSavedCards', updatedSavedCards);
 };
 
 
@@ -112,40 +105,41 @@ useFocusEffect(
     navigation.setOptions({
       title: categorytitle,
     });
-    console.log('LoadCard: Fetched list', contentList);
+    //console.log('LoadCard: Fetched list', contentList);
     if (contentList.length > 0) {
-       loadCards();
+        loadCards();
     }
   }, [ contentList])
 );
   
 
-  const handleSave = async (itemId, itemTitle) => {
-    const isSaved = savedCards.get(itemId);
-    sendContentSavedEvent(isSaved, itemId)
+  const handleSave = async (content) => {
+    const isSaved = savedCards.get(content.id);
+    analytics.sendContentSavedEvent(isSaved, content.id)
     if (isSaved) {
-      await SaveHandler.removeSave(categoryId, itemId);
+      await SaveHandler.removeSave(categoryId, content.id);
     } else {
-      await SaveHandler.addSave(categoryId, itemId, itemTitle);
+     // console.log("Saving Item", content)
+      await SaveHandler.addSave(content);
     }
     // Update only the savedCards state here
-    setSavedCards((prev) => new Map(prev).set(itemId, !isSaved));
+    setSavedCards((prev) => new Map(prev).set(content.id, !isSaved));
   };
   
-  const handleLike = async (itemId, itemTitle) => {
-    const isLiked = likedCards.get(itemId);
+  const handleLike = async (content) => {
+    const isLiked = likedCards.get(content.id);
 
-    sendContentLikedEvent(isLiked, itemId)
+    analytics.sendContentLikedEvent(isLiked, content.id)
 
     if (isLiked) {
-      await LikeHandler.removeLike(categoryId, itemId);
-      dencreaseLikeCount(itemId)
+      await LikeHandler.removeLike(categoryId, content.id);
+      dencreaseLikeCount(content.id)
     } else {
-      await LikeHandler.addLike(categoryId, itemId, itemTitle);
-      increaseLikeCount(itemId)
+      await LikeHandler.addLike(categoryId, content.id, content.title);
+      increaseLikeCount(content.id)
     }
     // Update only the likedCards state here
-    setLikedCards((prev) => new Map(prev).set(itemId, !isLiked));
+    setLikedCards((prev) => new Map(prev).set(content.id, !isLiked));
     
   };
 
@@ -213,15 +207,15 @@ useFocusEffect(
     }
   };
 
-  const handleCardPress = (item: { id: string, title: string }) => {
-    console.log('Pass Likes Count', item.likeCount);
-    navigation.navigate('ContentDetailScreen', { itemId: item.id, itemTitle: item.title, categoryId: categoryId });
+  const handleCardPress = (content) => {
+    console.log('Pass Likes Count', content.likeCount);
+    navigation.navigate('ContentDetailScreen', { content });
   };
 
-  const handleAddTask = (itemId: string) => {
-    setSelectedContendid(itemId)
+  const handleAddTask = (item) => {
+    setSelectedContent(item)
     setModalVisible(true);
-    sendAddTaskPresentedEvent(itemId)
+    analytics.sendAddTaskPresentedEvent(item.id)
   };
 
   const handleCancelAddTask = async () => { 
@@ -229,7 +223,7 @@ useFocusEffect(
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
       setModalVisible(false); 
-      sendCancelAddTaskPEvent(selectedContentid)
+      analytics.sendCancelAddTaskPEvent(selectedContent.id)
   }
 
   const handleSubmitTask = async () => {
@@ -239,134 +233,22 @@ useFocusEffect(
     }
   
     try {
-      // Call the addTask method from TaskHandler to save the task
-      const content = contentList.find((item) => item.id === selectedContentid) ;
-      const contentTitle  = content ? content.title : '';
-
-      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, selectedContentid,contentTitle, categoryId);
+      
+      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, selectedContent);
   
       // Log the task details to console (for debugging purposes)
-      console.log(`Task Added contentTitle: ${contentTitle}`)
-      console.log(`Task Added: ${taskName}, Type: ${selectedTaskType}, Category: ${categoryId}, ContentId: ${selectedContentid}`);
-  
+      console.log(`Task Added selectedContent: ${selectedContent}`)
+      
       setTaskName(''); 
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
       setModalVisible(false); 
-      sendAddTaskEvent(selectedContentid, selectedTaskType, selectedSubTaskType)
+      analytics.sendAddTaskEvent(selectedContent.id, selectedTaskType, selectedSubTaskType)
     } catch (error) {
       console.error("Error adding task:", error);
       Alert.alert('Error', 'Something went wrong while adding the task.');
     }
   };
-
-  //Analytics
-  const sendContentImpressionEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '4.0.0',
-      'Content_List_Appeared',
-      'Content_List',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      { 'categoryId': categoryId}
-   );
-  };
-
-  const sendContentListPresentedEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '4.1.0',
-      'Content_List_Presented',
-      'Content_List',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      { 'categoryId': categoryId}
-   );
-  };
-
-  const sendContentSavedEvent = async (isSave: boolean, contentId: String) => {
-     const optionType =  isSave ? 'Save' : 'Remove'
-     const eventId =  isSave ? '4.1.1.1' : '4.1.1.2'
-     const eventName =  isSave ? 'Content_Saved' : 'Content_Saved_Removed'
-    await AnalyticsHelper.sendEvent(
-      eventId,
-      eventName,
-      'Content_List',
-      'Save',
-      ActionType.CLICK,
-      optionType,
-      { 'categoryId': categoryId, 'contentId': contentId}
-   );
-  };
-
-  const sendContentLikedEvent = async (isLike: boolean, contentId: String) => {
-    const optionType =  isLike ? 'Like' : 'Remove'
-    const eventId =  isLike ? '4.2.1.1' : '4.2.1.2'
-     const eventName =  isLike ? 'Content_Liked' : 'Content_Like_Removed'
-   await AnalyticsHelper.sendEvent(
-     eventId,
-     eventName,
-     'Content_List',
-     'Like',
-     ActionType.CLICK,
-     optionType,
-     { 'categoryId': categoryId, 'contentId': contentId}
-  );
- };
-
- const sendAddTaskPresentedEvent = async (contentId: String) => {
-  
- await AnalyticsHelper.sendEvent(
-   '4.3.0',
-   'Add_Task_Presented',
-   'Content_List',
-   'Add_Task',
-   ActionType.IMPRESSION,
-   '',
-   { 'categoryId': categoryId, 'contentId': contentId}
-);
-};
-
-const sendAddTaskEvent = async (contentId: String, taskType: number, freqType: number) => {
-  
-  await AnalyticsHelper.sendEvent(
-    '4.3.1.2',
-    'Add_Task_Cancelled',
-    'Content_List',
-    'Add_Task',
-    ActionType.CLICK,
-    'Cancel',
-    { 'categoryId': categoryId, 'contentId': contentId, 'taskType': taskType, 'freqType': freqType}
- );
- };
-
-const sendCancelAddTaskPEvent = async (contentId: String) => {
-  
-  await AnalyticsHelper.sendEvent(
-    '4.3.1.2',
-    'Add_Task_Cancelled',
-    'Content_List',
-    'Add_Task',
-    ActionType.CLICK,
-    'Cancel',
-    { 'categoryId': categoryId, 'contentId': contentId}
- );
- };
-
-
- const sendBackEvent = async () => {
-  
-  await AnalyticsHelper.sendEvent(
-    '4.4.1.1',
-    'Back_Clicked',
-    'Content_List',
-    'Header',
-    ActionType.CLICK,
-    'Back',
-    { 'categoryId': categoryId}
- );
- };
 
 
   return (
@@ -386,7 +268,7 @@ const sendCancelAddTaskPEvent = async (contentId: String) => {
               <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
             </TouchableOpacity>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item.id, item.title)}
+              <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item)}
                 accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
                 <Ionicons
                   name={savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
@@ -394,7 +276,7 @@ const sendCancelAddTaskPEvent = async (contentId: String) => {
                   color={savedCards.get(item.id) ? theme.colors.green : theme.colors.primary}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike(item.id, item.title)}
+              <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike(item)}
                 accessibilityLabel={likedCards.get(item.id) ? `Unlike Card. Total like ${item.likeCount}`: `Like Card. Total like ${item.likeCount}`}>
                 <Ionicons
                   name={likedCards.get(item.id) ? 'heart' : 'heart-outline'}
@@ -403,7 +285,7 @@ const sendCancelAddTaskPEvent = async (contentId: String) => {
                 />
                 <Text>{item.likeCount}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item.id)}
+              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item)}
                  accessibilityLabel={'Add Task'}>
                 <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>
               </TouchableOpacity>
