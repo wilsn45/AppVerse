@@ -17,7 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
-import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
+import { ContentListAnalytics } from '../../Analytics/ContentListAnalytics';
 import theme from '../../Theme/Theme.js';
 import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native'; 
@@ -40,8 +40,10 @@ const ContentScreen = () => {
   const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
 
+  const analytics = new ContentListAnalytics(categoryId)
+
   useEffect(() => {
-     sendContentImpressionEvent()
+     analytics.sendContentImpressionEvent()
      console.log("Fetched categoryId:", categoryId)
 
     fetchContentList()
@@ -55,7 +57,7 @@ const ContentScreen = () => {
         const contentList  = await ContentHandler.fetchContentByCategory(categoryId);
         //console.log("Fetched ContentList:", contentList)
         setContentList(contentList)
-       sendContentListPresentedEvent()
+      analytics.sendContentListPresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
     } finally {
@@ -113,7 +115,7 @@ useFocusEffect(
 
   const handleSave = async (content) => {
     const isSaved = savedCards.get(content.id);
-    sendContentSavedEvent(isSaved, content.id)
+    analytics.sendContentSavedEvent(isSaved, content.id)
     if (isSaved) {
       await SaveHandler.removeSave(categoryId, content.id);
     } else {
@@ -127,7 +129,7 @@ useFocusEffect(
   const handleLike = async (content) => {
     const isLiked = likedCards.get(content.id);
 
-    sendContentLikedEvent(isLiked, content.id)
+    analytics.sendContentLikedEvent(isLiked, content.id)
 
     if (isLiked) {
       await LikeHandler.removeLike(categoryId, content.id);
@@ -213,7 +215,7 @@ useFocusEffect(
   const handleAddTask = (item) => {
     setSelectedContent(item)
     setModalVisible(true);
-    sendAddTaskPresentedEvent(item.id)
+    analytics.sendAddTaskPresentedEvent(item.id)
   };
 
   const handleCancelAddTask = async () => { 
@@ -221,7 +223,7 @@ useFocusEffect(
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
       setModalVisible(false); 
-      sendCancelAddTaskPEvent(selectedContent.id)
+      analytics.sendCancelAddTaskPEvent(selectedContent.id)
   }
 
   const handleSubmitTask = async () => {
@@ -241,120 +243,12 @@ useFocusEffect(
       setSelectedSubTaskType(1)
       setSelectedTaskType(1); 
       setModalVisible(false); 
-      sendAddTaskEvent(selectedContent.id, selectedTaskType, selectedSubTaskType)
+      analytics.sendAddTaskEvent(selectedContent.id, selectedTaskType, selectedSubTaskType)
     } catch (error) {
       console.error("Error adding task:", error);
       Alert.alert('Error', 'Something went wrong while adding the task.');
     }
   };
-
-  //Analytics
-  const sendContentImpressionEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '4.0.0',
-      'Content_List_Appeared',
-      'Content_List',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      { 'categoryId': categoryId}
-   );
-  };
-
-  const sendContentListPresentedEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '4.1.0',
-      'Content_List_Presented',
-      'Content_List',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      { 'categoryId': categoryId}
-   );
-  };
-
-  const sendContentSavedEvent = async (isSave: boolean, contentId: String) => {
-     const optionType =  isSave ? 'Save' : 'Remove'
-     const eventId =  isSave ? '4.1.1.1' : '4.1.1.2'
-     const eventName =  isSave ? 'Content_Saved' : 'Content_Saved_Removed'
-    await AnalyticsHelper.sendEvent(
-      eventId,
-      eventName,
-      'Content_List',
-      'Save',
-      ActionType.CLICK,
-      optionType,
-      { 'categoryId': categoryId, 'contentId': contentId}
-   );
-  };
-
-  const sendContentLikedEvent = async (isLike: boolean, contentId: String) => {
-    const optionType =  isLike ? 'Like' : 'Remove'
-    const eventId =  isLike ? '4.2.1.1' : '4.2.1.2'
-     const eventName =  isLike ? 'Content_Liked' : 'Content_Like_Removed'
-   await AnalyticsHelper.sendEvent(
-     eventId,
-     eventName,
-     'Content_List',
-     'Like',
-     ActionType.CLICK,
-     optionType,
-     { 'categoryId': categoryId, 'contentId': contentId}
-  );
- };
-
- const sendAddTaskPresentedEvent = async (contentId: String) => {
-  
- await AnalyticsHelper.sendEvent(
-   '4.3.0',
-   'Add_Task_Presented',
-   'Content_List',
-   'Add_Task',
-   ActionType.IMPRESSION,
-   '',
-   { 'categoryId': categoryId, 'contentId': contentId}
-);
-};
-
-const sendAddTaskEvent = async (contentId: String, taskType: number, freqType: number) => {
-  
-  await AnalyticsHelper.sendEvent(
-    '4.3.1.2',
-    'Add_Task_Cancelled',
-    'Content_List',
-    'Add_Task',
-    ActionType.CLICK,
-    'Cancel',
-    { 'categoryId': categoryId, 'contentId': contentId, 'taskType': taskType, 'freqType': freqType}
- );
- };
-
-const sendCancelAddTaskPEvent = async (contentId: String) => {
-  
-  await AnalyticsHelper.sendEvent(
-    '4.3.1.2',
-    'Add_Task_Cancelled',
-    'Content_List',
-    'Add_Task',
-    ActionType.CLICK,
-    'Cancel',
-    { 'categoryId': categoryId, 'contentId': contentId}
- );
- };
-
-
- const sendBackEvent = async () => {
-  
-  await AnalyticsHelper.sendEvent(
-    '4.4.1.1',
-    'Back_Clicked',
-    'Content_List',
-    'Header',
-    ActionType.CLICK,
-    'Back',
-    { 'categoryId': categoryId}
- );
- };
 
 
   return (
