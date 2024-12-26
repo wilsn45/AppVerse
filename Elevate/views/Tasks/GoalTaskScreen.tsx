@@ -257,7 +257,7 @@ const GoalTaskScreen = () => {
              style={styles.iconButton}
              disabled={isTaskCompleted || isDeleteRecordEnable} 
              accessibilityLabel={'Add new progress'}>
-          <Ionicons name="add-outline" size={40} color={(isTaskCompleted || isDeleteRecordEnable) ? theme.colors.greyLight : theme.colors.grey} />
+          <Ionicons name="add-outline" size={30} color={(isTaskCompleted || isDeleteRecordEnable) ? theme.colors.greyLight3 : theme.colors.grey} />
           <Text style={[styles.iconButtonText, (isTaskCompleted || isDeleteRecordEnable) && styles.iconButtonTextDisabled]}>Add Record</Text>
         </TouchableOpacity>
        
@@ -265,7 +265,7 @@ const GoalTaskScreen = () => {
             style={styles.iconButton}
             disabled={isDeleteRecordEnable}
             accessibilityLabel={'Delete Record Or Task'}>
-          <Ionicons name="trash-outline" size={40} color={(isDeleteRecordEnable) ? theme.colors.greyLight : theme.colors.grey} />
+          <Ionicons name="trash-outline" size={30} color={(isDeleteRecordEnable) ? theme.colors.greyLight3 : theme.colors.grey} />
           <Text style={[styles.iconButtonText, (isDeleteRecordEnable) && styles.iconButtonTextDisabled]}>Delete</Text>
         </TouchableOpacity>
       </View>
@@ -455,16 +455,16 @@ const styles = StyleSheet.create({
   leftHeaderText: {
     textAlign: 'center',
     color: theme.colors.secondaryTheme,
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '800',
   },
   centerHeaderText: {
     marginLeft: 10,
     flex: 1,
     textAlign: 'left',
     color: theme.colors.secondaryTheme,
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: 16,
+    fontWeight: '800',
   },
   recordList: {
     paddingHorizontal: 20,
@@ -473,7 +473,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     //borderBottomColor: theme.colors.grey1,
     paddingRight: 15,
-    gap: 5
+    //gap: 5
   },
   recordText: {
     color: theme.colors.black,
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
     color: theme.colors.greyLight1,
   },
   iconButtonTextDisabled: {
-    color: theme.colors.greyLight,
+    color: theme.colors.greyLight3,
   },
   disabledButton: {
     backgroundColor: theme.colors.secondaryThemeDisabled,
@@ -638,7 +638,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
   },
-  mainCellView: { flexDirection: 'row', gap: 15 },
+  mainCellView: { flexDirection: 'row', gap: 25, alignItems: 'center' },
   leftCellView: { width: 50, alignItems: 'center', justifyContent: 'center',  },
   lineSuperView: {
     flex: 1,
@@ -665,7 +665,7 @@ const styles = StyleSheet.create({
   },
   circleText: {
     color: theme.colors.greyDark, 
-    fontSize: 16, 
+    fontSize: 15, 
     fontWeight: 'bold', 
   },
   deleteDoneButton: {
