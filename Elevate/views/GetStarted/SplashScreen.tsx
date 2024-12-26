@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ProfileHandler from '../../Handlers/ProfileHandler';
-import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
+import { SplashAnalytics } from '../../Analytics/SplashAnalytics';
 
 const SplashScreen = () => {
     const [loading, setLoading] = useState(true);
     const navigation = useNavigation();
 
+    const analytics = new SplashAnalytics()
+
     useEffect(() => {
-       sendNavigateToHomeEvent();
+        analytics.sendSplashImpressionEvent()
+        analytics.sendNavigateToHomeEvent();
        navigation.navigate('HomeTabNavigator');
        
         // const checkOnboardingStatus = async () => {
@@ -30,54 +33,6 @@ const SplashScreen = () => {
         //     }
         // };
     }, [navigation]);
-
-    const sendSplashImpressionEvent = async () => {
-        await AnalyticsHelper.sendEvent(
-          '8.0.0',
-          'Splash_Appeared',
-          'Splash',
-          '',
-          ActionType.IMPRESSION,
-          '',
-          {}
-        );
-    };
-
-    const sendCategoryFetchEvent = async () => {
-        await AnalyticsHelper.sendEvent(
-          '8.0.0.1',
-          'Categories_Fetched',
-          'Splash',
-          '',
-          ActionType.IMPRESSION,
-          '',
-          {}
-        );
-    };
-
-    const sendNavigateToLetsStartEvent = async () => {
-        await AnalyticsHelper.sendEvent(
-          '8.1.0.1',
-          'Navigate_LetsStart',
-          'Splash',
-          '',
-          ActionType.IMPRESSION,
-          '',
-          {}
-        );
-    };
-
-    const sendNavigateToHomeEvent = async () => {
-        await AnalyticsHelper.sendEvent(
-          '8.1.0.2',
-          'Navigate_Home',
-          'Splash',
-          '',
-          ActionType.IMPRESSION,
-          '',
-          {}
-        );
-    };
 
     return (
         <View style={styles.container}>
