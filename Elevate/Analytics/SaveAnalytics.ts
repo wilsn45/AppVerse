@@ -2,18 +2,6 @@ import { AnalyticsHelper, ActionType } from './AnalyticsHelper';
 
 export class SaveAnalytics {
 
- async sendHomeImpressionEvent() {
-    await AnalyticsHelper.sendEvent(
-        '1.0.0',
-        'Home_Appeared',
-        'Home',
-        '',
-        ActionType.IMPRESSION,
-        '',
-        {}
-      );
-  }
-
  async sendSaveImpressionEvent(selectedCategoryId) {
     await AnalyticsHelper.sendEvent(
         '2.0.0',

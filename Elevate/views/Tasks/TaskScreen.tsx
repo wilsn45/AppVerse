@@ -7,7 +7,7 @@ import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
 import { useNavigation } from '@react-navigation/native';
 import theme from '../../Theme/Theme';
 import DropDownList from '../Common/DropDownList';
-import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
+import { TaskAnalytics } from '../../Analytics/TaskAnalytics';
 
 const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -15,6 +15,7 @@ const TaskScreen = () => {
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
+  const analytics = new TaskAnalytics()
 
   const fetchTasks = async () => {
     try {
@@ -29,13 +30,13 @@ const TaskScreen = () => {
   };
 
   useEffect(() => {
-    sendSaveImpressionEvent(selectedCategory, selectedTaskType);
+    analytics.sendSaveImpressionEvent(selectedCategory, selectedTaskType);
     const fetchCategories = async () => {
       try {
         const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
         console.log("Live Categories", liveCategories)
-        sendCategoryDisplayedEvent(selectedCategory, selectedTaskType);
+        analytics.sendCategoryDisplayedEvent(selectedCategory, selectedTaskType);
       } catch (error) {
         console.error('Error fetching categories', error);
       }
@@ -85,7 +86,7 @@ const TaskScreen = () => {
   );
 
   const handleTaskPress = (task) => {
-    sendTaskOpenEvent(task.categoryId, task.contentId, task.id);
+    analytics.sendTaskOpenEvent(task.content.categoryId, task.content.id, task.id);
     if (task.type === 1) {
       navigation.navigate('RoutineTaskScreen', { task });
     } else if (task.type === 2) {
@@ -95,48 +96,14 @@ const TaskScreen = () => {
 
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
-    sendCategoryClickedEvent(categoryId);
+    analytics.sendCategoryClickedEvent(categoryId);
   };
 
   const handleTaskTypeSelect = (taskUd) => {
     setSelectedTaskType(taskUd);
-    sendTaskTypeChangeEvent(taskUd);
+    analytics.sendTaskTypeChangeEvent(taskUd);
   };
 
-  // Analytics Events
-  const sendSaveImpressionEvent = async (selectedCategoryId, selectedTaskType) => {
-    await AnalyticsHelper.sendEvent('3.0.0', 'Task_Appeared', 'Task', '', ActionType.IMPRESSION, '', {
-      selectedCategoryId,
-      selectedTaskType,
-    });
-  };
-
-  const sendCategoryDisplayedEvent = async (selectedCategoryId, selectedTaskType) => {
-    await AnalyticsHelper.sendEvent('3.1.0', 'Content_List_Presented', 'Task', 'Content_List', ActionType.IMPRESSION, '', {
-      selectedCategoryId,
-      selectedTaskType,
-    });
-  };
-
-  const sendTaskOpenEvent = async (categoryId, contentId, taskId) => {
-    await AnalyticsHelper.sendEvent('3.1.1', 'Content_Clicked', 'Task', 'Content_List', ActionType.CLICK, '', {
-      categoryId,
-      contentId,
-      taskId,
-    });
-  };
-
-  const sendCategoryClickedEvent = async (categoryId) => {
-    await AnalyticsHelper.sendEvent('3.2.1', 'Categoy_Filter_Selected', 'Task', 'Category_Filter', ActionType.CLICK, '', {
-      categoryId,
-    });
-  };
-
-  const sendTaskTypeChangeEvent = async (taskType) => {
-    await AnalyticsHelper.sendEvent('3.2.2', 'Task_Type_Changed', 'Task', 'Task_Tab', ActionType.CLICK, '', {
-      taskType,
-    });
-  };
 
   return (
     <SafeAreaView style={styles.container}>

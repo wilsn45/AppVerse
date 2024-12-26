@@ -4,7 +4,6 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollV
 import { useNavigation } from '@react-navigation/native';
 import { HomeHandler } from '../Handlers/HomeHandler'; 
 import ProfileHandler from '../Handlers/ProfileHandler'; 
-import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
 import { HomeAnalytics } from '../Analytics/HomeAnalytics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
