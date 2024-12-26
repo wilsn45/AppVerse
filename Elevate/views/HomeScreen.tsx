@@ -63,10 +63,9 @@ const HomeScreen = () => {
           }
        }
 
+       setSectionDataModel(sectionDataArray)
        setSavedCards(newSavedCards);
 
-      // console.log('SectionDataArray', sectionDataArray)
-       setSectionDataModel(sectionDataArray)
        analytics.sendCategoryDisplayedEvent(liveCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -104,6 +103,7 @@ const HomeScreen = () => {
     try {
       
       const newSavedCards = new Map();
+      console.log("sectionDataModel", sectionDataModel);
       if (!sectionDataModel || sectionDataModel.length === 0) {
         console.log("sectionDataModel is empty. Exiting function.");
         return; 
@@ -112,8 +112,6 @@ const HomeScreen = () => {
       for (const section of sectionDataModel) {
         const data = section.data;
 
-        
-  
         // Use a for...of loop to handle async operations properly
         for (const item of data) {
           //console.log("sectionDataModel item", item)
@@ -234,7 +232,7 @@ const HomeScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
         <Text style={styles.userNameLabel}>Hi, There!</Text>
 
-        <Text style={styles.categoryLabel}>Categories</Text>
+        <Text style={styles.horizontalListTitle}>Categories</Text>
         <FlatList
           data={groupCategories()}
           renderItem={({ item }) => (
@@ -277,10 +275,11 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: theme.colors.white,
+    paddingVertical: 0,
+    paddingHorizontal: 5,
   },
   container: {
     flex: 1,
-    padding: 10,
   },
   welcomeLabel: {
     fontSize: 20,
@@ -299,11 +298,10 @@ const styles = StyleSheet.create({
   },
   categoryLabel: {
     fontSize: 20,
-    paddingLeft: 20,
-    paddingBottom: 10,
-    textAlign: 'left',
-    fontWeight: '600',
+    marginVertical: 10,
+    fontWeight: '800',
     color: theme.colors.blackLight1,
+    paddingLeft: 20, 
   },
   contentContainer: {
     flexGrow: 1,
@@ -342,11 +340,10 @@ const styles = StyleSheet.create({
     height: 120,
     resizeMode: 'cover',
   },
-
   horizontalListTitle: {
     fontSize: 20,
     marginVertical: 10,
-    fontWeight: '600',
+    fontWeight: '800',
     color: theme.colors.blackLight1,
     paddingLeft: 20, 
   },

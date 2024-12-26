@@ -252,6 +252,7 @@ const styles = StyleSheet.create({
     gap: 5,
     flexDirection: 'row'
   },
+
   categoryText: {
     color: theme.colors.greyLight3,
     fontWeight: '800',
@@ -259,8 +260,7 @@ const styles = StyleSheet.create({
   },
   taskTypeText: {
     color: theme.colors.greyLight3,
-    fontWeight: '600',
-    fontSize: 14,
+    fontSize: 12,
   },
   emptyText: {
     textAlign: 'center',

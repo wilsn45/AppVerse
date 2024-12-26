@@ -42,9 +42,9 @@ export class SaveHandler {
     const newSavedItem = new SavedContentData(item.id, item.title, item.categoryId, item.categoryTitle, item.readMin, item.thumbnail)
     const savedItems = await this.getSaves();
   
-    console.log("Before Save:", savedItems);
+    //console.log("Before Save:", savedItems);
 
-    console.log("Before Save newSavedItem:", newSavedItem);
+    //console.log("Before Save newSavedItem:", newSavedItem);
   
     // Remove any existing item with the same ID in the category
     if (savedItems[newSavedItem.categoryId]) {
@@ -53,7 +53,7 @@ export class SaveHandler {
       );
     }
   
-    console.log("After removing duplicate Save:", savedItems);
+    //console.log("After removing duplicate Save:", savedItems);
   
     // Add the new item to the category
     if (!savedItems[newSavedItem.categoryId]) {
@@ -61,7 +61,7 @@ export class SaveHandler {
     }
     savedItems[newSavedItem.categoryId].push(newSavedItem);
   
-    console.log("After Final Save:", newSavedItem);
+    //console.log("After Final Save:", newSavedItem);
   
     // Save back to AsyncStorage
     await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(savedItems));

@@ -26,7 +26,7 @@ export class CategoryHandler {
       // Ensure the categories are an array
       if (Array.isArray(categories)) {
         await AsyncStorage.setItem(this.LIVE_CATEGORY_STORAGE_KEY, JSON.stringify(categories));
-        console.log('Categories have been saved successfully.');
+        //console.log('Categories have been saved successfully.');
       } else {
         throw new Error('Input must be an array of categories.');
       }
