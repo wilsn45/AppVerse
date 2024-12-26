@@ -6,7 +6,7 @@ import { CategoryHandler } from '../Handlers/CategoryHandler';
 import { SaveHandler } from '../Handlers/SaveHandler';
 import DropDownList from './Common/DropDownList';
 import theme from '../Theme/Theme';
-import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
+import { SaveAnalytics } from '../Analytics/SaveAnalytics';
 import { Swipeable } from 'react-native-gesture-handler';
 
 const SaveScreen = () => {
@@ -17,14 +17,15 @@ const SaveScreen = () => {
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
+  const analytics = new SaveAnalytics()
 
   useEffect(() => {
-    sendSaveImpressionEvent(selectedCategory);
+    analytics.sendSaveImpressionEvent(selectedCategory);
     const fetchCategories = async () => {
       try {
         const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
-        sendCategoryDisplayedEvent(selectedCategory);
+       analytics. sendCategoryDisplayedEvent(selectedCategory);
       } catch (error) {
         console.error("Error fetching categories", error);
       }
@@ -59,7 +60,7 @@ const SaveScreen = () => {
 
   const handleRemoveCard = async (categoryId, id) => {
     try {
-      sendContentRemovedEvent(categoryId, id);
+      analytics.sendContentRemovedEvent(categoryId, id);
       await SaveHandler.removeSave(categoryId, id);
       fetchSavedCards();
     } catch (error) {
@@ -69,13 +70,13 @@ const SaveScreen = () => {
 
   const handleCardPress = (content) => {
     console.log("Opening Card", content)
-    sendContentOpenEvent(content.categoryId, content.id);
+    analytics.sendContentOpenEvent(content.categoryId, content.id);
     navigation.navigate('ContentDetailScreen', { content });
   };
 
   const handleCategorySelect = (categoryID) => {
     setSelectedCategory(categoryID);
-    sendCategoryClickedEvent(categoryID);
+    analytics.sendCategoryClickedEvent(categoryID);
   };
 
   const categoryOptions = [
@@ -122,66 +123,6 @@ const SaveScreen = () => {
           <Ionicons name="trash" size={30} color={theme.colors.white} />
         </Animated.View>
       </TouchableOpacity>
-    );
-  };
-
-  const sendSaveImpressionEvent = async (selectedCategoryId) => {
-    await AnalyticsHelper.sendEvent(
-      '2.0.0',
-      'Save_Appeared',
-      'Save',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      { selectedCategoryId }
-    );
-  };
-
-  const sendCategoryDisplayedEvent = async (selectedCategoryId) => {
-    await AnalyticsHelper.sendEvent(
-      '2.1.0',
-      'Content_Lis_Presented',
-      'Save',
-      'Content_List',
-      ActionType.IMPRESSION,
-      '',
-      { selectedCategoryId }
-    );
-  };
-
-  const sendContentOpenEvent = async (categoryId, contentId) => {
-    await AnalyticsHelper.sendEvent(
-      '2.1.1.1',
-      'Content_Clicked',
-      'Save',
-      'Content_List',
-      ActionType.CLICK,
-      'Open',
-      { categoryId, contentId }
-    );
-  };
-
-  const sendContentRemovedEvent = async (categoryId, contentId) => {
-    await AnalyticsHelper.sendEvent(
-      '2.1.1.2',
-      'Content_Save_Removed',
-      'Save',
-      'Content_List',
-      ActionType.CLICK,
-      'Delete',
-      { categoryId, contentId }
-    );
-  };
-
-  const sendCategoryClickedEvent = async (categoryId) => {
-    await AnalyticsHelper.sendEvent(
-      '2.2.1',
-      'Categoy_Filter_Selected',
-      'Save',
-      'Category_Filter',
-      ActionType.CLICK,
-      '',
-      { categoryId }
     );
   };
 

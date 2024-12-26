@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { HomeHandler } from '../Handlers/HomeHandler'; 
 import ProfileHandler from '../Handlers/ProfileHandler'; 
 import { AnalyticsHelper, ActionType } from '../Analytics/AnalyticsHelper';
+import { HomeAnalytics } from '../Analytics/HomeAnalytics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SaveHandler } from '../Handlers/SaveHandler.tsx';
@@ -23,6 +24,7 @@ const HomeScreen = () => {
   const leftPadding = 20; // Adjust these values as needed
   const rightPadding = 20;
   const spacing = 10; // Space between tiles
+  const analytics = new HomeAnalytics();
 
   // Example dynamic data for the horizontal FlatLists
   const categoryData = [];
@@ -30,7 +32,7 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        sendHomeImpressionEvent();
+        analytics.sendHomeImpressionEvent()
         const homeData = await HomeHandler.getHome();
         
         const liveCategories = homeData['Categories']
@@ -66,7 +68,7 @@ const HomeScreen = () => {
 
       // console.log('SectionDataArray', sectionDataArray)
        setSectionDataModel(sectionDataArray)
-       sendCategoryDisplayedEvent(liveCategories);
+       analytics.sendCategoryDisplayedEvent(liveCategories);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
@@ -138,7 +140,7 @@ const HomeScreen = () => {
 
 
   const handleTilePress = (categorytitle: string, id: string) => {
-    sendCategoryClickedEvent(id);
+    analytics.sendCategoryClickedEvent(id);
      navigation.navigate('ContentScreen', { categorytitle, categoryId: id });
   };
 
@@ -224,57 +226,8 @@ const HomeScreen = () => {
   );
 
   const handleCardPress = (content) => {
-    sendContentOpenEvent(content.categoryId, content.id);
+    analytics.sendContentOpenEvent(content.categoryId, content.id);
     navigation.navigate('ContentDetailScreen', { content });
-  };
-
-  // Analytics Events
-  const sendHomeImpressionEvent = async () => {
-    await AnalyticsHelper.sendEvent(
-      '1.0.0',
-      'Home_Appeared',
-      'Home',
-      '',
-      ActionType.IMPRESSION,
-      '',
-      {}
-    );
-  };
-
-  const sendCategoryDisplayedEvent = async (categoryList: [string]) => {
-    await AnalyticsHelper.sendEvent(
-      '1.1.0',
-      'Category_Displayed',
-      'Home',
-      'Category_List',
-      ActionType.IMPRESSION,
-      '',
-      { category: categoryList }
-    );
-  };
-
-  const sendCategoryClickedEvent = async (categoryId: string) => {
-    await AnalyticsHelper.sendEvent(
-      '1.1.1',
-      'Category_Clicked',
-      'Home',
-      'Category_List',
-      ActionType.CLICK,
-      '',
-      { categoryId }
-    );
-  };
-
-  const sendContentOpenEvent = async (categoryId, contentId) => {
-    await AnalyticsHelper.sendEvent(
-      '1.2.1',
-      'Content_Open',
-      'Save',
-      'Section_List',
-      ActionType.CLICK,
-      'Open',
-      { categoryId, contentId }
-    );
   };
 
   return (
