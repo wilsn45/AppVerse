@@ -27,6 +27,7 @@ const HomeScreen = () => {
 
   // Example dynamic data for the horizontal FlatLists
   const categoryData = [];
+  const homeCards = [];
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -46,25 +47,31 @@ const HomeScreen = () => {
         setCategories(sortedLiveCategories);
         //console.log("Categories", liveCategories)
 
-        const sectionDataArray = [];
+        const newSectionDataArray = [];
         const newSavedCards = new Map();
+        const homeCardsList = [];
 
         //console.log("Saved Home Data", homeData)
         for (const key in homeData) {
           if (key !== 'Categories') {
               const data =  homeData[key] 
               const sectionData = {'title': key, 'data': data}
-              sectionDataArray.push(sectionData)
+              newSectionDataArray.push(sectionData)
               
               for (const item of data) {
                 const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
                 newSavedCards.set(item.id, isSaved); 
+                homeCards.push(item)
               }
           }
        }
 
-       setSectionDataModel(sectionDataArray)
+      setSectionDataModel(newSectionDataArray)
        setSavedCards(newSavedCards);
+       //console.log("All Home cards", homeCardsList)
+       console.log("Load All Home Crds", homeCards)
+
+       //console.log("Load All Home Sections", newSectionDataArray)
 
        analytics.sendCategoryDisplayedEvent(liveCategories);
       } catch (error) {
@@ -102,25 +109,17 @@ const HomeScreen = () => {
   const updateSavedCard = async () => {
     try {
       
+      console.log("Get All Home cards", homeCards)
       const newSavedCards = new Map();
-      console.log("sectionDataModel", sectionDataModel);
-      if (!sectionDataModel || sectionDataModel.length === 0) {
-        console.log("sectionDataModel is empty. Exiting function.");
+      //console.log("sectionDataModel", sectionDataModel);
+      if (!homeCards || homeCards.length === 0) {
+        //console.log("sectionDataModel is empty. Exiting function.");
         return; 
       }
   
-      for (const section of sectionDataModel) {
-        const data = section.data;
-
-        // Use a for...of loop to handle async operations properly
-        for (const item of data) {
-          //console.log("sectionDataModel item", item)
-          const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
-         // console.log("sectionDataModel isSaved", isSaved)
-          // console.log("item", item)
-          // console.log("Is saved", isSaved)
-          newSavedCards.set(item.id, isSaved);
-        }
+      for (const card of homeCards) {
+        const isSaved = await SaveHandler.isCardSaved(card.categoryId, card.id);
+         newSavedCards.set(card.id, isSaved);
       }
   
       setSavedCards(newSavedCards);
@@ -229,6 +228,11 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {sectionDataModel.length === 0 ? (
+      <View style={styles.emptyDataView}>
+        <Text style={styles.emptyDataLabel}>Hang tight... nurturing progress!</Text>
+      </View>
+    ) : (
       <ScrollView contentContainerStyle={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
         <Text style={styles.userNameLabel}>Hi, There!</Text>
 
@@ -266,8 +270,8 @@ const HomeScreen = () => {
             />
           </View>
         ))}
-      </ScrollView>
-    </SafeAreaView>
+      </ScrollView> )}
+    </SafeAreaView> 
   );
 };
 
@@ -277,6 +281,16 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     paddingVertical: 0,
     paddingHorizontal: 5,
+  },
+  emptyDataView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyDataLabel: {
+    fontSize: 22,
+    fontWeight: '400',
+    color: theme.colors.greyLight3
   },
   container: {
     flex: 1,

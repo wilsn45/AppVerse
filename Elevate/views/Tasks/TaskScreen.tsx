@@ -171,7 +171,7 @@ const TaskScreen = () => {
         ListEmptyComponent={
           <View style={styles.noTaskView}>
            <Text style={styles.emptyText} accessibilityLabel="No Tasks Found">
-            No tasks found
+           Nothing here yet!
             </Text>
             {/* <Ionicons
                   name={'clipboard-outline'}

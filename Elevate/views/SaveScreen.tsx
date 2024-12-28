@@ -200,7 +200,7 @@ const SaveScreen = () => {
         ListEmptyComponent={
           <View style={styles.noTaskView}>
            <Text style={styles.emptyText} accessibilityLabel="No Tasks Found">
-            No saved card
+           No Saved Card
             </Text>
             {/* <Ionicons
                   name={'clipboard-outline'}
