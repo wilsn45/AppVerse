@@ -199,8 +199,8 @@ const SaveScreen = () => {
         contentContainerStyle={searchedCards.length === 0 ? styles.emptyContainer : styles.taskList}
         ListEmptyComponent={
           <View style={styles.noTaskView}>
-           <Text style={styles.emptyText} accessibilityLabel="No Tasks Found">
-           No Saved Card
+           <Text style={styles.emptyText} accessibilityLabel="No saved card">
+           No saved cards...
             </Text>
             {/* <Ionicons
                   name={'clipboard-outline'}
@@ -259,8 +259,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 24,
-    fontWeight: '500',
+    fontSize: 22,
+    fontWeight: '600',
     color: theme.colors.greyLight3
   },
   cardTitle: {

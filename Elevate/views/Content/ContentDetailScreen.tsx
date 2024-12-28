@@ -316,8 +316,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyDataLabel: {
-    fontSize: 24,
-    fontWeight: '400',
+    fontSize: 22,
+    fontWeight: '600',
     color: theme.colors.greyLight3
   },
   likeCount: {

@@ -221,8 +221,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 24,
-    fontWeight: '500',
+    fontSize: 22,
+    fontWeight: '600',
     color: theme.colors.greyLight3
   },
   taskControlContainer: {
