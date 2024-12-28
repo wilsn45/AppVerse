@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     justifyContent: 'space-between',
     gap: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     paddingBottom: 120
   },
   cardContent: {
@@ -412,20 +412,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 60,
+    gap: 80,
   },
   contentText: {
     fontSize: 24,
     color: theme.colors.black,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 18,
     fontWeight: '500'
   },
   contentDescription:  {
-    fontSize: 20,
+    fontSize: 18,
     color: theme.colors.greyText,
     textAlign: 'center',
     marginBottom: 10,
+    lineHeight: 30
   },
   iconButton: {
     padding: 10,
