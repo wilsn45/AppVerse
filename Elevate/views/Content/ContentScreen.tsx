@@ -460,12 +460,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   input: {
-    height: 60,
-    borderColor: theme.colors.greyLight2,
+    height: 50,
+    borderColor: theme.colors.greyLight,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
     paddingLeft: 10,
+    fontSize: 16,
+    fontWeight: '500'
   },
   optionButtonContainer: {
     flexDirection: 'row',

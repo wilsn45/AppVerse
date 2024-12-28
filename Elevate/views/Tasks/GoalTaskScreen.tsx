@@ -303,7 +303,7 @@ const GoalTaskScreen = () => {
               value={progressValue}
               keyboardType="numeric"
               onChangeText={onProgressInputValueChanged}
-              placeholder="Enter progress"
+              placeholder="Enter progress (%)"
               placeholderTextColor="#aaa"
         />
      {showProgressLimitError && (
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    borderTopWidth: 1,
+    borderTopWidth: 2,
     borderTopColor: theme.colors.greyLight2,
   },
   iconButton: {
@@ -514,6 +514,7 @@ const styles = StyleSheet.create({
   },
   iconButtonText: {
     fontSize: 12,
+    fontWeight: '500',
     textAlign: 'center',
     color: theme.colors.greyLight1,
   },
@@ -561,18 +562,21 @@ const styles = StyleSheet.create({
     height: 80,
     padding: 10,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.greyLight,
     borderRadius: 8,
     marginBottom: 20,
+    fontSize: 16,
+    fontWeight: '500'
   },
   progressInput: {
     backgroundColor: theme.colors.greyLight1,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.greyLight,
     padding: 10,
     borderRadius: 8,
     marginBottom: 15,
-   
+    fontSize: 16,
+    fontWeight: '500',
   },
   errorText: {
     color: theme.colors.red, // Use your theme's red color or a hardcoded hex value like '#FF0000'
@@ -583,6 +587,7 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: theme.colors.secondaryTheme,
+    marginTop: 10,
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',

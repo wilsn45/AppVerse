@@ -379,11 +379,13 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
-    borderColor: theme.colors.greyLight2,
+    borderColor: theme.colors.greyLight,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
     paddingLeft: 10,
+    fontSize: 16,
+    fontWeight: '500'
   },
   optionButtonContainer: {
     flexDirection: 'row',

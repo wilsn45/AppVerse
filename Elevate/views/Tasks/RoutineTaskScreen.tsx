@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    borderTopWidth: 1,
+    borderTopWidth: 2,
     borderTopColor: theme.colors.greyLight2,
   },
   iconButton: {
@@ -505,6 +505,7 @@ const styles = StyleSheet.create({
   },
   iconButtonText: {
     fontSize: 12,
+    fontWeight: '500',
     textAlign: 'center',
     color: theme.colors.greyLight1,
   },
@@ -552,9 +553,11 @@ const styles = StyleSheet.create({
     height: 80,
     padding: 10,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.greyLight,
     borderRadius: 8,
     marginBottom: 20,
+    fontSize: 16,
+    fontWeight: '500'
   },
   saveButton: {
     backgroundColor: theme.colors.secondaryTheme,
