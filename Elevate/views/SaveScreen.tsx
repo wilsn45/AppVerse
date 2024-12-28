@@ -195,7 +195,21 @@ const SaveScreen = () => {
           </Swipeable>
         )}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        contentContainerStyle={styles.flatListContainer}
+
+        contentContainerStyle={searchedCards.length === 0 ? styles.emptyContainer : styles.taskList}
+        ListEmptyComponent={
+          <View style={styles.noTaskView}>
+           <Text style={styles.emptyText} accessibilityLabel="No Tasks Found">
+            No saved card
+            </Text>
+            {/* <Ionicons
+                  name={'clipboard-outline'}
+                  size={30}
+                  color={theme.colors.greyLight3}
+                /> */}
+          </View>
+          
+        }
         accessibilityLabel="List of saved items"
         accessibilityRole="list"
       />
@@ -226,6 +240,28 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginHorizontal: 20,
     paddingBottom: 20,
+  },
+  taskList: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  emptyContainer: {
+    flexGrow: 1, // Ensures the empty container takes full space
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%', // Match the screen height
+  },
+  noTaskView: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 30,
+    fontWeight: '500',
+    color: theme.colors.greyLight3
   },
   cardTitle: {
     color: theme.colors.black,
@@ -284,7 +320,7 @@ const styles = StyleSheet.create({
   },
 
   searchBar: {
-    paddingHorizontal: 5,
+    paddingHorizontal: 10,
     paddingVertical: 4,
     margin: 10,
     borderRadius: 8,
