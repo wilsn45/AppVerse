@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: '500',
     color: theme.colors.greyLight3
   },

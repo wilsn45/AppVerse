@@ -36,9 +36,11 @@ const theme = {
       //Primary
 
 
-      //Secondary 
+      //Theme 
       secondaryTheme: '#37817B',
       secondaryThemeLight: '#EBF6F6',
+      primaryTheme: '#DD4F5A', 
+      secondaryThemeDisabled: '#A9C2BF',
 
 
       //Black
@@ -65,9 +67,7 @@ const theme = {
       textGrey2: '#7D7D7D',
 
 
-      //theme
-      primaryTheme: '#DD4F5A', 
-      secondaryThemeDisabled: '#A9C2BF',
+    
  
 
 

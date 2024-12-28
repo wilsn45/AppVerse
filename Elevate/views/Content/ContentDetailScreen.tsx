@@ -191,7 +191,9 @@ const ContentDetailScreen = () => {
             style={styles.webView}
           />
         ) : (
-          <Text>Loading...</Text>
+          <View style={styles.emptyDataView}>
+          <Text style={styles.emptyDataLabel}>Loading...</Text>
+        </View>
         )}
       </View>
 
@@ -307,6 +309,16 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 0,
     borderRadius: 2,
+  },
+  emptyDataView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyDataLabel: {
+    fontSize: 24,
+    fontWeight: '400',
+    color: theme.colors.greyLight3
   },
   likeCount: {
     color: theme.colors.greyDark2,
