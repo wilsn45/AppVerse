@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 10,
   },
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    borderWidth: 1,
+    //borderWidth: 1,
     borderColor:  theme.colors.secondaryTheme,
     backgroundColor: theme.colors.white,
   },

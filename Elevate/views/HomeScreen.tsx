@@ -69,7 +69,7 @@ const HomeScreen = () => {
       setSectionDataModel(newSectionDataArray)
        setSavedCards(newSavedCards);
        //console.log("All Home cards", homeCardsList)
-       console.log("Load All Home Crds", homeCards)
+       //console.log("Load All Home Crds", homeCards)
 
        //console.log("Load All Home Sections", newSectionDataArray)
 
@@ -109,7 +109,7 @@ const HomeScreen = () => {
   const updateSavedCard = async () => {
     try {
       
-      console.log("Get All Home cards", homeCards)
+      //console.log("Get All Home cards", homeCards)
       const newSavedCards = new Map();
       //console.log("sectionDataModel", sectionDataModel);
       if (!homeCards || homeCards.length === 0) {
@@ -230,7 +230,7 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.safeArea}>
       {sectionDataModel.length === 0 ? (
       <View style={styles.emptyDataView}>
-        <Text style={styles.emptyDataLabel}>Hang tight... nurturing progress!</Text>
+        <Text style={styles.emptyDataLabel}>Hang tight... fetching new growth!!</Text>
       </View>
     ) : (
       <ScrollView contentContainerStyle={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyDataLabel: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '400',
     color: theme.colors.greyLight3
   },

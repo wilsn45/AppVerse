@@ -559,7 +559,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 20,
     fontSize: 16,
-    fontWeight: '500'
+    fontWeight: '500',
+    marginTop: 10
   },
   saveButton: {
     backgroundColor: theme.colors.secondaryTheme,
