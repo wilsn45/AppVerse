@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
     paddingHorizontal: 15,
-    paddingBottom: 120
+    paddingBottom: 90
   },
   cardContent: {
     height: '80%',
