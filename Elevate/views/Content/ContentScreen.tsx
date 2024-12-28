@@ -285,7 +285,7 @@ useFocusEffect(
                 <Ionicons
                   name={savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
                   size={24}
-                  color={savedCards.get(item.id) ? theme.colors.green : theme.colors.primary}
+                  color={savedCards.get(item.id) ? theme.colors.secondaryTheme : theme.colors.greyDark1}
                 />
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike(item)}
@@ -293,13 +293,13 @@ useFocusEffect(
                 <Ionicons
                   name={likedCards.get(item.id) ? 'heart' : 'heart-outline'}
                   size={24}
-                  color={likedCards.get(item.id) ? theme.colors.red : theme.colors.primary}
+                  color={likedCards.get(item.id) ? theme.colors.primaryTheme : theme.colors.greyDark1}
                 />
-                <Text>{item.likeCount}</Text>
+                <Text style={styles.likeCount}>{item.likeCount}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item)}
                  accessibilityLabel={'Add Task'}>
-                <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>
+                <MaterialIcons name="add-task" size={24} color={theme.colors.greyDark1}/>
               </TouchableOpacity>
             </View>
           </View>
@@ -418,7 +418,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: theme.colors.black,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
+    fontWeight: '500'
   },
   contentDescription:  {
     fontSize: 20,
@@ -428,6 +429,11 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 10,
+  },
+  likeCount: {
+    color: theme.colors.greyDark2,
+   // fontWeight: 'bold'
+
   },
   iconButtonLike: {
     padding: 10,
@@ -449,13 +455,13 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   input: {
-    height: 40,
-    borderColor: theme.colors.grey2,
+    height: 60,
+    borderColor: theme.colors.greyLight2,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
@@ -473,16 +479,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor:  theme.colors.selected1,
-    backgroundColor: theme.colors.white,
+     //borderWidth: 1,
+    borderColor:  theme.colors.primaryTheme,
+    backgroundColor:  theme.colors.white,
   },
   selectedButton: {
-    backgroundColor: theme.colors.selected1
+    backgroundColor: theme.colors.primaryTheme
   },
   optionButtonText: {
-    color: theme.colors.selected1,
-    fontSize: 16,
+    color: theme.colors.primaryTheme,
+    fontSize: 18,
      fontWeight: 'bold'
   },
   selectedOptionButtonText: {
@@ -496,15 +502,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor:  theme.colors.selected2,
+    //borderWidth: 1,
+    borderColor:  theme.colors.secondaryTheme,
     backgroundColor: theme.colors.white,
   },
   subSelectedButton: {
-    backgroundColor: theme.colors.selected2
+    backgroundColor: theme.colors.secondaryTheme
   },
   subOptionButtonText: {
-    color: theme.colors.selected2,
+    color: theme.colors.secondaryTheme,
     fontSize: 16,
      fontWeight: 'bold'
   },
@@ -526,14 +532,14 @@ const styles = StyleSheet.create({
   },
   addButton: {
     flex: 1,
-    backgroundColor: theme.colors.primary, 
+    backgroundColor: theme.colors.secondaryTheme, 
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
     alignItems: 'center',
   },
   disabledAddButton: {
-    backgroundColor: theme.colors.primaryDisabled, 
+    backgroundColor: theme.colors.secondaryThemeLight, 
   },
   addButtonText: {
     color: theme.colors.white,
@@ -546,18 +552,18 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: 'red', // Red border
+    borderColor: theme.colors.primaryTheme, 
     alignItems: 'center',
   },
   cancelButtonText: {
-    color: 'red', // Red text color
+    color: theme.colors.primaryTheme, 
     fontWeight: 'bold',
     fontSize: 16,
   },
   tileImage: {
-    width: 400,
+    width: '90%',
     height: 200,
-    borderRadius: 5,
+    borderRadius: 10,
     marginTop: 25,
     marginBottom: 5, // Space between image and button
     resizeMode: 'cover',
