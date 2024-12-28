@@ -23,8 +23,11 @@ import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { ContentHandler } from '../../Handlers/ContentHandler';
 
+const { width, height } = Dimensions.get('window');
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const NAVIGATION_BAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56; // Navigation bar height
+const AVAILABLE_HEIGHT = SCREEN_HEIGHT - NAVIGATION_BAR_HEIGHT; // Subtract navigation bar height
 
-const { height } = Dimensions.get('window');
 
 
 const ContentScreen = () => {
@@ -39,6 +42,7 @@ const ContentScreen = () => {
   const [selectedContent, setSelectedContent] = useState(null); // Default to "Routine"
   const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
+
 
   const analytics = new ContentListAnalytics(categoryId)
 
@@ -56,6 +60,7 @@ const ContentScreen = () => {
         // Map the fetched documents to include doc.id and category name
         const contentList  = await ContentHandler.fetchContentByCategory(categoryId);
         //console.log("Fetched ContentList:", contentList)
+        const sortedData = [...contentList].sort((a, b) => b.index - a.index);
         setContentList(contentList)
       analytics.sendContentListPresentedEvent()
     } catch (error) {
@@ -256,6 +261,10 @@ useFocusEffect(
       <FlatList
         data={contentList}
         keyExtractor={(item) => item.id}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        decelerationRate="fast"
+        snapToInterval={SCREEN_HEIGHT}
         renderItem={({ item }) => (
           <View style={styles.cardContainer}>
             <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}
@@ -264,8 +273,11 @@ useFocusEffect(
                     source={{ uri: item.imageUrl }} 
                      style={styles.tileImage} 
                   />
-              <Text style={styles.contentText}>{item.title}</Text>
-              <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
+               <View>
+                <Text style={styles.contentText}>{item.title}</Text>
+                <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
+              </View>
+             
             </TouchableOpacity>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item)}
@@ -378,26 +390,29 @@ useFocusEffect(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.white,
   },
   cardContainer: {
-    height: height * 0.8,
-    width: '90%',
+    flex: 1,
+    height: SCREEN_HEIGHT,
     backgroundColor: theme.colors.white,
-    borderColor: theme.colors.grey2,
-    borderWidth: 1,
-    borderRadius: 10,
-    alignSelf: 'center',
-    marginVertical: 10,
     justifyContent: 'space-between',
-     paddingHorizontal: 20,
-     paddingVertical: 10
+    gap: 10,
+    paddingHorizontal: 10,
+    paddingBottom: 120
   },
   cardContent: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 20,
+    height: '80%',
+    justifyContent: 'flex-start',
+    gap: 50,
     alignItems: 'center',
+    backgroundColor: theme.colors.white,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 60,
   },
   contentText: {
     fontSize: 24,
@@ -502,14 +517,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginVertical: 10,
   },
-
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    gap: 40,
-  },
   addTaskbuttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -548,8 +555,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   tileImage: {
-    width: '90%',
-    height: 150,
+    width: 400,
+    height: 200,
     borderRadius: 5,
     marginTop: 25,
     marginBottom: 5, // Space between image and button

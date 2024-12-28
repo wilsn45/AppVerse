@@ -263,6 +263,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   emptyText: {
+    justifyContent: 'center',
+    alignItems: 'center',
     textAlign: 'center',
     color: 'grey',
     marginTop: 20,
