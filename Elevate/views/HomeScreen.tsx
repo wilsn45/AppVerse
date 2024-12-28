@@ -166,6 +166,7 @@ const HomeScreen = () => {
 
   const renderTile = ({ item }: { item: { id: string; title: string } }) => (
     <TouchableOpacity
+    activeOpacity={1}
     style={[
       styles.tile,
       { width: (deviceWidth - leftPadding - rightPadding - spacing) / 2 },
@@ -185,6 +186,7 @@ const HomeScreen = () => {
 
   const renderHorizontalScrollList = ({ item }) => (
     <TouchableOpacity
+    activeOpacity={1}
     onPress={() =>  handleCardPress(item)}>
     <View style={styles.horizontalTile}>
       {/* Left Section: Title */}
@@ -373,8 +375,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.greyLight2,
     borderRadius: 10,
-    padding: 12,
-    marginHorizontal: 10,
+    paddingVertical: 12,
     height: 150,
     width: 350,
     shadowColor: theme.colors.grey,
@@ -384,6 +385,7 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   leftSection: {
+    marginLeft: 10,
     flex: 0.9,
     gap: 10,
     justifyContent: 'center',
@@ -411,7 +413,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     width: 80, // Ensures alignment for the right section
     gap: 10,
-    height: '100%'
+    height: '100%',
+    marginRight: 10
   },
   tileSaveButton: {
     flexDirection: 'row',
