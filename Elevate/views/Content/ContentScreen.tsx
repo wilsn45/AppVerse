@@ -23,8 +23,11 @@ import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { ContentHandler } from '../../Handlers/ContentHandler';
 
+const { width, height } = Dimensions.get('window');
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+const NAVIGATION_BAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56; // Navigation bar height
+const AVAILABLE_HEIGHT = SCREEN_HEIGHT - NAVIGATION_BAR_HEIGHT; // Subtract navigation bar height
 
-const { height } = Dimensions.get('window');
 
 
 const ContentScreen = () => {
@@ -39,6 +42,7 @@ const ContentScreen = () => {
   const [selectedContent, setSelectedContent] = useState(null); // Default to "Routine"
   const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
   const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
+
 
   const analytics = new ContentListAnalytics(categoryId)
 
@@ -56,6 +60,7 @@ const ContentScreen = () => {
         // Map the fetched documents to include doc.id and category name
         const contentList  = await ContentHandler.fetchContentByCategory(categoryId);
         //console.log("Fetched ContentList:", contentList)
+        const sortedData = [...contentList].sort((a, b) => b.index - a.index);
         setContentList(contentList)
       analytics.sendContentListPresentedEvent()
     } catch (error) {
@@ -256,6 +261,10 @@ useFocusEffect(
       <FlatList
         data={contentList}
         keyExtractor={(item) => item.id}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        decelerationRate="fast"
+        snapToInterval={SCREEN_HEIGHT}
         renderItem={({ item }) => (
           <View style={styles.cardContainer}>
             <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}
@@ -264,8 +273,11 @@ useFocusEffect(
                     source={{ uri: item.imageUrl }} 
                      style={styles.tileImage} 
                   />
-              <Text style={styles.contentText}>{item.title}</Text>
-              <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
+               <View>
+                <Text style={styles.contentText}>{item.title}</Text>
+                <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
+              </View>
+             
             </TouchableOpacity>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item)}
@@ -273,7 +285,7 @@ useFocusEffect(
                 <Ionicons
                   name={savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
                   size={24}
-                  color={savedCards.get(item.id) ? theme.colors.green : theme.colors.primary}
+                  color={savedCards.get(item.id) ? theme.colors.secondaryTheme : theme.colors.greyDark1}
                 />
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike(item)}
@@ -281,13 +293,13 @@ useFocusEffect(
                 <Ionicons
                   name={likedCards.get(item.id) ? 'heart' : 'heart-outline'}
                   size={24}
-                  color={likedCards.get(item.id) ? theme.colors.red : theme.colors.primary}
+                  color={likedCards.get(item.id) ? theme.colors.primaryTheme : theme.colors.greyDark1}
                 />
-                <Text>{item.likeCount}</Text>
+                <Text style={styles.likeCount}>{item.likeCount}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item)}
                  accessibilityLabel={'Add Task'}>
-                <MaterialIcons name="add-task" size={24} color={theme.colors.primary}/>
+                <MaterialIcons name="add-task" size={24} color={theme.colors.greyDark1}/>
               </TouchableOpacity>
             </View>
           </View>
@@ -378,41 +390,51 @@ useFocusEffect(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.white,
   },
   cardContainer: {
-    height: height * 0.8,
-    width: '90%',
+    flex: 1,
+    height: SCREEN_HEIGHT,
     backgroundColor: theme.colors.white,
-    borderColor: theme.colors.grey2,
-    borderWidth: 1,
-    borderRadius: 10,
-    alignSelf: 'center',
-    marginVertical: 10,
     justifyContent: 'space-between',
-     paddingHorizontal: 20,
-     paddingVertical: 10
+    gap: 10,
+    paddingHorizontal: 15,
+    paddingBottom: 90
   },
   cardContent: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 20,
+    height: '80%',
+    justifyContent: 'flex-start',
+    gap: 50,
     alignItems: 'center',
+    backgroundColor: theme.colors.white,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 80,
   },
   contentText: {
     fontSize: 24,
     color: theme.colors.black,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 18,
+    fontWeight: '500'
   },
   contentDescription:  {
-    fontSize: 20,
+    fontSize: 18,
     color: theme.colors.greyText,
     textAlign: 'center',
     marginBottom: 10,
+    lineHeight: 30
   },
   iconButton: {
     padding: 10,
+  },
+  likeCount: {
+    color: theme.colors.greyDark2,
+   // fontWeight: 'bold'
+
   },
   iconButtonLike: {
     padding: 10,
@@ -434,17 +456,19 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 10,
   },
   input: {
-    height: 40,
-    borderColor: theme.colors.grey2,
+    height: 50,
+    borderColor: theme.colors.greyLight,
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
     paddingLeft: 10,
+    fontSize: 16,
+    fontWeight: '500'
   },
   optionButtonContainer: {
     flexDirection: 'row',
@@ -458,16 +482,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor:  theme.colors.selected1,
-    backgroundColor: theme.colors.white,
+     //borderWidth: 1,
+    borderColor:  theme.colors.primaryTheme,
+    backgroundColor:  theme.colors.white,
   },
   selectedButton: {
-    backgroundColor: theme.colors.selected1
+    backgroundColor: theme.colors.primaryTheme
   },
   optionButtonText: {
-    color: theme.colors.selected1,
-    fontSize: 16,
+    color: theme.colors.primaryTheme,
+    fontSize: 18,
      fontWeight: 'bold'
   },
   selectedOptionButtonText: {
@@ -481,15 +505,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor:  theme.colors.selected2,
+    //borderWidth: 1,
+    borderColor:  theme.colors.secondaryTheme,
     backgroundColor: theme.colors.white,
   },
   subSelectedButton: {
-    backgroundColor: theme.colors.selected2
+    backgroundColor: theme.colors.secondaryTheme
   },
   subOptionButtonText: {
-    color: theme.colors.selected2,
+    color: theme.colors.secondaryTheme,
     fontSize: 16,
      fontWeight: 'bold'
   },
@@ -502,14 +526,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     marginVertical: 10,
   },
-
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    gap: 40,
-  },
   addTaskbuttonContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -519,14 +535,14 @@ const styles = StyleSheet.create({
   },
   addButton: {
     flex: 1,
-    backgroundColor: theme.colors.primary, 
+    backgroundColor: theme.colors.secondaryTheme, 
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
     alignItems: 'center',
   },
   disabledAddButton: {
-    backgroundColor: theme.colors.primaryDisabled, 
+    backgroundColor: theme.colors.secondaryThemeLight, 
   },
   addButtonText: {
     color: theme.colors.white,
@@ -539,18 +555,18 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: 'red', // Red border
+    borderColor: theme.colors.primaryTheme, 
     alignItems: 'center',
   },
   cancelButtonText: {
-    color: 'red', // Red text color
+    color: theme.colors.primaryTheme, 
     fontWeight: 'bold',
     fontSize: 16,
   },
   tileImage: {
     width: '90%',
-    height: 150,
-    borderRadius: 5,
+    height: 200,
+    borderRadius: 10,
     marginTop: 25,
     marginBottom: 5, // Space between image and button
     resizeMode: 'cover',

@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   centerHeaderText: {
-    marginLeft: 10,
+    marginLeft: 15,
     flex: 1,
     textAlign: 'left',
     color: theme.colors.secondaryTheme,
@@ -458,19 +458,21 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   recordList: {
-    paddingHorizontal: 20,
+    marginHorizontal: 20,
   },
   recordItem: {
     paddingVertical: 15,
+    //backgroundColor: 'red',
    // borderBottomColor: theme.colors.grey1,
-    paddingRight: 15,
+    marginRight: 10,
     //gap: 5
   },
   recordText: {
     color: theme.colors.black,
     fontSize: 16,
+    textAlign: 'left',
     fontWeight: '600',
-    paddingRight: 15,
+    paddingRight: 70,
   },
   recordDate: {
     color: theme.colors.greyLight3,
@@ -492,7 +494,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    borderTopWidth: 1,
+    borderTopWidth: 2,
     borderTopColor: theme.colors.greyLight2,
   },
   iconButton: {
@@ -505,6 +507,7 @@ const styles = StyleSheet.create({
   },
   iconButtonText: {
     fontSize: 12,
+    fontWeight: '500',
     textAlign: 'center',
     color: theme.colors.greyLight1,
   },
@@ -552,9 +555,12 @@ const styles = StyleSheet.create({
     height: 80,
     padding: 10,
     borderWidth: 1,
-    borderColor: theme.colors.grey2,
+    borderColor: theme.colors.greyLight,
     borderRadius: 8,
     marginBottom: 20,
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 10
   },
   saveButton: {
     backgroundColor: theme.colors.secondaryTheme,
@@ -614,7 +620,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 15,
   },
-  mainCellView: { flexDirection: 'row', gap: 25, alignItems: 'center' },
+  mainCellView: { flexDirection: 'row', gap: 15, alignItems: 'center' },
   leftCellView: { width: 50, alignItems: 'center', justifyContent: 'center',  },
   lineSuperView: {
     flex: 1,

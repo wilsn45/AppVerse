@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import theme from '../../Theme/Theme';
 import DropDownList from '../Common/DropDownList';
 import { TaskAnalytics } from '../../Analytics/TaskAnalytics';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const TaskScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
@@ -166,11 +167,19 @@ const TaskScreen = () => {
         data={filteredTasks}
         renderItem={renderTask}
         keyExtractor={(item) => item.taskId}
-        contentContainerStyle={styles.taskList}
+        contentContainerStyle={filteredTasks.length === 0 ? styles.emptyContainer : styles.taskList}
         ListEmptyComponent={
-          <Text style={styles.emptyText} accessibilityLabel="No Tasks Found">
-            No tasks found.
-          </Text>
+          <View style={styles.noTaskView}>
+           <Text style={styles.emptyText} accessibilityLabel="No Tasks Found">
+           Nothing here yet!
+            </Text>
+            {/* <Ionicons
+                  name={'clipboard-outline'}
+                  size={30}
+                  color={theme.colors.greyLight3}
+                /> */}
+          </View>
+          
         }
       />
     </SafeAreaView>
@@ -193,6 +202,28 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.black,
     marginBottom: 10,
+  },
+  taskList: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  emptyContainer: {
+    flexGrow: 1, // Ensures the empty container takes full space
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%', // Match the screen height
+  },
+  noTaskView: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 24,
+    fontWeight: '500',
+    color: theme.colors.greyLight3
   },
   taskControlContainer: {
     flexDirection: 'row',
@@ -220,7 +251,7 @@ const styles = StyleSheet.create({
   taskTypeButtonText: {
     fontWeight: 'bold',
     color: theme.colors.primaryTheme,
-    fontSize: 18,
+    fontSize: 16,
   },
   selectedTaskTypeButtonText: {
     color: theme.colors.white,
@@ -261,11 +292,6 @@ const styles = StyleSheet.create({
   taskTypeText: {
     color: theme.colors.greyLight3,
     fontSize: 12,
-  },
-  emptyText: {
-    textAlign: 'center',
-    color: 'grey',
-    marginTop: 20,
   },
 });
 
