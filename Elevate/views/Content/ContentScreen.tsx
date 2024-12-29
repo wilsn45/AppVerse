@@ -268,6 +268,7 @@ useFocusEffect(
         renderItem={({ item }) => (
           <View style={styles.cardContainer}>
             <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}
+            activeOpacity={1}
                accessibilityLabel={`Content Card: ${item.title}`}>
                 <Image 
                     source={{ uri: item.imageUrl }} 
