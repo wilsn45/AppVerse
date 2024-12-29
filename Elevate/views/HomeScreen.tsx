@@ -362,6 +362,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: theme.colors.blackLight1,
     paddingLeft: 20, 
+    fontFamily: 'Roboto-Medium'
   },
   horizontalListContainer: {
     paddingBottom: 30,
