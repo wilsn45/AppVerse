@@ -283,7 +283,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.greyLight,
-    height: 120,
   },
   leftCardView: {
     flex: 0.9,
