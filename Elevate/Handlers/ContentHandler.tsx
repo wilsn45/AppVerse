@@ -26,7 +26,8 @@ export class ContentHandler {
                 doc.data().likeCount,
                 doc.data().readMin,
                 doc.data().imageUrl,
-                doc.data().thumbnail
+                doc.data().thumbnail,
+                doc.data().isLive
             )
         );;
 

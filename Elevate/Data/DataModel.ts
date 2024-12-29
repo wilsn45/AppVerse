@@ -4,7 +4,7 @@ export const taskType: TaskType[] = [
   ];
 
   export class ContentData {
-    constructor(id, index, title, description, categoryId, categoryTitle, likeCount, readMin, imageUrl, thumbnail) {
+    constructor(id, index, title, description, categoryId, categoryTitle, likeCount, readMin, imageUrl, thumbnail, isLive) {
       this.id = id;
       this.title = title;
       this.description = description;
@@ -15,6 +15,7 @@ export const taskType: TaskType[] = [
       this.imageUrl = imageUrl
       this.thumbnail = thumbnail
       this.readMin = readMin
+      this.isLive = isLive
     }
   }
 

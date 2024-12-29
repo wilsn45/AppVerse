@@ -59,9 +59,13 @@ const ContentScreen = () => {
         
         // Map the fetched documents to include doc.id and category name
         const contentList  = await ContentHandler.fetchContentByCategory(categoryId);
+
+        const filteredContent = contentList.filter(content => content.isLive === true);
+
+       // console.log("Filtered Cards", filteredContent)
         //console.log("Fetched ContentList:", contentList)
-        const sortedData = [...contentList].sort((a, b) => b.index - a.index);
-        setContentList(contentList)
+        const sortedData = [...filteredContent].sort((a, b) => b.index - a.index);
+        setContentList(sortedData)
       analytics.sendContentListPresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
@@ -405,7 +409,7 @@ const styles = StyleSheet.create({
   cardContent: {
     height: '80%',
     justifyContent: 'flex-start',
-    gap: 50,
+    gap: 20,
     alignItems: 'center',
     backgroundColor: theme.colors.white,
   },
@@ -566,7 +570,7 @@ const styles = StyleSheet.create({
   },
   tileImage: {
     width: '90%',
-    height: 200,
+    height: 300,
     borderRadius: 10,
     marginTop: 25,
     marginBottom: 5, // Space between image and button

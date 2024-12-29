@@ -90,7 +90,7 @@ const HomeScreen = () => {
 
     const fetchLatestHomeData = async() => {
       let isSuccess = await HomeHandler.fetchLatestHomeData()
-      console.log("Latest Home data resp", isSuccess)
+      //console.log("Latest Home data resp", isSuccess)
       if (isSuccess == true) {
         fetchHomeData()
         updateSavedCard()
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
    //backgroundColor: 'grey',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    width: 80, // Ensures alignment for the right section
+    width: 100, // Ensures alignment for the right section
     gap: 10,
     height: '100%',
   },
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   tileImage: {
-    width: 70,
+    width: 100,
     height: 70,
     borderRadius: 5,
     marginBottom: 5, // Space between image and button
