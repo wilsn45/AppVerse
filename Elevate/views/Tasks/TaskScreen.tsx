@@ -195,7 +195,6 @@ const styles = StyleSheet.create({
   headerContainer: {
     marginTop: 20,
     marginBottom: 20,
-    marginHorizontal: 10,
   },
   title: {
     fontSize: 34,
@@ -229,12 +228,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 10
+
   },
   buttonGroup: {
     flexDirection: 'row',
-    flex: 2,
+    flex: 1,
     justifyContent: 'flex-start',
-    marginHorizontal: 5,
   },
   taskTypeButton: {
     backgroundColor: theme.colors.white,
