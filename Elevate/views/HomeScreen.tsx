@@ -376,7 +376,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.greyLight2,
     borderRadius: 10,
-    paddingVertical: 12,
+    padding: 12,
+    marginHorizontal: 10,
     height: 150,
     width: 350,
     shadowColor: theme.colors.grey,
@@ -386,7 +387,6 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   leftSection: {
-    marginLeft: 10,
     flex: 0.9,
     gap: 10,
     justifyContent: 'center',
@@ -415,7 +415,6 @@ const styles = StyleSheet.create({
     width: 80, // Ensures alignment for the right section
     gap: 10,
     height: '100%',
-    marginRight: 10
   },
   tileSaveButton: {
     flexDirection: 'row',
