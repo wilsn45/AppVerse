@@ -22,6 +22,7 @@ import theme from '../../Theme/Theme.js';
 import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { ContentHandler } from '../../Handlers/ContentHandler';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const { width, height } = Dimensions.get('window');
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -280,7 +281,12 @@ useFocusEffect(
                   />
                <View>
                 <Text style={styles.contentText}>{item.title}</Text>
-                <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
+                <ScrollView style={styles.contentDescriptionScrollView}  nestedScrollEnabled={true}  showsVerticalScrollIndicator={false}  contentContainerStyle={{
+    justifyContent: 'center', // Apply layout styles here
+    alignItems: 'center',
+  }}>
+                <Text style={styles.contentDescription}  accessibilityLabel={item.description}>{item.description}</Text>
+            </ScrollView>
               </View>
              
             </TouchableOpacity>
@@ -407,7 +413,7 @@ const styles = StyleSheet.create({
     paddingBottom: 90
   },
   cardContent: {
-    height: '80%',
+    height: '50%',
     justifyContent: 'flex-start',
     gap: 20,
     alignItems: 'center',
@@ -425,6 +431,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 18,
     fontWeight: '500'
+  },
+  contentDescriptionScrollView: {
+   
   },
   contentDescription:  {
     fontSize: 18,
