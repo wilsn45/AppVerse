@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     height: 70,
     backgroundColor: theme.colors.white,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.grey2,
+    borderTopColor: theme.colors.greyLight2,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
