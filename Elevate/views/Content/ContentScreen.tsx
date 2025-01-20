@@ -11,6 +11,8 @@ import {
   Alert,
   Image
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
+
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -294,9 +296,10 @@ useFocusEffect(
             <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}
             activeOpacity={1}
                accessibilityLabel={`Content Card: ${item.title}`}>
-                <Image 
+                <FastImage 
                     source={{ uri: item.imageUrl }} 
                      style={styles.tileImage} 
+                     resizeMode={FastImage.resizeMode.cover}
                   />
                <View>
                 <Text style={styles.contentText}>{item.title}</Text>
