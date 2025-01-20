@@ -99,6 +99,24 @@ const loadCards = async () => {
  // console.log('updatedSavedCards', updatedSavedCards);
 };
 
+const preloadImages = (index) => {
+  const nextItems = contentList.slice(index, index + 10); // Prefetch the next 10 items
+  nextItems.forEach(item => {
+    Image.prefetch(item.imageUrl); // Preload the image URL
+  });
+};
+
+
+const handleScroll = (event) => {
+  const contentOffsetY = event.nativeEvent.contentOffset.y;
+  const contentHeight = event.nativeEvent.contentSize.height;
+
+  // If user is within the last 10% of the list, start preloading images
+  if (contentHeight - contentOffsetY - SCREEN_HEIGHT < 100) {
+    preloadImages(contentList.length - 10); // Prefetch next 10 items
+  }
+};
+
 
 useFocusEffect(
   useCallback(() => {
@@ -269,6 +287,8 @@ useFocusEffect(
         showsVerticalScrollIndicator={false}
         decelerationRate="fast"
         snapToInterval={SCREEN_HEIGHT}
+        onEndReachedThreshold={0.1}
+        onScroll={handleScroll}
         renderItem={({ item }) => (
           <View style={styles.cardContainer}>
             <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}

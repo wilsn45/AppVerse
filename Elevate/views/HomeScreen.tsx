@@ -426,10 +426,10 @@ const styles = StyleSheet.create({
   },
   tileImage: {
     width: 100,
-    height: 70,
-    borderRadius: 5,
+    height: 80,
+    borderRadius: 10,
     marginBottom: 5, // Space between image and button
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
 });
 
