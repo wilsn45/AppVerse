@@ -122,6 +122,11 @@ useFocusEffect(
     }
   }, [ courseList])
 );
+
+const handleCardPress = (content) => {
+  console.log('Pass Likes Count', content.likeCount);
+  navigation.navigate('CourseScreen', { content });
+};
   
 
   const handleSave = async (course) => {

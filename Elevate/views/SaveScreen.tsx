@@ -71,7 +71,7 @@ const SaveScreen = () => {
   const handleCardPress = (content) => {
     console.log("Opening Card", content)
     analytics.sendContentOpenEvent(content.categoryId, content.id);
-    navigation.navigate('ContentDetailScreen', { content });
+    navigation.navigate('CourseScreen', { content });
   };
 
   const handleCategorySelect = (categoryID) => {

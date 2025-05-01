@@ -5,8 +5,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from './views/HomeScreen';
-import CourseListScreen from './views/Content/CourseListScreen.tsx';
-import ContentDetailScreen from './views/Content/ContentDetailScreen.tsx';
+import CourseListScreen from './views/Courses/CourseListScreen.tsx';
+import CourseScreen from './views/Courses/CourseScreen.tsx';
 import SavedScreen from './views/SaveScreen.tsx';
 import TaskScreen from './views/Tasks/TaskScreen.tsx';
 import RoutineTaskScreen from './views/Tasks/RoutineTaskScreen.tsx';
@@ -85,8 +85,15 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-
+      <Stack.Navigator  screenOptions={{
+      headerTintColor: theme.colors.black,
+      headerBackTitleVisible: false,
+      headerStyle: {
+        backgroundColor: theme.colors.white,
+        shadowColor: 'transparent',
+      },
+    }}>
+        
         <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -119,8 +126,8 @@ const App = () => {
           }}
         />
         <Stack.Screen
-          name="ContentDetailScreen"
-          component={ContentDetailScreen}
+          name="CourseScreen"
+          component={CourseScreen}
           options={{
             headerShown: true,
             headerBackTitle: '',

@@ -86,10 +86,10 @@ const RoutineTaskScreen = () => {
     setIsTaskCompleted(task.isDone)
   }, []);
 
-  // Handle navigation to ContentDetailScreen
+  // Handle navigation to CourseScreen
   const navigateToContentDetail = () => {
     anlaytics.sendContentClickeddEvent()
-    navigation.navigate('ContentDetailScreen', { content: task.content });
+    navigation.navigate('CourseScreen', { content: task.content });
   };
 
   // Handle opening the modal

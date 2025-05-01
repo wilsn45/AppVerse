@@ -13,14 +13,14 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
-import { ContentAnalytics } from '../../Analytics/ContentAnalytics';
-import theme from '../../Theme/Theme';
+import { ContentAnalytics } from '../../Analytics/ContentAnalytics.ts';
+import theme from '../../Theme/Theme.js';
 import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import { ContentHandler } from '../../Handlers/ContentHandler';
+import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
 
-const ContentDetailScreen = () => {
+const CourseScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { content } = route.params; // Access the item title and ID passed as parameters
@@ -37,6 +37,7 @@ const ContentDetailScreen = () => {
   
 
   useEffect(() => {
+    console.log("NEW COURSESS")
     console.log("Content Data", content)
     analytics.sendContentImpressionEvent()
     const checkIfLiked = async () => {
@@ -502,4 +503,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ContentDetailScreen;
+export default CourseScreen;

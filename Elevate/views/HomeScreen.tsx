@@ -239,7 +239,7 @@ const HomeScreen = () => {
 
   const handleCardPress = (content) => {
     analytics.sendContentOpenEvent(content.categoryId, content.id);
-    navigation.navigate('ContentDetailScreen', { content });
+    navigation.navigate('CourseScreen', { content });
   };
 
   return (
