@@ -86,7 +86,7 @@ const loadCards = async () => {
 const preloadImages = (index) => {
   const nextItems = courseList.slice(index, index + 10); // Prefetch the next 10 items
   nextItems.forEach(item => {
-    Image.prefetch(item.thumbnailMax); // Preload the image URL
+    Image.prefetch(item.thumbnail); // Preload the image URL
   });
 };
 
@@ -123,9 +123,8 @@ useFocusEffect(
   }, [ courseList])
 );
 
-const handleCardPress = (content) => {
-  console.log('Pass Likes Count', content.likeCount);
-  navigation.navigate('CourseScreen', { content });
+const handleCardPress = (course) => {
+  navigation.navigate('CourseScreen', { courseId: course.id, categoryId });
 };
   
 
@@ -157,24 +156,40 @@ const handleCardPress = (content) => {
         onScroll={handleScroll}
         renderItem={({ item }) => (
           <View style={styles.cardContainer}>
+          <View style={styles.separatorLine} />
+        
           <TouchableOpacity
             onPress={() => handleCardPress(item)}
             activeOpacity={1}
             style={styles.cardContent}
             accessibilityLabel={`Content Card: ${item.title}`}
           >
-            {/* LEFT SIDE: Textual Info */}
+            {/* LEFT SIDE: Title, Description, Category, etc. */}
             <View style={styles.leftContent}>
-              <Text style={styles.contentText}>{item.title}</Text>
-              <Text style={styles.contentDescription} accessibilityLabel={item.description}>
-                {item.description}
-              </Text>
-              <View style={styles.bottomRow}>
-              <View style={styles.tag}>
+              <View style={styles.topLeft}>
+                <Text style={styles.contentText}>{item.title}</Text>
+                <Text style={styles.contentDescription} accessibilityLabel={item.description}>
+                  {item.description}
+                </Text>
+              </View>
+        
+              <View style={styles.bottomLeft}>
+                <View style={styles.tag}>
                   <Text style={styles.tagText}>{item.categoryTitle || 'Category'}</Text>
                 </View>
-              <Text style={styles.ratingText}>⭐ {item.rating ?? '4.5'}</Text>
-               <Text style={styles.levelText}>{item.duration ?? '1 Hour'}</Text>
+                <Text style={styles.ratingText}>⭐ {item.rating ?? '4.5'}</Text>
+                <Text style={styles.durationText}>{item.duration ?? '1 Hour'}</Text>
+              </View>
+            </View>
+        
+            {/* RIGHT SIDE: Image + Duration + Save */}
+            <View style={styles.rightContent}>
+              <FastImage
+                source={{ uri: item.thumbnail }}
+                style={styles.tileImage}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+              <View style={styles.imageBottomRow}>
                 <TouchableOpacity
                   style={styles.iconButton}
                   onPress={() => handleSave(item)}
@@ -188,13 +203,6 @@ const handleCardPress = (content) => {
                 </TouchableOpacity>
               </View>
             </View>
-      
-            {/* RIGHT SIDE: Image */}
-            <FastImage
-              source={{ uri: item.thumbnailMax }}
-              style={styles.tileImage}
-              resizeMode={FastImage.resizeMode.cover}
-            />
           </TouchableOpacity>
         </View>
         )}
@@ -207,96 +215,93 @@ const handleCardPress = (content) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.white,
   },
   cardContainer: {
-    height: 180,
-    marginVertical: 10,
-    paddingHorizontal: 16,
+    backgroundColor: theme.colors.white,
+    padding: 12,
+  },
+  separatorLine: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginBottom: 12,
   },
   cardContent: {
-    flex: 1,
     flexDirection: 'row',
-    backgroundColor: '#F9F9F9',
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
   },
   leftContent: {
     flex: 1,
-    padding: 12,
     justifyContent: 'space-between',
+    paddingRight: 12,
+  },
+  topLeft: {
+    flexShrink: 1,
+    gap: 10
   },
   contentText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: theme.colors.black,
+    color: '#000',
     marginBottom: 4,
   },
   contentDescription: {
     fontSize: 14,
-    color: theme.colors.greyDark1,
-    flexShrink: 1,
+    color: '#555',
+    marginBottom: 8,
   },
-  bottomRow: {
+  bottomLeft: {
     flexDirection: 'row',
-     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 8,
-    gap: 5
+    flexWrap: 'wrap',
+    gap: 15,
   },
   tag: {
-    backgroundColor: theme.colors.secondaryTheme,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginRight: 8,
+    paddingVertical: 2,
   },
   tagText: {
     fontSize: 12,
-    color: 'white',
+    color: '#333',
   },
-  iconButton: {
-    padding: 4,
-  },
-  tileImage: {
-    width: 150,
-    height: '100%',
-  },
-  textContent: {
-    flex: 1,
-    paddingRight: 10,
-    justifyContent: 'space-between',
-  },
-  
-  rowBetween: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  
   ratingText: {
     fontSize: 12,
-    color: theme.colors.greyDark1,
+    color: '#777',
+    marginLeft: 6,
   },
-  
   levelText: {
     fontSize: 12,
-    color: theme.colors.greyDark1,
+    color: '#777',
+    marginLeft: 6,
+  },
+  rightContent: {
+    width: '25%',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  tileImage: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 8,
+  },
+  imageBottomRow: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    marginTop: 6,
   },
   
-  categoryTag: {
+  iconButton: {
+    padding: 4,
+    marginBottom: 2, // optional
+  },
+  durationText: {
     fontSize: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    backgroundColor: theme.colors.greyLight1,
-    borderRadius: 12,
-    color: theme.colors.black,
+    color: '#666',
   },
 });
 

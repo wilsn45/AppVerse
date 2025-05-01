@@ -1,505 +1,214 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useCallback, useState,  } from 'react';
 import {
   View,
   Text,
   StyleSheet,
+  Dimensions,
+  FlatList,
   TouchableOpacity,
   Modal,
   TextInput,
   Alert,
+  Image
 } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
-import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
-import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
-import { ContentAnalytics } from '../../Analytics/ContentAnalytics.ts';
-import theme from '../../Theme/Theme.js';
-import { WebView } from 'react-native-webview';
+import FastImage from 'react-native-fast-image';
+
 import { useNavigation, useRoute } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
+import { CourseListAnalytics } from '../../Analytics/CourseListAnalytics.ts';
+import theme from '../../Theme/Theme.js';
+import { useFocusEffect } from '@react-navigation/native'; 
 import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
 
-const CourseScreen = () => {
-  const route = useRoute();
-  const navigation = useNavigation();
-  const { content } = route.params; // Access the item title and ID passed as parameters
-  const [isLiked, setIsLiked] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
-  const [likedCount, setLikedCount] = useState(0)
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [taskName, setTaskName] = useState('');
-  const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
-  const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
-  const [htmlContent, setHtmlContent] = useState('');
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-  const analytics = new ContentAnalytics(content)
+const CourseScreen = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { courseId, categoryId } = route.params;
+  const [chaptereList, setChapterList] = useState([]);
   
+
+  const analytics = new CourseListAnalytics(categoryId)
 
   useEffect(() => {
-    console.log("NEW COURSESS")
-    console.log("Content Data", content)
-    analytics.sendContentImpressionEvent()
-    const checkIfLiked = async () => {
-      const liked = await LikeHandler.isCardLiked(content.categoryId, content.id); // Check if the card is liked using categoryId and itemId
-      setIsLiked(liked);
-    };
+     //analytics.sendCourseImpressionEvent()
+     //console.log("Fetched categoryId:", categoryId)
 
-    const checkIfSaved = async () => {
-      const liked = await SaveHandler.isCardSaved(content.categoryId, content.id); // Check if the card is liked using categoryId and itemId
-      setIsSaved(liked);
-    };
-
-    checkIfLiked(); 
-    checkIfSaved();
-
-    const fetchContent = async () => {
-      
-      const contentData = await ContentHandler.fetchContent(content.id, content.categoryId)
-      console.log('Content contentData', contentData);
-      setLikedCount(contentData?.likeCount || 0)
-     
-     
-      const doc = await ContentHandler.fetchContentDoc(content.id, content.categoryId)
-      //console.log('Content Doc', doc);
-      //console.log('Item id', content.id);
-      setHtmlContent(doc?.htmlContent || '');   
-    };
-
-    fetchContent();
-
-  }, [content]);
+     fetchChapterList()
+  }, [ , categoryId, navigation, courseId]);
 
 
-  const handleSave = async () => {
-    analytics.sendContentSavedEvent(isSaved)
-    console.log("Is card saved", isSaved)
-    if (isSaved) {
-      await SaveHandler.removeSave(content.categoryId, content.id);
-    } else {
-      await SaveHandler.addSave(content);
-    }
-    // Update only the savedCards state here
-    setIsSaved(!isSaved)
-  };
-  
-  const handleLike = async () => {
-    analytics.sendContentLikedEvent(isLiked)
-    if (isLiked) {
-      setIsLiked(false)
-      await LikeHandler.removeLike(content.categoryId, content.id);
-      dencreaseLikeCount(content.id)
-    } else {
-      setIsLiked(true)
-      await LikeHandler.addLike(content.categoryId, content.id, content.title);
-      increaseLikeCount(content.id)
-    }
-  };
-
-  const increaseLikeCount = (id) => {
-    setLikedCount(likedCount+1)
-    const docRef = firestore().collection('Content').doc('List').collection(content.categoryId).doc(id);
-    docRef.update({
-      likeCount: firestore.FieldValue.increment(1)  // Increments the count by 1
-    })
-    .then(() => {
-      console.log("Count updated successfully");
-    })
-    .catch((error) => {
-      console.error("Error updating count: ", error);
-    });
-  };
-
-  const dencreaseLikeCount = async (id) => {
-    console.log("Content Data", content)
-    const docRef = firestore().collection('Content').doc('List').collection(content.categoryId).doc(id);
-  
-    // Fetch the current likeCount before decreasing it
+  const fetchChapterList = async () => {
     try {
-      const docSnapshot = await docRef.get();
-  
-      if (docSnapshot.exists) {
-        const currentLikeCount = docSnapshot.data().likeCount;
-  
-        // Only decrease likeCount if it's greater than 0
-        if (currentLikeCount > 0) {
-          docRef.update({
-            likeCount: firestore.FieldValue.increment(-1)  // Decrements the count by 1
-          })
-          .then(() => {
-            console.log("Count updated successfully");
-          })
-          .catch((error) => {
-            console.error("Error updating count: ", error);
-          });
-  
-          // Update the local state for likedCount
-          setLikedCount((prevLikedCount) => prevLikedCount - 1);
-        } else {
-          console.log("likeCount is already 0, cannot decrease");
-        }
-      } else {
-        console.log("Document does not exist, cannot decrease likeCount");
-      }
+        
+        // Map the fetched documents to include doc.id and category name
+        const chapterList  = await ContentHandler.fetchChapters(courseId,categoryId);
+
+        const filteredChapters = chapterList.filter(course => course.isLive === true);
+
+        console.log("Filtered Chapters", filteredChapters)
+        console.log("Fetched ContentList:", chapterList)
+        const sortedData = [...filteredChapters].sort((a, b) => b.index - a.index);
+        setChapterList(sortedData)
+        analytics.sendCourseListPresentedEvent()
     } catch (error) {
-      console.error("Error fetching like count: ", error);
+        console.error('Error fetching LiveCategory:', error);
+    } finally {
+        
     }
-  };
+};
 
-  const handleAddTask = () => {
-    analytics.sendAddTaskPresentedEvent()
-    setModalVisible(true);
-  };
 
-  const handleCancelAddTask = async () => { 
-      setTaskName(''); 
-      setSelectedSubTaskType(1)
-      setSelectedTaskType(1); 
-      setModalVisible(false); 
-      analytics.sendCancelAddTaskPEvent()
+const preloadImages = (index) => {
+  const nextItems = chaptereList.slice(index, index + 10); // Prefetch the next 10 items
+  nextItems.forEach(item => {
+    Image.prefetch(item.thumbnail); // Preload the image URL
+  });
+};
+
+
+const handleScroll = (event) => {
+  const contentOffsetY = event.nativeEvent.contentOffset.y;
+  const contentHeight = event.nativeEvent.contentSize.height;
+
+  // If user is within the last 10% of the list, start preloading images
+  if (contentHeight - contentOffsetY - SCREEN_HEIGHT < 100) {
+    preloadImages(chaptereList.length - 10); // Prefetch next 10 items
   }
+};
 
-  const handleSubmitTask = async () => {
-    if (!taskName.trim()) {
-      Alert.alert('Error', 'Please enter a task name');
-      return;
-    }
+
+useFocusEffect(
+  useCallback(() => {
+    fetchChapterList()
+  }, [ categoryId, navigation, courseId])
+);
+
+
+const handleCardPress = (content) => {
+  console.log('Pass Likes Count', content.likeCount);
+  //navigation.navigate('CourseScreen', { content });
+};
   
-    try {
-      // Call the addTask method from TaskHandler to save the task
-      const contentTitle  = content.title
-      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, content);
 
-      setTaskName(''); 
-      setSelectedSubTaskType(1)
-      setSelectedTaskType(1); 
-      setModalVisible(false); 
-      analytics.sendAddTaskEvent(selectedTaskType,selectedSubTaskType)
-    } catch (error) {
-      console.error("Error adding task:", error);
-      Alert.alert('Error', 'Something went wrong while adding the task.');
-    }
-  };
 
   return (
     <View style={styles.container}>
-     {/* <Text style={styles.title}>{itemTitle}</Text> */}
-      <View style={styles.mainContent}>
-        {htmlContent ? (
-          <WebView
-            originWhitelist={['*']}
-            source={{ html: htmlContent }}
-            style={styles.webView}
-          />
-        ) : (
-          <View style={styles.emptyDataView}>
-          <Text style={styles.emptyDataLabel}>Loading...</Text>
+      <FlatList
+        data={chaptereList}
+        keyExtractor={(item) => item.id}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        decelerationRate="fast"
+        snapToInterval={SCREEN_HEIGHT}
+        onEndReachedThreshold={0.1}
+        onScroll={handleScroll}
+        renderItem={({ item }) => (
+          <View style={styles.cardContainer}>
+          <View style={styles.separatorLine} />
+        
+          <TouchableOpacity
+            onPress={() => handleCardPress(item)}
+            activeOpacity={1}
+            style={styles.cardContent}
+            accessibilityLabel={`Content Card: ${item.title}`}
+          >
+            {/* LEFT SIDE: Title, Description, Category, etc. */}
+            <View style={styles.leftContent}>
+              <View style={styles.topLeft}>
+                <Text style={styles.contentText}>{item.title}</Text>
+                <Text style={styles.contentDescription} accessibilityLabel={item.description}>
+                  {item.description}
+                </Text>
+              </View>
+          
+            </View>
+        
+            {/* RIGHT SIDE: Image + Duration + Save */}
+            <View style={styles.rightContent}>
+              <FastImage
+                source={{ uri: item.thumbnail }}
+                style={styles.tileImage}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+            </View>
+          </TouchableOpacity>
         </View>
         )}
-      </View>
+      />
 
-      {/* Footer Section */}
-      <View style={styles.footer}>
-      <TouchableOpacity style={styles.iconButton} onPress={() => handleSave()}
-        accessibilityLabel={isSaved ?`Unsave Card`: 'Save Card'}>
-                <Ionicons
-                  name={isSaved ? 'bookmark' : 'bookmark-outline'}
-                  size={24}
-                  color={isSaved ? theme.colors.secondaryTheme : theme.colors.greyDark1}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike()}
-                accessibilityLabel={isLiked ? `Unlike Card. Total like ${likedCount}`: `Like Card. Total like ${likedCount}`}>
-                <Ionicons
-                  name={isLiked ? 'heart' : 'heart-outline'}
-                  size={24}
-                  color={isLiked ? theme.colors.primaryTheme : theme.colors.greyDark1}
-                />
-                <Text style={styles.likeCount}>{likedCount}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask()}
-                accessibilityLabel={'Add Task'}>
-                <MaterialIcons name="add-task" size={24} color={theme.colors.greyDark1}/>
-              </TouchableOpacity>
-      </View>
-
-      <Modal visible={isModalVisible} animationType="slide" transparent>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Add Task</Text>
-          
-          {/* Task Input */}
-          <TextInput
-            style={styles.input}
-            placeholder="Enter task name"
-            placeholderTextColor={theme.colors.placeholder}
-            value={taskName}
-            onChangeText={setTaskName}
-          />
-
-          {/* Routine and Goal Buttons */}
-          <View style={styles.optionButtonContainer}>
-            <TouchableOpacity
-              style={[styles.optionButton, selectedTaskType === 1 && styles.selectedButton]}
-              onPress={() => setSelectedTaskType(1)} // 0 for Routine
-            >
-              <Text style={[styles.optionButtonText, selectedTaskType === 1 && styles.selectedOptionButtonText]}>
-                Routine
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.optionButton, selectedTaskType === 2 && styles.selectedButton]}
-              onPress={() => setSelectedTaskType(2)} // 1 for Goal
-            >
-              <Text style={[styles.optionButtonText, selectedTaskType === 2 && styles.selectedOptionButtonText]}>
-                Goal
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Sub-buttons for Routine */}
-          {selectedTaskType === 1 && (
-            <View style={styles.subButtonContainer}>
-              {[1, 2, 3].map((value, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.subOptionButton,
-                    selectedSubTaskType === value && styles.subSelectedButton,
-                  ]}
-                  onPress={() => setSelectedSubTaskType(value)}
-                >
-                  <Text style={[
-                    styles.subOptionButtonText,
-                    selectedSubTaskType === value && styles.subSelectedOptionButtonText,
-                  ]}>
-                    {value === 1 ? 'Daily' : value === 2 ? 'Weekly' : 'Monthly'}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          {/* Add Task and Cancel Buttons */}
-          <View style={styles.addTaskbuttonContainer}>
-            <TouchableOpacity  style={[styles.addButton, taskName.trim() === '' && styles.disabledAddButton]} onPress={handleSubmitTask} disabled={taskName.trim() === ''}>
-              <Text style={styles.addButtonText}>Add Task</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancelAddTask}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
-    </View>
+ </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
-    paddingBottom: 80, // Ensure content does not overlap footer
+    backgroundColor: theme.colors.white,
   },
-  mainContent: {
+  cardContainer: {
+    backgroundColor: theme.colors.white,
+    padding: 12,
+  },
+  separatorLine: {
+    height: 1,
+    backgroundColor: '#e0e0e0',
+    marginBottom: 12,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+  },
+  leftContent: {
     flex: 1,
+    justifyContent: 'space-between',
+    paddingRight: 12,
   },
-  webView: {
-    flex: 1,
-    marginVertical: 0,
-    borderRadius: 2,
-  },
-  emptyDataView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyDataLabel: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: theme.colors.greyLight3
-  },
-  likeCount: {
-    color: theme.colors.greyDark2,
-   // fontWeight: 'bold'
-
-  },
-  title: {
-    fontSize: 26,
-    color: theme.colors.black,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
+  topLeft: {
+    flexShrink: 1,
+    gap: 10
   },
   contentText: {
-    fontSize: 18,
-    color: theme.colors.grey1,
-    textAlign: 'justify',
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 70,
-    backgroundColor: theme.colors.white,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.greyLight2,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  footerButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: theme.colors.primary,
-    borderRadius: 5,
-  },
-  footerButtonText: {
-    color: theme.colors.white,
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 4,
   },
-
+  contentDescription: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 8,
+  },
+  bottomLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 15,
+  },
+  
+  rightContent: {
+    width: '25%',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  tileImage: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: 8,
+  },
+  imageBottomRow: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+    marginTop: 6,
+  },
   iconButton: {
-    padding: 10,
-  },
-  iconButtonLike: {
-    padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 5
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  input: {
-    height: 50,
-    borderColor: theme.colors.greyLight,
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 20,
-    paddingLeft: 10,
-    fontSize: 16,
-    fontWeight: '500'
-  },
-  optionButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginVertical: 10,
-  },
-  optionButton: {
-    flex: 1,
-    marginHorizontal: 5,
-    height: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    //borderWidth: 1,
-    borderColor:  theme.colors.primaryTheme,
-    backgroundColor: theme.colors.white,
-  },
-  selectedButton: {
-    backgroundColor: theme.colors.primaryTheme
-  },
-  optionButtonText: {
-    color: theme.colors.primaryTheme,
-    fontSize: 18,
-     fontWeight: 'bold'
-  },
-  selectedOptionButtonText: {
-    color: theme.colors.white,
-   
-  },
-  subOptionButton: {
-    flex: 1,
-    marginHorizontal: 5,
-    height: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    //borderWidth: 1,
-    borderColor:  theme.colors.secondaryTheme,
-    backgroundColor: theme.colors.white,
-  },
-  subSelectedButton: {
-    backgroundColor: theme.colors.secondaryTheme
-  },
-  subOptionButtonText: {
-    color: theme.colors.secondaryTheme,
-    fontSize: 16,
-     fontWeight: 'bold'
-  },
-  subSelectedOptionButtonText: {
-    color: theme.colors.white,
-  },
-
-  subButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginVertical: 10,
-  },
-
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    gap: 40,
-  },
-  addTaskbuttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    gap: 10,
-  },
-  addButton: {
-    flex: 1,
-    backgroundColor: theme.colors.secondaryTheme, 
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-    alignItems: 'center',
-  },
-  disabledAddButton: {
-    backgroundColor: theme.colors.secondaryThemeLight, 
-  },
-  addButtonText: {
-    color: theme.colors.white,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: 'transparent', // Transparent background
-    padding: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor:  theme.colors.primaryTheme, 
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    color:  theme.colors.primaryTheme, 
-    fontWeight: 'bold',
-    fontSize: 16,
+    padding: 4,
+    marginBottom: 2, // optional
   },
 });
 
