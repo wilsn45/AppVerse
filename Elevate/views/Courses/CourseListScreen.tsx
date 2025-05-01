@@ -157,31 +157,46 @@ const handleCardPress = (content) => {
         onScroll={handleScroll}
         renderItem={({ item }) => (
           <View style={styles.cardContainer}>
-            <TouchableOpacity onPress={() => handleCardPress(item)} style={styles.cardContent}
+          <TouchableOpacity
+            onPress={() => handleCardPress(item)}
             activeOpacity={1}
-               accessibilityLabel={`Content Card: ${item.title}`}>
-                <FastImage 
-                    source={{ uri: item.thumbnailMax }} 
-                     style={styles.tileImage} 
-                     resizeMode={FastImage.resizeMode.cover}
+            style={styles.cardContent}
+            accessibilityLabel={`Content Card: ${item.title}`}
+          >
+            {/* LEFT SIDE: Textual Info */}
+            <View style={styles.leftContent}>
+              <Text style={styles.contentText}>{item.title}</Text>
+              <Text style={styles.contentDescription} accessibilityLabel={item.description}>
+                {item.description}
+              </Text>
+              <View style={styles.bottomRow}>
+              <View style={styles.tag}>
+                  <Text style={styles.tagText}>{item.categoryTitle || 'Category'}</Text>
+                </View>
+              <Text style={styles.ratingText}>⭐ {item.rating ?? '4.5'}</Text>
+               <Text style={styles.levelText}>{item.duration ?? '1 Hour'}</Text>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => handleSave(item)}
+                  accessibilityLabel={savedCourses.get(item.id) ? `Unsave Card` : 'Save Card'}
+                >
+                  <Ionicons
+                    name={savedCourses.get(item.id) ? 'bookmark' : 'bookmark-outline'}
+                    size={20}
+                    color={savedCourses.get(item.id) ? theme.colors.secondaryTheme : theme.colors.greyDark1}
                   />
-               <View>
-                <Text style={styles.contentText}>{item.title}</Text>
-                <Text style={styles.contentDescription}  accessibilityLabel={item.description} >{item.description}</Text>
+                </TouchableOpacity>
               </View>
-             
-            </TouchableOpacity>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item)}
-                accessibilityLabel={savedCourses.get(item.id) ?`Unsave Card`: 'Save Card'}>
-                <Ionicons
-                  name={savedCourses.get(item.id) ? 'bookmark' : 'bookmark-outline'}
-                  size={24}
-                  color={savedCourses.get(item.id) ? theme.colors.secondaryTheme : theme.colors.greyDark1}
-                />
-              </TouchableOpacity>
             </View>
-          </View>
+      
+            {/* RIGHT SIDE: Image */}
+            <FastImage
+              source={{ uri: item.thumbnailMax }}
+              style={styles.tileImage}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+          </TouchableOpacity>
+        </View>
         )}
       />
 
@@ -192,54 +207,96 @@ const handleCardPress = (content) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.white,
+    backgroundColor: '#fff',
   },
   cardContainer: {
-    flex: 1,
-    height: SCREEN_HEIGHT,
-    backgroundColor: theme.colors.white,
-    justifyContent: 'space-between',
-    gap: 10,
-    paddingHorizontal: 15,
-    paddingBottom: 90
+    height: 180,
+    marginVertical: 10,
+    paddingHorizontal: 16,
   },
   cardContent: {
-    height: '80%',
-    justifyContent: 'flex-start',
-    gap: 20,
-    alignItems: 'center',
-    backgroundColor: theme.colors.white,
-  },
-  buttonContainer: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 80,
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    overflow: 'hidden',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  leftContent: {
+    flex: 1,
+    padding: 12,
+    justifyContent: 'space-between',
   },
   contentText: {
-    fontSize: 24,
+    fontSize: 16,
+    fontWeight: 'bold',
     color: theme.colors.black,
-    textAlign: 'center',
-    marginBottom: 18,
-    fontWeight: '500'
+    marginBottom: 4,
   },
-  contentDescription:  {
-    fontSize: 18,
-    color: theme.colors.greyText,
-    textAlign: 'center',
-    marginBottom: 10,
-    lineHeight: 30
+  contentDescription: {
+    fontSize: 14,
+    color: theme.colors.greyDark1,
+    flexShrink: 1,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 5
+  },
+  tag: {
+    backgroundColor: theme.colors.secondaryTheme,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  tagText: {
+    fontSize: 12,
+    color: 'white',
   },
   iconButton: {
-    padding: 10,
+    padding: 4,
   },
   tileImage: {
-    width: '90%',
-    height: 300,
-    borderRadius: 10,
-    marginTop: 25,
-    marginBottom: 5, // Space between image and button
-    resizeMode: 'cover',
+    width: 150,
+    height: '100%',
+  },
+  textContent: {
+    flex: 1,
+    paddingRight: 10,
+    justifyContent: 'space-between',
+  },
+  
+  rowBetween: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  
+  ratingText: {
+    fontSize: 12,
+    color: theme.colors.greyDark1,
+  },
+  
+  levelText: {
+    fontSize: 12,
+    color: theme.colors.greyDark1,
+  },
+  
+  categoryTag: {
+    fontSize: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: theme.colors.greyLight1,
+    borderRadius: 12,
+    color: theme.colors.black,
   },
 });
 

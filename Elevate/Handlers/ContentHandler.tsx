@@ -24,7 +24,9 @@ export class ContentHandler {
                 doc.data().categoryId,
                 doc.data().categoryTitle,
                 doc.data().thumbnailMax,
-                doc.data().isLive
+                doc.data().isLive,
+                doc.data().rating,
+                doc.data().duration,
             )
         );;
 
