@@ -151,7 +151,7 @@ const HomeScreen = () => {
 
   const handleTilePress = (categorytitle: string, id: string) => {
     analytics.sendCategoryClickedEvent(id);
-     navigation.navigate('ContentScreen', { categorytitle, categoryId: id });
+     navigation.navigate('CourseListScreen', { categorytitle, categoryId: id });
   };
 
   // Group the categories into rows of 2 tiles

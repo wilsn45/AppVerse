@@ -19,11 +19,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
 import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
-import { ContentListAnalytics } from '../../Analytics/ContentListAnalytics';
+import { ContentListAnalytics } from '../../Analytics/ContentListAnalytics.ts';
 import theme from '../../Theme/Theme.js';
 import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native'; 
-import { ContentHandler } from '../../Handlers/ContentHandler';
+import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
 
 const { width, height } = Dimensions.get('window');
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -32,7 +32,7 @@ const AVAILABLE_HEIGHT = SCREEN_HEIGHT - NAVIGATION_BAR_HEIGHT; // Subtract navi
 
 
 
-const ContentScreen = () => {
+const CourseListScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { categorytitle, categoryId } = route.params;
@@ -601,4 +601,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ContentScreen;
+export default CourseListScreen;
