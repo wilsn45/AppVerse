@@ -55,13 +55,13 @@ const ContentDetailScreen = () => {
     const fetchContent = async () => {
       
       const contentData = await ContentHandler.fetchContent(content.id, content.categoryId)
-      //console.log('Content contentData', contentData);
+      console.log('Content contentData', contentData);
       setLikedCount(contentData?.likeCount || 0)
      
      
       const doc = await ContentHandler.fetchContentDoc(content.id, content.categoryId)
-      console.log('Content Doc', doc);
-      console.log('Item id', content.id);
+      //console.log('Content Doc', doc);
+      //console.log('Item id', content.id);
       setHtmlContent(doc?.htmlContent || '');   
     };
 

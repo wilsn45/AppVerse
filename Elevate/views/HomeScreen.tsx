@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SaveHandler } from '../Handlers/SaveHandler.tsx';
 import { ContentData, CategoryData } from '../Data/DataModel';
+import { BackHandler } from 'react-native';
 
 import theme from '../Theme/Theme';
 
@@ -28,6 +29,18 @@ const HomeScreen = () => {
   // Example dynamic data for the horizontal FlatLists
   const categoryData = [];
   const homeCards = [];
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        return true; // Prevent default back action
+      };
+  
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  
+      return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -55,7 +68,8 @@ const HomeScreen = () => {
         for (const key in homeData) {
           if (key !== 'Categories') {
               const data =  homeData[key] 
-              const sectionData = {'title': key, 'data': data}
+              const sortedData = Object.values(data).sort((a, b) => a.index - b.index);
+              const sectionData = {'title': key, 'data': sortedData}
               newSectionDataArray.push(sectionData)
               
               for (const item of data) {
