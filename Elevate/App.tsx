@@ -7,10 +7,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import HomeScreen from './views/HomeScreen';
 import CourseListScreen from './views/Courses/CourseListScreen.tsx';
 import CourseScreen from './views/Courses/CourseScreen.tsx';
+import ChapterScreen from './views/Chapter/ChapterScreen.tsx';
 import SavedScreen from './views/SaveScreen.tsx';
-import TaskScreen from './views/Tasks/TaskScreen.tsx';
-import RoutineTaskScreen from './views/Tasks/RoutineTaskScreen.tsx';
-import GoalTaskScreen from './views/Tasks/GoalTaskScreen.tsx';
 import LetsStartScreen from './views/GetStarted/LetsStartScreen.tsx'; 
 import SplashScreen from './views/GetStarted/SplashScreen.tsx'; 
 import ProfileHandler from './Handlers/ProfileHandler'; 
@@ -59,14 +57,14 @@ const TabNavigator = () => {
           title: 'Saves',
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Tasks"
         component={TaskScreen}
         options={{
           headerShown: false,
           title: 'Tasks',
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
@@ -112,8 +110,7 @@ const App = () => {
           options={{ headerShown: false }}
         />
 
-       
-
+      
         {/* Other screens */}
         <Stack.Screen
           name="CourseListScreen"
@@ -135,26 +132,18 @@ const App = () => {
             title: '',
           }}
         />
-        <Stack.Screen
-          name="RoutineTaskScreen"
-          component={RoutineTaskScreen}
+
+      <Stack.Screen
+          name="ChapterScreen"
+          component={ChapterScreen}
           options={{
             headerShown: true,
             headerBackTitle: '',
             headerTintColor: theme.colors.black,
-            title: 'Task',
+            title: '',
           }}
-        />
-        <Stack.Screen
-          name="GoalTaskScreen"
-          component={GoalTaskScreen}
-          options={{
-            headerShown: true,
-            headerBackTitle: '',
-            headerTintColor: theme.colors.black,
-            title: 'Task',
-          }}
-        />
+        />  
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -101,30 +101,31 @@ export class ContentHandler {
     } 
 }
 
-static async fetchContentDoc(contentId, categoryId) {
-    try {
-        // Fetch category list from Home collection
-        const contetnDocSnapshot = await firestore()
-        .collection('Content')
-        .doc('Doc') 
-        .collection(categoryId)
-        .doc(contentId)
-        .get();
+static async fetchChapter(chapterId) {
+  try {
+      // Fetch category list from Home collection
 
-        console.log("Fetched Content doc", contetnDocSnapshot.data())
+      console.log("fetchChapter", chapterId)
 
-        if (contetnDocSnapshot.exists) { 
-            console.log("Fetched data", contetnDocSnapshot.data())
-            return contetnDocSnapshot.data()
-        } else {
-            return null
-        }
-       
 
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return null
-    } 
+      const chapterDocSnapshot = await firestore()
+      .collection('Chapters')
+      .doc(chapterId)
+      .get();
+
+      //console.log("Fetched Content data", contetnDocSnapshot.data())
+
+      if (chapterDocSnapshot.exists) { 
+          return chapterDocSnapshot.data()
+      }
+      else {
+          return null
+      }
+
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      return null
+  } 
 }
 
 }

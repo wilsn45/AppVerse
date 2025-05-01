@@ -55,7 +55,7 @@ class AnalyticsHelper {
         },
       };
 
-     // console.log('Sending analytics event:', eventData);
+      //console.log('Sending analytics event:', eventData);
 
       // Send data to Google Analytics using Firebase Analytics
       await analytics().logEvent(eventName, {

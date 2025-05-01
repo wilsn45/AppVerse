@@ -1,51 +1,52 @@
 import { AnalyticsHelper, ActionType } from './AnalyticsHelper';
 
-export class CourseListAnalytics {
+export class CourseAnalytics {
 
     categoryId;
+    courseId;
 
     // Constructor to accept and save the argument
-    constructor(categoryId) {
+    constructor(categoryId,courseId) {
       this.categoryId = categoryId;
+      this.courseId = courseId
     }
   
 
- async sendCourseListImpressionEvent() {
+ async sendCourseImpressionEvent() {
     await AnalyticsHelper.sendEvent(
-        '4.0.0',
-        'Course_List_Appeared',
-        'Course_List',
+        '10.0.0',
+        'Course_Appeared',
+        'Course',
         '',
         ActionType.IMPRESSION,
         '',
-        { 'categoryId': this.categoryId}
+        { 'categoryId': this.categoryId, 'courseId': this.courseId}
      );
   }
 
-  async sendCourseListPresentedEvent() {
+  async sendCoursePresentedEvent() {
     await AnalyticsHelper.sendEvent(
-        '4.1.0',
-        'Course_List_Presented',
-        'Course_List',
+        '10.1.0',
+        'Course_Presented',
+        'Course',
         '',
         ActionType.IMPRESSION,
         '',
-        { 'categoryId': this.categoryId}
+        { 'categoryId': this.categoryId, 'courseId': this.courseId}
      );
   }
 
-  async sendCourseSavedEvent(isSave, contentId) {
-    const optionType =  isSave ? 'Save' : 'Remove'
-     const eventId =  isSave ? '4.1.1.1' : '4.1.1.2'
-     const eventName =  isSave ? 'Course_Saved' : 'Course_Saved_Removed'
+  async sendCourseOpenEvent() {
+     const eventId =   '10.1.1.1' 
+     const eventName =  'Chapter_Opened' 
     await AnalyticsHelper.sendEvent(
       eventId,
       eventName,
       'Course_List',
       'Save',
       ActionType.CLICK,
-      optionType,
-      { 'categoryId': this.categoryId, 'contentId': contentId}
+      '',
+      { 'categoryId': this.categoryId, 'courseId': this.courseId}
    );
   }
 

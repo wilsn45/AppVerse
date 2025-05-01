@@ -16,7 +16,7 @@ import FastImage from 'react-native-fast-image';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
-import { CourseListAnalytics } from '../../Analytics/CourseListAnalytics.ts';
+import { CourseAnalytics } from '../../Analytics/CourseAnalytics.ts';
 import theme from '../../Theme/Theme.js';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
@@ -30,10 +30,10 @@ const CourseScreen = () => {
   const [chaptereList, setChapterList] = useState([]);
   
 
-  const analytics = new CourseListAnalytics(categoryId)
+  const analytics = new CourseAnalytics(categoryId,courseId)
 
   useEffect(() => {
-     //analytics.sendCourseImpressionEvent()
+     analytics.sendCourseImpressionEvent()
      //console.log("Fetched categoryId:", categoryId)
 
      fetchChapterList()
@@ -48,11 +48,11 @@ const CourseScreen = () => {
 
         const filteredChapters = chapterList.filter(course => course.isLive === true);
 
-        console.log("Filtered Chapters", filteredChapters)
-        console.log("Fetched ContentList:", chapterList)
+        // console.log("Filtered Chapters", filteredChapters)
+        // console.log("Fetched ContentList:", chapterList)
         const sortedData = [...filteredChapters].sort((a, b) => b.index - a.index);
         setChapterList(sortedData)
-        analytics.sendCourseListPresentedEvent()
+        analytics.sendCoursePresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
     } finally {
@@ -88,8 +88,9 @@ useFocusEffect(
 
 
 const handleCardPress = (content) => {
+  analytics.sendCourseOpenEvent()
   console.log('Pass Likes Count', content.likeCount);
-  //navigation.navigate('CourseScreen', { content });
+  navigation.navigate('ChapterScreen', { chapterId: content.id });
 };
   
 

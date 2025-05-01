@@ -6,16 +6,12 @@ import {
   Dimensions,
   FlatList,
   TouchableOpacity,
-  Modal,
-  TextInput,
-  Alert,
   Image
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
 import { CourseListAnalytics } from '../../Analytics/CourseListAnalytics.ts';
 import theme from '../../Theme/Theme.js';
@@ -35,7 +31,7 @@ const CourseListScreen = () => {
   const analytics = new CourseListAnalytics(categoryId)
 
   useEffect(() => {
-     analytics.sendCourseImpressionEvent()
+     analytics.sendCourseListImpressionEvent()
      //console.log("Fetched categoryId:", categoryId)
 
     fetchContentList()
