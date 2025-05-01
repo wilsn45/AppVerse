@@ -17,58 +17,44 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
-import { LikeHandler } from '../../Handlers/LikeHandler.tsx';
-import { TaskHandler } from '../../Handlers/Tasks/TaskHandler.tsx';
-import { ContentListAnalytics } from '../../Analytics/ContentListAnalytics.ts';
+import { CourseListAnalytics } from '../../Analytics/CourseListAnalytics.ts';
 import theme from '../../Theme/Theme.js';
-import firestore from '@react-native-firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
 
-const { width, height } = Dimensions.get('window');
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const NAVIGATION_BAR_HEIGHT = Platform.OS === 'ios' ? 44 : 56; // Navigation bar height
-const AVAILABLE_HEIGHT = SCREEN_HEIGHT - NAVIGATION_BAR_HEIGHT; // Subtract navigation bar height
-
-
 
 const CourseListScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { categorytitle, categoryId } = route.params;
-  const [contentList, setContentList] = useState([]);
-  const [savedCards, setSavedCards] = useState<Map<string, boolean>>(new Map());
-  const [likedCards, setLikedCards] = useState<Map<string, boolean>>(new Map());
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [taskName, setTaskName] = useState('');
-  const [selectedContent, setSelectedContent] = useState(null); // Default to "Routine"
-  const [selectedTaskType, setSelectedTaskType] = useState(1); // 0 for Routine, 1 for Goal
-  const [selectedSubTaskType, setSelectedSubTaskType] = useState(1); // 0 for Daily, 1 for Weekly, 2 for Monthly
+  const { categoryTitle, categoryId } = route.params;
+  const [courseList, setCourseList] = useState([]);
+  const [savedCourses, setSavedCourses] = useState<Map<string, boolean>>(new Map());
+  
 
-
-  const analytics = new ContentListAnalytics(categoryId)
+  const analytics = new CourseListAnalytics(categoryId)
 
   useEffect(() => {
-     analytics.sendContentImpressionEvent()
+     analytics.sendCourseImpressionEvent()
      //console.log("Fetched categoryId:", categoryId)
 
     fetchContentList()
-  }, [ , categoryId, navigation, categorytitle]);
+  }, [ , categoryId, navigation, categoryTitle]);
 
 
   const fetchContentList = async () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
-        const contentList  = await ContentHandler.fetchContentByCategory(categoryId);
+        const coursesList  = await ContentHandler.fetchCourseByCategory(categoryId);
 
-        const filteredContent = contentList.filter(content => content.isLive === true);
+        const filteredCourses = coursesList.filter(course => course.isLive === true);
 
-       // console.log("Filtered Cards", filteredContent)
-        //console.log("Fetched ContentList:", contentList)
-        const sortedData = [...filteredContent].sort((a, b) => b.index - a.index);
-        setContentList(sortedData)
-      analytics.sendContentListPresentedEvent()
+        console.log("Filtered Cards", filteredCourses)
+        console.log("Fetched ContentList:", coursesList)
+        const sortedData = [...filteredCourses].sort((a, b) => b.index - a.index);
+        setCourseList(sortedData)
+        analytics.sendCourseListPresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
     } finally {
@@ -80,31 +66,27 @@ const loadCards = async () => {
   //console.log('Fetched list 2', contentList);
   
   const savedContentIds = await SaveHandler.getSavedCardByCategory(categoryId) || [];
-  const likedContentIds =  await LikeHandler.getLikedCardByCategory(categoryId) || [];
   //console.log("savedContentIds", savedContentIds)
   //console.log("likedContentIds", likedContentIds)
 
-  const updatedSavedCards = new Map();
-  const updatedLikedCards = new Map();
+  const updatedSavedCourses = new Map();
 
   //console.log('Updated Liked: contentList  Count', contentList);
 
   //console.log("contentList length:", contentList.length);
 
-  contentList.forEach((item) => {
-    updatedSavedCards.set(item.id, savedContentIds.some((savedCard) => savedCard.id === item.id));
-    updatedLikedCards.set(item.id, likedContentIds.some((likedCard) => likedCard.id === item.id));
+  courseList.forEach((item) => {
+    updatedSavedCourses.set(item.id, savedContentIds.some((savedCourses) => savedCard.id === item.id));
   });
 
-  setSavedCards(updatedSavedCards);
-  setLikedCards(updatedLikedCards);
+  setSavedCourses(updatedSavedCourses);
  // console.log('updatedSavedCards', updatedSavedCards);
 };
 
 const preloadImages = (index) => {
-  const nextItems = contentList.slice(index, index + 10); // Prefetch the next 10 items
+  const nextItems = courseList.slice(index, index + 10); // Prefetch the next 10 items
   nextItems.forEach(item => {
-    Image.prefetch(item.imageUrl); // Preload the image URL
+    Image.prefetch(item.thumbnailMax); // Preload the image URL
   });
 };
 
@@ -115,7 +97,7 @@ const handleScroll = (event) => {
 
   // If user is within the last 10% of the list, start preloading images
   if (contentHeight - contentOffsetY - SCREEN_HEIGHT < 100) {
-    preloadImages(contentList.length - 10); // Prefetch next 10 items
+    preloadImages(courseList.length - 10); // Prefetch next 10 items
   }
 };
 
@@ -123,167 +105,44 @@ const handleScroll = (event) => {
 useFocusEffect(
   useCallback(() => {
     navigation.setOptions({
-      title: categorytitle,
+      title: categoryTitle,
     });
     fetchContentList()
-  }, [ categoryId, navigation, categorytitle])
+  }, [ categoryId, navigation, categoryTitle])
 );
 
 useFocusEffect(
   useCallback(() => {
     navigation.setOptions({
-      title: categorytitle,
+      title: categoryTitle,
     });
     //console.log('LoadCard: Fetched list', contentList);
-    if (contentList.length > 0) {
+    if (courseList.length > 0) {
         loadCards();
     }
-  }, [ contentList])
+  }, [ courseList])
 );
   
 
-  const handleSave = async (content) => {
-    const isSaved = savedCards.get(content.id);
-    analytics.sendContentSavedEvent(isSaved, content.id)
+  const handleSave = async (course) => {
+    const isSaved = savedCourses.get(course.id);
+    analytics.sendCourseSavedEvent(isSaved, course.id)
     if (isSaved) {
-      await SaveHandler.removeSave(categoryId, content.id);
+      await SaveHandler.removeSave(categoryId, course.id);
     } else {
      // console.log("Saving Item", content)
-      await SaveHandler.addSave(content);
+      await SaveHandler.addSave(course);
     }
     // Update only the savedCards state here
-    setSavedCards((prev) => new Map(prev).set(content.id, !isSaved));
+    setSavedCourses((prev) => new Map(prev).set(course.id, !isSaved));
   };
   
-  const handleLike = async (content) => {
-    const isLiked = likedCards.get(content.id);
-
-    analytics.sendContentLikedEvent(isLiked, content.id)
-
-    if (isLiked) {
-      await LikeHandler.removeLike(categoryId, content.id);
-      dencreaseLikeCount(content.id)
-    } else {
-      await LikeHandler.addLike(categoryId, content.id, content.title);
-      increaseLikeCount(content.id)
-    }
-    // Update only the likedCards state here
-    setLikedCards((prev) => new Map(prev).set(content.id, !isLiked));
-    
-  };
-
-  const increaseLikeCount = (id) => {
-    const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
-
-      docRef.update({
-        likeCount: firestore.FieldValue.increment(1)  // Increments the count by 1
-      })
-      .then(() => {
-        console.log("Count updated successfully");
-      })
-      .catch((error) => {
-        console.error("Error updating count: ", error);
-      });
-
-    setContentList((prevContentList) => {
-      return prevContentList.map(item => {
-        if (item.id === id) {
-          return { ...item, likeCount: item.likeCount + 1 };
-        }
-        return item;
-      });
-    });
-  };
-
-  const dencreaseLikeCount = async (id) => {
-    const docRef = firestore().collection('Content').doc('List').collection(categoryId).doc(id);
   
-    // Fetch the current likeCount before decreasing it
-    try {
-      const docSnapshot = await docRef.get();
-  
-      if (docSnapshot.exists) {
-        const currentLikeCount = docSnapshot.data().likeCount;
-  
-        // Only decrease likeCount if it's greater than 0
-        if (currentLikeCount > 0) {
-          docRef.update({
-            likeCount: firestore.FieldValue.increment(-1)  // Decrements the count by 1
-          })
-          .then(() => {
-            console.log("Count updated successfully");
-          })
-          .catch((error) => {
-            console.error("Error updating count: ", error);
-          });
-  
-          setContentList((prevContentList) => {
-            return prevContentList.map(item => {
-              if (item.id === id) {
-                return { ...item, likeCount: item.likeCount - 1 };
-              }
-              return item;
-            });
-          });
-        } else {
-          console.log("likeCount is already 0, cannot decrease");
-        }
-      } else {
-        console.log("Document does not exist, cannot decrease likeCount");
-      }
-    } catch (error) {
-      console.error("Error fetching like count: ", error);
-    }
-  };
-
-  const handleCardPress = (content) => {
-    console.log('Pass Likes Count', content.likeCount);
-    navigation.navigate('ContentDetailScreen', { content });
-  };
-
-  const handleAddTask = (item) => {
-    setSelectedContent(item)
-    setModalVisible(true);
-    analytics.sendAddTaskPresentedEvent(item.id)
-  };
-
-  const handleCancelAddTask = async () => { 
-      setTaskName(''); 
-      setSelectedSubTaskType(1)
-      setSelectedTaskType(1); 
-      setModalVisible(false); 
-      analytics.sendCancelAddTaskPEvent(selectedContent.id)
-  }
-
-  const handleSubmitTask = async () => {
-    if (!taskName.trim()) {
-      Alert.alert('Error', 'Please enter a task name');
-      return;
-    }
-  
-    try {
-      
-      await TaskHandler.addTask(taskName, selectedTaskType,selectedSubTaskType, selectedContent);
-  
-      // Log the task details to console (for debugging purposes)
-      console.log(`Task Added selectedContent: ${selectedContent}`)
-      
-      setTaskName(''); 
-      setSelectedSubTaskType(1)
-      setSelectedTaskType(1); 
-      setModalVisible(false); 
-      analytics.sendAddTaskEvent(selectedContent.id, selectedTaskType, selectedSubTaskType)
-    } catch (error) {
-      console.error("Error adding task:", error);
-      Alert.alert('Error', 'Something went wrong while adding the task.');
-    }
-  };
-
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={contentList}
+        data={courseList}
         keyExtractor={(item) => item.id}
         pagingEnabled
         showsVerticalScrollIndicator={false}
@@ -297,7 +156,7 @@ useFocusEffect(
             activeOpacity={1}
                accessibilityLabel={`Content Card: ${item.title}`}>
                 <FastImage 
-                    source={{ uri: item.imageUrl }} 
+                    source={{ uri: item.thumbnailMax }} 
                      style={styles.tileImage} 
                      resizeMode={FastImage.resizeMode.cover}
                   />
@@ -309,107 +168,17 @@ useFocusEffect(
             </TouchableOpacity>
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.iconButton} onPress={() => handleSave(item)}
-                accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
+                accessibilityLabel={savedCourses.get(item.id) ?`Unsave Card`: 'Save Card'}>
                 <Ionicons
-                  name={savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
+                  name={savedCourses.get(item.id) ? 'bookmark' : 'bookmark-outline'}
                   size={24}
-                  color={savedCards.get(item.id) ? theme.colors.secondaryTheme : theme.colors.greyDark1}
+                  color={savedCourses.get(item.id) ? theme.colors.secondaryTheme : theme.colors.greyDark1}
                 />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButtonLike} onPress={() => handleLike(item)}
-                accessibilityLabel={likedCards.get(item.id) ? `Unlike Card. Total like ${item.likeCount}`: `Like Card. Total like ${item.likeCount}`}>
-                <Ionicons
-                  name={likedCards.get(item.id) ? 'heart' : 'heart-outline'}
-                  size={24}
-                  color={likedCards.get(item.id) ? theme.colors.primaryTheme : theme.colors.greyDark1}
-                />
-                <Text style={styles.likeCount}>{item.likeCount}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => handleAddTask(item)}
-                 accessibilityLabel={'Add Task'}>
-                <MaterialIcons name="add-task" size={24} color={theme.colors.greyDark1}/>
               </TouchableOpacity>
             </View>
           </View>
         )}
       />
-
-      {/* Task Modal */}
-    {/* Task Modal */}
-{/* Task Modal */}
-<Modal visible={isModalVisible} animationType="slide" transparent>
-      <View style={styles.modalContainer}  accessibilityLabel={'Add Task Screen'}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Add Task</Text>
-          
-          {/* Task Input */}
-          <TextInput
-            style={styles.input}
-            placeholder="Enter task name"
-            placeholderTextColor={theme.colors.placeholder}
-            value={taskName}
-            onChangeText={setTaskName}
-          />
-
-          {/* Routine and Goal Buttons */}
-          <View style={styles.optionButtonContainer}>
-            <TouchableOpacity
-              style={[styles.optionButton, selectedTaskType === 1 && styles.selectedButton]}
-              onPress={() => setSelectedTaskType(1)}
-              accessibilityLabel={'Routine Task'}   // 0 for Routine
-            >
-              <Text style={[styles.optionButtonText, selectedTaskType === 1 && styles.selectedOptionButtonText]}>
-                Routine
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.optionButton, selectedTaskType === 2 && styles.selectedButton]}
-              onPress={() => setSelectedTaskType(2)} // 1 for Goal
-              accessibilityLabel={'Goal Task'} 
-            >
-              <Text style={[styles.optionButtonText, selectedTaskType === 2 && styles.selectedOptionButtonText]}>
-                Goal
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Sub-buttons for Routine */}
-          {selectedTaskType === 1 && (
-            <View style={styles.subButtonContainer}>
-              {[1, 2, 3].map((value, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.subOptionButton,
-                    selectedSubTaskType === value && styles.subSelectedButton,
-                  ]}
-                  onPress={() => setSelectedSubTaskType(value)}
-                  accessibilityLabel={`Task Frequency ${value === 1 ? 'Daily' : value === 2 ? 'Weekly' : 'Monthly'}`} 
-                >
-                  <Text style={[
-                    styles.subOptionButtonText,
-                    selectedSubTaskType === value && styles.subSelectedOptionButtonText,
-                  ]}>
-                    {value === 1 ? 'Daily' : value === 2 ? 'Weekly' : 'Monthly'}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          {/* Add Task and Cancel Buttons */}
-          <View style={styles.addTaskbuttonContainer}>
-            <TouchableOpacity  style={[styles.addButton, taskName.trim() === '' && styles.disabledAddButton]} onPress={handleSubmitTask} disabled={taskName.trim() === ''}>
-              <Text style={styles.addButtonText}>Add Task</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancelAddTask}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </Modal>
 
  </View>
   );
@@ -458,138 +227,6 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 10,
-  },
-  likeCount: {
-    color: theme.colors.greyDark2,
-   // fontWeight: 'bold'
-
-  },
-  iconButtonLike: {
-    padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 5
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  input: {
-    height: 50,
-    borderColor: theme.colors.greyLight,
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 20,
-    paddingLeft: 10,
-    fontSize: 16,
-    fontWeight: '500'
-  },
-  optionButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginVertical: 10,
-  },
-  optionButton: {
-    flex: 1,
-    marginHorizontal: 5,
-    height: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-     //borderWidth: 1,
-    borderColor:  theme.colors.primaryTheme,
-    backgroundColor:  theme.colors.white,
-  },
-  selectedButton: {
-    backgroundColor: theme.colors.primaryTheme
-  },
-  optionButtonText: {
-    color: theme.colors.primaryTheme,
-    fontSize: 18,
-     fontWeight: 'bold'
-  },
-  selectedOptionButtonText: {
-    color: theme.colors.white,
-   
-  },
-  subOptionButton: {
-    flex: 1,
-    marginHorizontal: 5,
-    height: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    //borderWidth: 1,
-    borderColor:  theme.colors.secondaryTheme,
-    backgroundColor: theme.colors.white,
-  },
-  subSelectedButton: {
-    backgroundColor: theme.colors.secondaryTheme
-  },
-  subOptionButtonText: {
-    color: theme.colors.secondaryTheme,
-    fontSize: 16,
-     fontWeight: 'bold'
-  },
-  subSelectedOptionButtonText: {
-    color: theme.colors.white,
-  },
-
-  subButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginVertical: 10,
-  },
-  addTaskbuttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-    gap: 10,
-  },
-  addButton: {
-    flex: 1,
-    backgroundColor: theme.colors.secondaryTheme, 
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-    alignItems: 'center',
-  },
-  disabledAddButton: {
-    backgroundColor: theme.colors.secondaryThemeLight, 
-  },
-  addButtonText: {
-    color: theme.colors.white,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: 'transparent', // Transparent background
-    padding: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: theme.colors.primaryTheme, 
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    color: theme.colors.primaryTheme, 
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   tileImage: {
     width: '90%',

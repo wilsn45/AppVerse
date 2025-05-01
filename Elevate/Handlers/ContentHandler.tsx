@@ -1,6 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import { CategoryHandler } from './CategoryHandler';
-import { ContentData, CategoryData } from '../Data/DataModel';
+import { CourseData, CategoryData } from '../Data/DataModel';
 
 export class ContentHandler {
   // Define the key for storing live categories in AsyncStorage
@@ -9,29 +9,26 @@ export class ContentHandler {
   // Helper function to get the current saved categories from AsyncStorage
 
 
-  static async fetchContentByCategory(categoryId) {
+  static async fetchCourseByCategory(categoryId) {
       try {
           // Fetch category list from Home collection
-        const snapshot = await firestore().collection('Content').doc('List').collection(categoryId).get();
+        const snapshot = await firestore().collection('Courses').doc('List').collection(categoryId).get();
         
         // Map the fetched documents to include doc.id and category name
-        const contentList = snapshot.docs.map(doc => 
-            new ContentData(
+        const coursesList = snapshot.docs.map(doc => 
+            new CourseData(
                 doc.id,
                 doc.data().index,
                 doc.data().title,
                 doc.data().description,
                 doc.data().categoryId,
                 doc.data().categoryTitle,
-                doc.data().likeCount,
-                doc.data().readMin,
-                doc.data().imageUrl,
-                doc.data().thumbnail,
+                doc.data().thumbnailMax,
                 doc.data().isLive
             )
         );;
 
-        return contentList
+        return coursesList
 
       } catch (error) {
           console.error('Error fetching data:', error);

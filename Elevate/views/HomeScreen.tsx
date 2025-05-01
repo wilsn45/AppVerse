@@ -149,9 +149,9 @@ const HomeScreen = () => {
   );
 
 
-  const handleTilePress = (categorytitle: string, id: string) => {
+  const handleTilePress = (categoryTitle: string, id: string) => {
     analytics.sendCategoryClickedEvent(id);
-     navigation.navigate('CourseListScreen', { categorytitle, categoryId: id });
+     navigation.navigate('CourseListScreen', { categoryTitle, categoryId: id });
   };
 
   // Group the categories into rows of 2 tiles

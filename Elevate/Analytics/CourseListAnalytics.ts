@@ -1,6 +1,6 @@
 import { AnalyticsHelper, ActionType } from './AnalyticsHelper';
 
-export class ContentListAnalytics {
+export class CourseListAnalytics {
 
     categoryId;
 
@@ -10,11 +10,11 @@ export class ContentListAnalytics {
     }
   
 
- async sendContentImpressionEvent() {
+ async sendCourseImpressionEvent() {
     await AnalyticsHelper.sendEvent(
         '4.0.0',
-        'Content_List_Appeared',
-        'Content_List',
+        'Course_List_Appeared',
+        'Course_List',
         '',
         ActionType.IMPRESSION,
         '',
@@ -22,11 +22,11 @@ export class ContentListAnalytics {
      );
   }
 
-  async sendContentListPresentedEvent() {
+  async sendCourseListPresentedEvent() {
     await AnalyticsHelper.sendEvent(
         '4.1.0',
-        'Content_List_Presented',
-        'Content_List',
+        'Course_List_Presented',
+        'Course_List',
         '',
         ActionType.IMPRESSION,
         '',
@@ -34,14 +34,14 @@ export class ContentListAnalytics {
      );
   }
 
-  async sendContentSavedEvent(isSave, contentId) {
+  async sendCourseSavedEvent(isSave, contentId) {
     const optionType =  isSave ? 'Save' : 'Remove'
      const eventId =  isSave ? '4.1.1.1' : '4.1.1.2'
-     const eventName =  isSave ? 'Content_Saved' : 'Content_Saved_Removed'
+     const eventName =  isSave ? 'Course_Saved' : 'Course_Saved_Removed'
     await AnalyticsHelper.sendEvent(
       eventId,
       eventName,
-      'Content_List',
+      'Course_List',
       'Save',
       ActionType.CLICK,
       optionType,
