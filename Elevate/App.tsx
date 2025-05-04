@@ -8,7 +8,7 @@ import HomeScreen from './views/HomeScreen';
 import CourseListScreen from './views/Courses/CourseListScreen.tsx';
 import CourseScreen from './views/Courses/CourseScreen.tsx';
 import ChapterScreen from './views/Chapter/ChapterScreen.tsx';
-import SavedScreen from './views/SaveScreen.tsx';
+import MyCourseScreen from './views/MyCourseScreen.tsx';
 import LetsStartScreen from './views/GetStarted/LetsStartScreen.tsx'; 
 import SplashScreen from './views/GetStarted/SplashScreen.tsx'; 
 import ProfileHandler from './Handlers/ProfileHandler'; 
@@ -27,7 +27,7 @@ const TabNavigator = () => {
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
             //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
-          } else if (route.name === 'Save') {
+          } else if (route.name === 'My Course') {
             iconName = focused ? 'bookmark' : 'bookmark-outline';
             //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
           } else if (route.name === 'Tasks') {
@@ -50,11 +50,11 @@ const TabNavigator = () => {
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Save"
-        component={SavedScreen}
+        name="My Course"
+        component={MyCourseScreen}
         options={{
           headerShown: false,
-          title: 'Saves',
+          title: 'My Course',
         }}
       />
       {/* <Tab.Screen

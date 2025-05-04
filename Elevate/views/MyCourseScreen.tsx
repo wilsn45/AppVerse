@@ -9,7 +9,7 @@ import theme from '../Theme/Theme';
 import { SaveAnalytics } from '../Analytics/SaveAnalytics';
 import { Swipeable } from 'react-native-gesture-handler';
 
-const SaveScreen = () => {
+const MyCourseScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(0);
   const [allSavedCards, setAllSavedCards] = useState([]);
   const [filteredCards, setFilteredCards] = useState([]);
@@ -350,4 +350,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SaveScreen;
+export default MyCourseScreen;
