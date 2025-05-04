@@ -30,11 +30,10 @@ const CourseScreen = () => {
   const [chaptereList, setChapterList] = useState([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
   
-  const analytics = new CourseAnalytics(categoryId,course.id)
+  const analytics = new CourseAnalytics(course.id)
 
   useEffect(() => {
      analytics.sendCourseImpressionEvent()
-     //console.log("Fetched categoryId:", categoryId)
 
      fetchChapterList()
   }, [ navigation, course]);
@@ -44,14 +43,8 @@ const CourseScreen = () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
-        const chapterList  = await ContentHandler.fetchChapters(course.id,categoryId);
-
-        const filteredChapters = chapterList.filter(course => course.isLive === true);
-
-        // console.log("Filtered Chapters", filteredChapters)
-        // console.log("Fetched ContentList:", chapterList)
-        const sortedData = [...filteredChapters].sort((a, b) => b.index - a.index);
-        setChapterList(sortedData)
+        const chapterList  = await ContentHandler.fetchChapters(course.id);
+        setChapterList(chapterList)
         
         let isSaved = await SaveHandler.isCourseSaved(course.id);
         setIsCourseSaved(isSaved)
@@ -86,7 +79,7 @@ const handleScroll = (event) => {
 useFocusEffect(
   useCallback(() => {
     fetchChapterList()
-  }, [ categoryId, navigation, course, isSaved])
+  }, [ navigation, course])
 );
 
 
@@ -114,14 +107,22 @@ return (
   <View style={styles.container}>
     {/* Course Info Box */}
     <View style={styles.courseInfoBox}>
-      <View style={styles.courseInfoLeft}>
-        <Text style={styles.courseTitle}>{course.title}</Text>
-        <Text style={styles.courseDescription}>{course.description}</Text>
-        <View style={styles.courseMetaRow}>
-          <Text style={styles.metaText}>⭐ {course.rating ?? '4.5'}</Text>
-          <Text style={styles.metaText}>⏱️ {course.duration ?? '25 Min'}</Text>
-        </View>
-      </View>
+  <View style={styles.courseInfoContent}>
+    <View style={styles.courseInfoLeft}>
+      <Text style={styles.courseTitle}>{course.title}</Text>
+      <Text style={styles.courseDescription}>{course.description}</Text>
+      <View style={styles.courseMetaRow}>
+        <Text style={styles.metaText}>⭐ {course.rating ?? '4.5'}</Text>
+        <Text style={styles.metaText}>⏱️ {course.duration ?? '25 Min'}</Text>
+        <Text
+          style={[
+            styles.metaText,
+            { color: course.isLiveCourse ? 'red' : theme.colors.greyDark1 },
+          ]}
+        >
+          {course.isLiveCourse ? 'Live' : `${chaptereList.length} Chapters`}
+        </Text>
+        <View style={{ flex: 1 }} /> {/* Push save icon to the end */}
       <TouchableOpacity onPress={onToggleSave}>
         <Ionicons
           name={isCourseSaved ? 'bookmark' : 'bookmark-outline'}
@@ -129,30 +130,45 @@ return (
           color={isCourseSaved ? theme.colors.secondaryTheme : theme.colors.greyDark1}
         />
       </TouchableOpacity>
+      </View>
     </View>
+
+  </View>
+</View>
 
     {/* Chapter List */}
     <FlatList
-      data={chaptereList}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <TouchableOpacity style={styles.chapterItem} onPress={() => onChapterPress(item)}>
-          <Text style={styles.chapterTitle}>{item.title}</Text>
-          <Text style={styles.chapterDescription}>{item.description}</Text>
-          <View style={styles.chapterStatusRow}>
-            {item.completed && (
-              <Ionicons name="checkmark-circle" size={18} color="green" />
-            )}
+        data={chaptereList}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.chapterItem}
+            onPress={() => onChapterPress(item)}
+          >
+            <View style={styles.chapterLeft}>
+              <Text style={styles.chapterTitle}>{item.title}</Text>
+              <Text style={styles.chapterDescription}>{item.description}</Text>
+              <Text style={styles.chapterDuration}>{item.duration ?? '5 min'}</Text>
+            </View>
+            <Image
+              source={{ uri: item.thumbnail }}
+              style={styles.chapterThumbnail}
+              resizeMode="cover"
+            />
+            <View style={styles.chapterStatusRow}>
+              {item.completed && (
+                <Ionicons name="checkmark-circle" size={18} color="green" />
+              )}
+            </View>
+          </TouchableOpacity>
+        )}
+        contentContainerStyle={styles.chapterList}
+        ListEmptyComponent={
+          <View style={styles.emptyDataView}>
+            <Text style={styles.emptyDataLabel}>No chapters found</Text>
           </View>
-        </TouchableOpacity>
-      )}
-      contentContainerStyle={styles.chapterList}
-      ListEmptyComponent={
-        <View style={styles.emptyDataView}>
-          <Text style={styles.emptyDataLabel}>No chapters found</Text>
-        </View>
-      }
-    />
+        }
+      />
 
     {/* Footer */}
     <View style={styles.footer}>
@@ -168,9 +184,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
   },
   courseInfoBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
     backgroundColor: theme.colors.white,
     padding: 16,
     margin: 16,
@@ -178,57 +191,108 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     elevation: 2,
+    position: 'relative', // Ensures save button positions inside this
   },
+  
+  courseInfoContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  
   courseInfoLeft: {
     flex: 1,
-    marginRight: 12,
+  },
+  
+  saveButton: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
   },
   courseTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: theme.colors.black,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   courseDescription: {
     fontSize: 14,
     color: theme.colors.greyDark2,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   courseMetaRow: {
     flexDirection: 'row',
     gap: 12,
+    alignItems: 'center',
   },
   metaText: {
     fontSize: 13,
     color: theme.colors.greyDark1,
   },
-  
   chapterList: {
-    paddingHorizontal: 16,
+    paddingLeft: 16,
     paddingBottom: 100,
   },
   chapterItem: {
+    flexDirection: 'row',
     backgroundColor: theme.colors.white,
-    padding: 12,
     marginBottom: 12,
+    paddingLeft: 12,
+    marginRight: 12,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#eee',
+    height: 100,
+    alignItems: 'flex-start',
+
+  },
+  chapterLeft: {
+    flex: 1,
+    paddingRight: 8,
   },
   chapterTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: theme.colors.black,
     marginBottom: 4,
+    marginTop: 4
   },
   chapterDescription: {
     fontSize: 13,
     color: theme.colors.greyDark2,
     marginBottom: 8,
+    
+  },
+  chapterDuration: {
+    fontSize: 12,
+    color: theme.colors.greyDark1,
+    marginTop: 4,
+  },
+  chapterThumbnail: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginLeft: 8,
   },
   chapterStatusRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    position: 'absolute',
+    right: 12,
+    bottom: 8,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: theme.colors.white,
+    padding: 10,
+    borderRadius: 50,
+    elevation: 3,
+  },
+  emptyDataView: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  emptyDataLabel: {
+    color: theme.colors.greyDark2,
   },
 });
 

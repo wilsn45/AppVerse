@@ -2,12 +2,10 @@ import { AnalyticsHelper, ActionType } from './AnalyticsHelper';
 
 export class CourseAnalytics {
 
-    categoryId;
     courseId;
 
     // Constructor to accept and save the argument
-    constructor(categoryId,courseId) {
-      this.categoryId = categoryId;
+    constructor(courseId) {
       this.courseId = courseId
     }
   
@@ -20,7 +18,7 @@ export class CourseAnalytics {
         '',
         ActionType.IMPRESSION,
         '',
-        { 'categoryId': this.categoryId, 'courseId': this.courseId}
+        { 'courseId': this.courseId}
      );
   }
 
@@ -32,7 +30,7 @@ export class CourseAnalytics {
         '',
         ActionType.IMPRESSION,
         '',
-        { 'categoryId': this.categoryId, 'courseId': this.courseId}
+        { 'courseId': this.courseId}
      );
   }
 
@@ -46,7 +44,7 @@ export class CourseAnalytics {
       'Save',
       ActionType.CLICK,
       '',
-      { 'categoryId': this.categoryId, 'courseId': this.courseId}
+      { 'courseId': this.courseId}
    );
   }
 
@@ -58,7 +56,7 @@ export class CourseAnalytics {
         'Header',
         ActionType.CLICK,
         'Back',
-        { 'categoryId': this.categoryId}
+        { 'courseId': this.courseId}
      );
   }
 

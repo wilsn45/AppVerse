@@ -32,8 +32,6 @@ const CourseListScreen = () => {
 
   useEffect(() => {
      analytics.sendCourseListImpressionEvent()
-     //console.log("Fetched categoryId:", categoryId)
-
     fetchContentList()
   }, [ navigation, topic]);
 
@@ -44,7 +42,7 @@ const CourseListScreen = () => {
         // Map the fetched documents to include doc.id and category name
         const coursesList  = await ContentHandler.fetchCourseByTopic(topic);
 
-        console.log("Fetched ContentList:", coursesList)
+       // console.log("Fetched ContentList:", coursesList)
         setCourseList(coursesList)
         analytics.sendCourseListPresentedEvent()
     } catch (error) {
@@ -54,12 +52,17 @@ const CourseListScreen = () => {
     }
 };
 
-const loadCards = async () => {
-  const updatedSavedCourses = new Map();
+useEffect(() => {
+  if (courseList.length > 0) {
+    loadCourseSaveStatus();
+  }
+}, [courseList]);
 
+const loadCourseSaveStatus = async () => {
+   const updatedSavedCourses = new Map();
   const checkResults = await Promise.all(
     courseList.map(async (course) => {
-      const isSaved = await SaveHandler.isCourseSaved(course);
+      const isSaved = await SaveHandler.isCourseSaved(course.id);
       return { id: course.id, isSaved };
     })
   );
@@ -67,10 +70,31 @@ const loadCards = async () => {
   checkResults.forEach(({ id, isSaved }) => {
     updatedSavedCourses.set(id, isSaved);
   });
-
   setSavedCourses(updatedSavedCourses);
-  console.log('savedCourses', savedCourses);
   
+};
+
+const handleSave = async (course) => {
+  const isSaved = savedCourses.get(course.id);
+  console.log('isSaved', isSaved);
+
+  // Send analytics event
+  analytics.sendCourseSavedEvent(isSaved, course.id);
+
+  // Perform save/remove action
+  if (isSaved) {
+    await SaveHandler.removeCourse(course.id);
+  } else {
+    await SaveHandler.saveCourse(course);
+  }
+
+  // Update the savedCourses state
+  setSavedCourses(prevMap => {
+    const newMap = new Map(prevMap); // Create a shallow copy to trigger re-render
+    const currentValue = newMap.get(course.id) || false;
+    newMap.set(course.id, !currentValue); // Toggle the value
+     return newMap;
+  });
 };
 
 const preloadImages = (index) => {
@@ -101,47 +125,14 @@ useFocusEffect(
   }, [ navigation, topic])
 );
 
-useFocusEffect(
-  useCallback(() => {
-    navigation.setOptions({
-      title: topic,
-    });
-    //console.log('LoadCard: Fetched list', contentList);
-    if (courseList.length > 0) {
-        loadCards();
-    }
-  }, [ courseList])
-);
 
 const handleCardPress = (course) => {
   let isSaved =  savedCourses.get(course.id);
-  navigation.navigate('CourseScreen', { course: course, categoryId, isSaved });
+  navigation.navigate('CourseScreen', { course: course });
 };
   
 
-const handleSave = async (course) => {
-  const isSaved = savedCourses.get(course.id);
-  console.log('isSaved', isSaved);
 
-  // Send analytics event
-  analytics.sendCourseSavedEvent(isSaved, course.id);
-
-  // Perform save/remove action
-  if (isSaved) {
-    await SaveHandler.removeCourse(course.id);
-  } else {
-    await SaveHandler.saveCourse(course);
-  }
-
-  // Update the savedCourses state
-  setSavedCourses(prevMap => {
-    const newMap = new Map(prevMap); // Create a shallow copy to trigger re-render
-    const currentValue = newMap.get(course.id) || false;
-    newMap.set(course.id, !currentValue); // Toggle the value
-    console.log('Updated newMap inside setState:', newMap); // Log here to verify change
-    return newMap;
-  });
-};
 
 // useEffect(() => {
 //   console.log('Saved courses updated (from useEffect):', savedCourses);

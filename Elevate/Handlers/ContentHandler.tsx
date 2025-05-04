@@ -12,7 +12,6 @@ export class ContentHandler {
   static async fetchCourseByTopic(topic) {
     try {
 
-      console.log("topic:", topic)
       const snapshot = await firestore()
         .collection('Courses')
         .where('topic', '==', topic)
@@ -30,6 +29,7 @@ export class ContentHandler {
           doc.data().isLive,
           doc.data().rating,
           doc.data().duration,
+          doc.data().isLiveCourse
         )
       );
   
@@ -41,35 +41,33 @@ export class ContentHandler {
     }
   }
 
-  static async fetchChapters(courseId, categoryId) {
+  static async fetchChapters(courseId) {
     try {
-
-        console.log("courseId", courseId)
-        console.log("categoryId", categoryId)
-      const docSnap = await firestore()
+     
+      const chapterDocs = await firestore()
         .collection('Courses')
-        .doc('Doc')
-        .collection(categoryId)
         .doc(courseId)
+        .collection('Chapters')
+        .where('isLive', '==', true)
+        .orderBy('index', 'asc')
         .get();
-
   
-      if (!docSnap.exists) {
-        console.warn('Course document does not exist.');
+      if (chapterDocs.empty) {
+        console.warn(`No chapters found for courseId: ${courseId}`);
         return [];
       }
   
-      const data = docSnap.data();
-      const chapterArray = data.list || []; // Replace 'list' with your actual array field key
-  
-      const chapters = chapterArray.map(item => new ChapterData(
-        item.id,
-        item.title,
-        item.description,
-        item.thumbnail,
-        item.index,
-        item.isLive
-      ));
+      const chapters = chapterDocs.docs.map(doc => {
+        const item = doc.data();
+        return new ChapterData(
+          item.id,
+          item.title,
+          item.description,
+          item.thumbnail,
+          item.index,
+          item.isLive
+        );
+      });
   
       return chapters;
   
