@@ -85,7 +85,7 @@ useFocusEffect(
 
 const onChapterPress = (content) => {
   analytics.sendCourseOpenEvent()
-  console.log('Pass Likes Count', content.likeCount);
+  console.log('chapterId', content);
   navigation.navigate('ChapterScreen', { chapterId: content.id });
 };
 
@@ -241,9 +241,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#eee',
-    height: 100,
+    height: 102,
     alignItems: 'flex-start',
-
   },
   chapterLeft: {
     flex: 1,

@@ -26,7 +26,7 @@ const ChapterScreen = () => {
     const fetchContent = async () => {
       
       const doc = await ContentHandler.fetchChapter(chapterId)
-      console.log('Content Doc', doc);
+     // console.log('Content Doc', doc);
       //console.log('Item id', content.id);
       setHtmlContent(doc?.htmlContent || '');   
     };

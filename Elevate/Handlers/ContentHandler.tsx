@@ -60,7 +60,7 @@ export class ContentHandler {
       const chapters = chapterDocs.docs.map(doc => {
         const item = doc.data();
         return new ChapterData(
-          item.id,
+          doc.id,
           item.title,
           item.description,
           item.thumbnail,
@@ -77,37 +77,11 @@ export class ContentHandler {
     }
   }
 
-  static async fetchContent(contentId, categoryId) {
-    try {
-        // Fetch category list from Home collection
-        const contetnDocSnapshot = await firestore()
-        .collection('Content')
-        .doc('List') 
-        .collection(categoryId)
-        .doc(contentId)
-        .get();
-
-        //console.log("Fetched Content data", contetnDocSnapshot.data())
-
-        if (contetnDocSnapshot.exists) { 
-            return contetnDocSnapshot.data()
-        }
-        else {
-            return null
-        }
-
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        return null
-    } 
-}
 
 static async fetchChapter(chapterId) {
   try {
       // Fetch category list from Home collection
-
-      console.log("fetchChapter", chapterId)
-
+     
       const chapterDocSnapshot = await firestore()
       .collection('Chapters')
       .doc(chapterId)
