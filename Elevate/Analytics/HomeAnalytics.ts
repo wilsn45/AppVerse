@@ -26,7 +26,7 @@ export class HomeAnalytics {
       );
   }
 
-  async sendCategoryClickedEvent(categoryId) {
+  async sendCategoryClickedEvent(topic) {
     await AnalyticsHelper.sendEvent(
         '1.1.1',
         'Category_Clicked',
@@ -34,7 +34,7 @@ export class HomeAnalytics {
         'Category_List',
         ActionType.CLICK,
         '',
-        { "categoryId": categoryId }
+        { "topic": topic }
       );
   }
 

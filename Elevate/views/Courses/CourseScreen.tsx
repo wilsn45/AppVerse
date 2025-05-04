@@ -26,25 +26,25 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 const CourseScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { courseId, categoryId } = route.params;
+  const { course } = route.params;
   const [chaptereList, setChapterList] = useState([]);
+  const [isCourseSaved, setIsCourseSaved] = useState(false);
   
-
-  const analytics = new CourseAnalytics(categoryId,courseId)
+  const analytics = new CourseAnalytics(categoryId,course.id)
 
   useEffect(() => {
      analytics.sendCourseImpressionEvent()
      //console.log("Fetched categoryId:", categoryId)
 
      fetchChapterList()
-  }, [ , categoryId, navigation, courseId]);
+  }, [ navigation, course]);
 
 
   const fetchChapterList = async () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
-        const chapterList  = await ContentHandler.fetchChapters(courseId,categoryId);
+        const chapterList  = await ContentHandler.fetchChapters(course.id,categoryId);
 
         const filteredChapters = chapterList.filter(course => course.isLive === true);
 
@@ -52,6 +52,9 @@ const CourseScreen = () => {
         // console.log("Fetched ContentList:", chapterList)
         const sortedData = [...filteredChapters].sort((a, b) => b.index - a.index);
         setChapterList(sortedData)
+        
+        let isSaved = await SaveHandler.isCourseSaved(course.id);
+        setIsCourseSaved(isSaved)
         analytics.sendCoursePresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
@@ -83,65 +86,80 @@ const handleScroll = (event) => {
 useFocusEffect(
   useCallback(() => {
     fetchChapterList()
-  }, [ categoryId, navigation, courseId])
+  }, [ categoryId, navigation, course, isSaved])
 );
 
 
-const handleCardPress = (content) => {
+const onChapterPress = (content) => {
   analytics.sendCourseOpenEvent()
   console.log('Pass Likes Count', content.likeCount);
   navigation.navigate('ChapterScreen', { chapterId: content.id });
 };
+
+const onToggleSave = async () => {
+    const isSaved = isCourseSaved;
+    
+    if (isSaved) {
+      await SaveHandler.removeCourse(course.id);
+    } else {
+     // console.log("Saving Item", content)
+      await SaveHandler.saveCourse(course);
+    }
+    // Update only the savedCards state here
+    setIsCourseSaved(!isCourseSaved)
+  };
   
 
-
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={chaptereList}
-        keyExtractor={(item) => item.id}
-        pagingEnabled
-        showsVerticalScrollIndicator={false}
-        decelerationRate="fast"
-        snapToInterval={SCREEN_HEIGHT}
-        onEndReachedThreshold={0.1}
-        onScroll={handleScroll}
-        renderItem={({ item }) => (
-          <View style={styles.cardContainer}>
-          <View style={styles.separatorLine} />
-        
-          <TouchableOpacity
-            onPress={() => handleCardPress(item)}
-            activeOpacity={1}
-            style={styles.cardContent}
-            accessibilityLabel={`Content Card: ${item.title}`}
-          >
-            {/* LEFT SIDE: Title, Description, Category, etc. */}
-            <View style={styles.leftContent}>
-              <View style={styles.topLeft}>
-                <Text style={styles.contentText}>{item.title}</Text>
-                <Text style={styles.contentDescription} accessibilityLabel={item.description}>
-                  {item.description}
-                </Text>
-              </View>
-          
-            </View>
-        
-            {/* RIGHT SIDE: Image + Duration + Save */}
-            <View style={styles.rightContent}>
-              <FastImage
-                source={{ uri: item.thumbnail }}
-                style={styles.tileImage}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-            </View>
-          </TouchableOpacity>
+return (
+  <View style={styles.container}>
+    {/* Course Info Box */}
+    <View style={styles.courseInfoBox}>
+      <View style={styles.courseInfoLeft}>
+        <Text style={styles.courseTitle}>{course.title}</Text>
+        <Text style={styles.courseDescription}>{course.description}</Text>
+        <View style={styles.courseMetaRow}>
+          <Text style={styles.metaText}>⭐ {course.rating ?? '4.5'}</Text>
+          <Text style={styles.metaText}>⏱️ {course.duration ?? '25 Min'}</Text>
         </View>
-        )}
-      />
+      </View>
+      <TouchableOpacity onPress={onToggleSave}>
+        <Ionicons
+          name={isCourseSaved ? 'bookmark' : 'bookmark-outline'}
+          size={24}
+          color={isCourseSaved ? theme.colors.secondaryTheme : theme.colors.greyDark1}
+        />
+      </TouchableOpacity>
+    </View>
 
- </View>
-  );
+    {/* Chapter List */}
+    <FlatList
+      data={chaptereList}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <TouchableOpacity style={styles.chapterItem} onPress={() => onChapterPress(item)}>
+          <Text style={styles.chapterTitle}>{item.title}</Text>
+          <Text style={styles.chapterDescription}>{item.description}</Text>
+          <View style={styles.chapterStatusRow}>
+            {item.completed && (
+              <Ionicons name="checkmark-circle" size={18} color="green" />
+            )}
+          </View>
+        </TouchableOpacity>
+      )}
+      contentContainerStyle={styles.chapterList}
+      ListEmptyComponent={
+        <View style={styles.emptyDataView}>
+          <Text style={styles.emptyDataLabel}>No chapters found</Text>
+        </View>
+      }
+    />
+
+    {/* Footer */}
+    <View style={styles.footer}>
+      {/* Add your footer buttons or actions here */}
+    </View>
+  </View>
+);
 };
 
 const styles = StyleSheet.create({
@@ -149,67 +167,68 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.white,
   },
-  cardContainer: {
-    backgroundColor: theme.colors.white,
-    padding: 12,
-  },
-  separatorLine: {
-    height: 1,
-    backgroundColor: '#e0e0e0',
-    marginBottom: 12,
-  },
-  cardContent: {
+  courseInfoBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'stretch',
+    alignItems: 'flex-start',
+    backgroundColor: theme.colors.white,
+    padding: 16,
+    margin: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    elevation: 2,
   },
-  leftContent: {
+  courseInfoLeft: {
     flex: 1,
-    justifyContent: 'space-between',
-    paddingRight: 12,
+    marginRight: 12,
   },
-  topLeft: {
-    flexShrink: 1,
-    gap: 10
-  },
-  contentText: {
-    fontSize: 16,
+  courseTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#000',
+    color: theme.colors.black,
     marginBottom: 4,
   },
-  contentDescription: {
+  courseDescription: {
     fontSize: 14,
-    color: '#555',
+    color: theme.colors.greyDark2,
     marginBottom: 8,
   },
-  bottomLeft: {
+  courseMetaRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-    gap: 15,
+    gap: 12,
+  },
+  metaText: {
+    fontSize: 13,
+    color: theme.colors.greyDark1,
   },
   
-  rightContent: {
-    width: '25%',
-    flexDirection: 'column',
-    alignItems: 'center',
+  chapterList: {
+    paddingHorizontal: 16,
+    paddingBottom: 100,
   },
-  tileImage: {
-    width: '100%',
-    aspectRatio: 1,
-    borderRadius: 8,
+  chapterItem: {
+    backgroundColor: theme.colors.white,
+    padding: 12,
+    marginBottom: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#eee',
   },
-  imageBottomRow: {
-    flex: 1,
-    width: '100%',
+  chapterTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: theme.colors.black,
+    marginBottom: 4,
+  },
+  chapterDescription: {
+    fontSize: 13,
+    color: theme.colors.greyDark2,
+    marginBottom: 8,
+  },
+  chapterStatusRow: {
+    flexDirection: 'row',
     justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    marginTop: 6,
-  },
-  iconButton: {
-    padding: 4,
-    marginBottom: 2, // optional
   },
 });
 

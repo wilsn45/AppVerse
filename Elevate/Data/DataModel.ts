@@ -17,13 +17,10 @@ export const taskType: TaskType[] = [
   }
 
   export class CourseData {
-    constructor(id, index, title, description, categoryId, categoryTitle, thumbnail, isLive, rating, duration) {
+    constructor(id, title, description, thumbnail, isLive, rating, duration) {
       this.id = id;
       this.title = title;
       this.description = description;
-      this.categoryId = categoryId;
-      this.categoryTitle = categoryTitle;
-      this.index = index;
       this.thumbnail = thumbnail
       this.isLive = isLive
       this.rating = rating

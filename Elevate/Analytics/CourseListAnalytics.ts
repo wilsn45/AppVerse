@@ -2,11 +2,11 @@ import { AnalyticsHelper, ActionType } from './AnalyticsHelper';
 
 export class CourseListAnalytics {
 
-    categoryId;
+   topic;
 
     // Constructor to accept and save the argument
-    constructor(categoryId) {
-      this.categoryId = categoryId;
+    constructor(topic) {
+      this.topic = topic;
     }
   
 
@@ -18,7 +18,7 @@ export class CourseListAnalytics {
         '',
         ActionType.IMPRESSION,
         '',
-        { 'categoryId': this.categoryId}
+        { 'topic': this.topic}
      );
   }
 
@@ -30,11 +30,11 @@ export class CourseListAnalytics {
         '',
         ActionType.IMPRESSION,
         '',
-        { 'categoryId': this.categoryId}
+        { 'topic': this.topic}
      );
   }
 
-  async sendCourseSavedEvent(isSave, contentId) {
+  async sendCourseSavedEvent(isSave, courseId) {
     const optionType =  isSave ? 'Save' : 'Remove'
      const eventId =  isSave ? '4.1.1.1' : '4.1.1.2'
      const eventName =  isSave ? 'Course_Saved' : 'Course_Saved_Removed'
@@ -45,7 +45,7 @@ export class CourseListAnalytics {
       'Save',
       ActionType.CLICK,
       optionType,
-      { 'categoryId': this.categoryId, 'contentId': contentId}
+      { 'topic': this.topic, 'courseId': courseId}
    );
   }
 
@@ -57,7 +57,7 @@ export class CourseListAnalytics {
         'Header',
         ActionType.CLICK,
         'Back',
-        { 'categoryId': this.categoryId}
+        { 'topic': this.topic}
      );
   }
 

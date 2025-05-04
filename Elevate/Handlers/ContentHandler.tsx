@@ -9,33 +9,36 @@ export class ContentHandler {
   // Helper function to get the current saved categories from AsyncStorage
 
 
-  static async fetchCourseByCategory(categoryId) {
-      try {
-          // Fetch category list from Home collection
-        const snapshot = await firestore().collection('Courses').doc('List').collection(categoryId).get();
-        
-        // Map the fetched documents to include doc.id and category name
-        const coursesList = snapshot.docs.map(doc => 
-            new CourseData(
-                doc.id,
-                doc.data().index,
-                doc.data().title,
-                doc.data().description,
-                doc.data().categoryId,
-                doc.data().categoryTitle,
-                doc.data().thumbnail,
-                doc.data().isLive,
-                doc.data().rating,
-                doc.data().duration,
-            )
-        );;
+  static async fetchCourseByTopic(topic) {
+    try {
 
-        return coursesList
-
-      } catch (error) {
-          console.error('Error fetching data:', error);
-          return null
-      } 
+      console.log("topic:", topic)
+      const snapshot = await firestore()
+        .collection('Courses')
+        .where('topic', '==', topic)
+        .where('isLive', '==', true)
+        .orderBy('rating', 'desc')
+        .orderBy('lastUpdatedTimestamp', 'desc')
+        .get();
+  
+      const coursesList = snapshot.docs.map(doc => 
+        new CourseData(
+          doc.id,
+          doc.data().title,
+          doc.data().description,
+          doc.data().thumbnail,
+          doc.data().isLive,
+          doc.data().rating,
+          doc.data().duration,
+        )
+      );
+  
+      return coursesList;
+  
+    } catch (error) {
+      console.error('Error fetching courses by topic:', error);
+      return null;
+    }
   }
 
   static async fetchChapters(courseId, categoryId) {
@@ -106,7 +109,6 @@ static async fetchChapter(chapterId) {
       // Fetch category list from Home collection
 
       console.log("fetchChapter", chapterId)
-
 
       const chapterDocSnapshot = await firestore()
       .collection('Chapters')

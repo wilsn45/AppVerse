@@ -23,33 +23,29 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 const CourseListScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { categoryTitle, categoryId } = route.params;
+  const { topic} = route.params;
   const [courseList, setCourseList] = useState([]);
   const [savedCourses, setSavedCourses] = useState<Map<string, boolean>>(new Map());
   
 
-  const analytics = new CourseListAnalytics(categoryId)
+  const analytics = new CourseListAnalytics(topic)
 
   useEffect(() => {
      analytics.sendCourseListImpressionEvent()
      //console.log("Fetched categoryId:", categoryId)
 
     fetchContentList()
-  }, [ , categoryId, navigation, categoryTitle]);
+  }, [ navigation, topic]);
 
 
   const fetchContentList = async () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
-        const coursesList  = await ContentHandler.fetchCourseByCategory(categoryId);
+        const coursesList  = await ContentHandler.fetchCourseByTopic(topic);
 
-        const filteredCourses = coursesList.filter(course => course.isLive === true);
-
-        console.log("Filtered Cards", filteredCourses)
         console.log("Fetched ContentList:", coursesList)
-        const sortedData = [...filteredCourses].sort((a, b) => b.index - a.index);
-        setCourseList(sortedData)
+        setCourseList(coursesList)
         analytics.sendCourseListPresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
@@ -59,24 +55,22 @@ const CourseListScreen = () => {
 };
 
 const loadCards = async () => {
-  //console.log('Fetched list 2', contentList);
-  
-  const savedContentIds = await SaveHandler.getSavedCardByCategory(categoryId) || [];
-  //console.log("savedContentIds", savedContentIds)
-  //console.log("likedContentIds", likedContentIds)
-
   const updatedSavedCourses = new Map();
 
-  //console.log('Updated Liked: contentList  Count', contentList);
+  const checkResults = await Promise.all(
+    courseList.map(async (course) => {
+      const isSaved = await SaveHandler.isCourseSaved(course);
+      return { id: course.id, isSaved };
+    })
+  );
 
-  //console.log("contentList length:", contentList.length);
-
-  courseList.forEach((item) => {
-    updatedSavedCourses.set(item.id, savedContentIds.some((savedCourses) => savedCard.id === item.id));
+  checkResults.forEach(({ id, isSaved }) => {
+    updatedSavedCourses.set(id, isSaved);
   });
 
   setSavedCourses(updatedSavedCourses);
- // console.log('updatedSavedCards', updatedSavedCards);
+  console.log('savedCourses', savedCourses);
+  
 };
 
 const preloadImages = (index) => {
@@ -101,16 +95,16 @@ const handleScroll = (event) => {
 useFocusEffect(
   useCallback(() => {
     navigation.setOptions({
-      title: categoryTitle,
+      title: topic,
     });
     fetchContentList()
-  }, [ categoryId, navigation, categoryTitle])
+  }, [ navigation, topic])
 );
 
 useFocusEffect(
   useCallback(() => {
     navigation.setOptions({
-      title: categoryTitle,
+      title: topic,
     });
     //console.log('LoadCard: Fetched list', contentList);
     if (courseList.length > 0) {
@@ -120,23 +114,38 @@ useFocusEffect(
 );
 
 const handleCardPress = (course) => {
-  navigation.navigate('CourseScreen', { courseId: course.id, categoryId });
+  let isSaved =  savedCourses.get(course.id);
+  navigation.navigate('CourseScreen', { course: course, categoryId, isSaved });
 };
   
 
-  const handleSave = async (course) => {
-    const isSaved = savedCourses.get(course.id);
-    analytics.sendCourseSavedEvent(isSaved, course.id)
-    if (isSaved) {
-      await SaveHandler.removeSave(categoryId, course.id);
-    } else {
-     // console.log("Saving Item", content)
-      await SaveHandler.addSave(course);
-    }
-    // Update only the savedCards state here
-    setSavedCourses((prev) => new Map(prev).set(course.id, !isSaved));
-  };
-  
+const handleSave = async (course) => {
+  const isSaved = savedCourses.get(course.id);
+  console.log('isSaved', isSaved);
+
+  // Send analytics event
+  analytics.sendCourseSavedEvent(isSaved, course.id);
+
+  // Perform save/remove action
+  if (isSaved) {
+    await SaveHandler.removeCourse(course.id);
+  } else {
+    await SaveHandler.saveCourse(course);
+  }
+
+  // Update the savedCourses state
+  setSavedCourses(prevMap => {
+    const newMap = new Map(prevMap); // Create a shallow copy to trigger re-render
+    const currentValue = newMap.get(course.id) || false;
+    newMap.set(course.id, !currentValue); // Toggle the value
+    console.log('Updated newMap inside setState:', newMap); // Log here to verify change
+    return newMap;
+  });
+};
+
+// useEffect(() => {
+//   console.log('Saved courses updated (from useEffect):', savedCourses);
+// }, [savedCourses]);
   
 
   return (
@@ -171,7 +180,7 @@ const handleCardPress = (course) => {
       <View style={styles.bottomRow}>
         <View style={styles.infoGroup}>
           <View style={styles.tag}>
-            <Text style={styles.tagText}>{item.categoryTitle || 'Category'}</Text>
+            <Text style={styles.tagText}>{item.topic || 'Category'}</Text>
           </View>
           <Text style={styles.durationText}>{item.duration ?? '1 Hour'}</Text>
           <Text style={styles.ratingText}>⭐ {item.rating ?? '4.5'}</Text>

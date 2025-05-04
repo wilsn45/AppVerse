@@ -73,7 +73,7 @@ const HomeScreen = () => {
               newSectionDataArray.push(sectionData)
               
               for (const item of data) {
-                const isSaved = await SaveHandler.isCardSaved(item.categoryId, item.id);
+                const isSaved = await SaveHandler.isCourseSaved(item.id);
                 newSavedCards.set(item.id, isSaved); 
                 homeCards.push(item)
               }
@@ -132,7 +132,7 @@ const HomeScreen = () => {
       }
   
       for (const card of homeCards) {
-        const isSaved = await SaveHandler.isCardSaved(card.categoryId, card.id);
+        const isSaved = await SaveHandler.isCourseSaved( card.id);
          newSavedCards.set(card.id, isSaved);
       }
   
@@ -149,9 +149,9 @@ const HomeScreen = () => {
   );
 
 
-  const handleTilePress = (categoryTitle: string, id: string) => {
-    analytics.sendCategoryClickedEvent(id);
-     navigation.navigate('CourseListScreen', { categoryTitle, categoryId: id });
+  const handleTilePress = (item) => {
+    analytics.sendCategoryClickedEvent(item.name);
+    navigation.navigate('CourseListScreen', { topic: item.name });
   };
 
   // Group the categories into rows of 2 tiles
@@ -170,9 +170,9 @@ const HomeScreen = () => {
   const handleSave = async (item) => {
     const isSaved = savedCards.get(item.id);
     if (isSaved) {
-      await SaveHandler.removeSave(item.categoryId, item.id);
+      await SaveHandler.removeCourse(item.id);
     } else {
-      await SaveHandler.addSave(item);
+      await SaveHandler.saveCourse(item);
     }
     // Update only the savedCards state here
     setSavedCards((prev) => new Map(prev).set(item.id, !isSaved));
@@ -185,7 +185,7 @@ const HomeScreen = () => {
       styles.tile,
       { width: (deviceWidth - leftPadding - rightPadding - spacing) / 2 },
     ]}
-      onPress={() => handleTilePress(item.name, item.id)}
+      onPress={() => handleTilePress(item)}
       accessibilityLabel={`Category tile for ${item.name}`}
       accessibilityHint="Tap to view the content in this category"
       accessibilityRole="button"
