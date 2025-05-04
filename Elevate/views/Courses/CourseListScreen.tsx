@@ -127,7 +127,6 @@ useFocusEffect(
 
 
 const handleCardPress = (course) => {
-  let isSaved =  savedCourses.get(course.id);
   navigation.navigate('CourseScreen', { course: course });
 };
   

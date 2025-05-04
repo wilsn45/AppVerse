@@ -26,7 +26,7 @@ export class SaveAnalytics {
       );
   }
 
-  async sendContentOpenEvent(categoryId, contentId) {
+  async sendContentOpenEvent(courseId) {
     await AnalyticsHelper.sendEvent(
         '2.1.1.1',
         'Content_Clicked',
@@ -34,11 +34,11 @@ export class SaveAnalytics {
         'Content_List',
         ActionType.CLICK,
         'Open',
-        { "categoryId": categoryId, "contentId" : contentId }
+        { "courseId" : courseId }
       );
   }
 
-  async sendContentRemovedEvent(categoryId, contentId) {
+  async sendContentRemovedEvent( courseId) {
     await AnalyticsHelper.sendEvent(
         '2.1.1.2',
         'Content_Save_Removed',
@@ -46,11 +46,11 @@ export class SaveAnalytics {
         'Content_List',
         ActionType.CLICK,
         'Delete',
-        { "categoryId": categoryId, "contentId" : contentId }
+        {  "courseId" : courseId }
       );
   }
 
-  async sendCategoryClickedEvent(categoryId) {
+  async sendCategoryClickedEvent(courseId) {
     await AnalyticsHelper.sendEvent(
         '2.2.1',
         'Categoy_Filter_Selected',
@@ -58,7 +58,7 @@ export class SaveAnalytics {
         'Category_Filter',
         ActionType.CLICK,
         '',
-        { "categoryId":  categoryId }
+        { "courseId":  courseId }
       );
   }
 

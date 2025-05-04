@@ -29,6 +29,7 @@ export class ContentHandler {
           doc.data().isLive,
           doc.data().rating,
           doc.data().duration,
+          doc.data().topic,
           doc.data().isLiveCourse
         )
       );

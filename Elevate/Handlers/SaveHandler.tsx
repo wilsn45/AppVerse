@@ -24,8 +24,8 @@ export class SaveHandler {
         currentCourses.push(course);
         await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(currentCourses));
       }
-      const updatedCourses = await this.getSavedCourses();
-      console.log('Updated saved list after save:', updatedCourses.map(c => c.id));
+      // const updatedCourses = await this.getSavedCourses();
+      // console.log('Updated saved list after save:', updatedCourses.map(c => c.id));
     } catch (error) {
       console.error('Error saving course:', error);
     }
@@ -37,8 +37,8 @@ export class SaveHandler {
       const currentCourses = await this.getSavedCourses();
       const updated = currentCourses.filter(c => c.id !== id);
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
-      const updatedCourses = await this.getSavedCourses();
-      console.log('Updated saved list after save:', updatedCourses.map(c => c.id));
+      // const updatedCourses = await this.getSavedCourses();
+      // console.log('Updated saved list after save:', updatedCourses.map(c => c.id));
     } catch (error) {
       console.error('Error removing course:', error);
     }

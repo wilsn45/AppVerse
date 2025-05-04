@@ -10,35 +10,22 @@ import { SaveAnalytics } from '../Analytics/SaveAnalytics';
 import { Swipeable } from 'react-native-gesture-handler';
 
 const MyCourseScreen = () => {
-  const [selectedCategory, setSelectedCategory] = useState(0);
-  const [allSavedCards, setAllSavedCards] = useState([]);
-  const [filteredCards, setFilteredCards] = useState([]);
+  const [allSavedCourses, setAllSavedCourses] = useState([]);
+  const [ongoingCourses, setOngoingCourses] = useState([]);
+  const [completedCourses, setCompletedCourses] = useState([]);
   const [searchedCards, setSearchedCards] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const analytics = new SaveAnalytics()
+  const [selectedTab, setSelectedTab] = useState('Saved');
 
-  useEffect(() => {
-    analytics.sendSaveImpressionEvent(selectedCategory);
-    const fetchCategories = async () => {
-      try {
-        const liveCategories = await CategoryHandler.getLiveCategory();
-        setCategories(liveCategories);
-       analytics. sendCategoryDisplayedEvent(selectedCategory);
-      } catch (error) {
-        console.error("Error fetching categories", error);
-      }
-    };
 
-    fetchCategories();
-  }, [navigation]);
-
-  const fetchSavedCards = async () => {
+  const fetchSavedCourses = async () => {
     try {
-      const savedCards = await SaveHandler.getSavedCards();
-      setAllSavedCards(savedCards);
-      //console.log('Fetched Saved Card', savedCards)
+      const savedCourses = await SaveHandler.getSavedCourses();
+      setAllSavedCourses(savedCourses);
+      console.log('Fetched Saved Card', savedCourses)
     } catch (error) {
       console.error('Error fetching saved cards:', error);
     }
@@ -46,46 +33,25 @@ const MyCourseScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchSavedCards();
+      fetchSavedCourses();
     }, [])
   );
 
-  useEffect(() => {
-    const updatedCards = allSavedCards.filter(
-      (card) => selectedCategory === 0 || card.categoryId === selectedCategory.toString()
-    );
-    setFilteredCards(updatedCards);
-    setSearchedCards(updatedCards)
-  }, [selectedCategory, allSavedCards]);
 
-  const handleRemoveCard = async (categoryId, id) => {
+  const handleRemoveCard = async (id) => {
     try {
       analytics.sendContentRemovedEvent(categoryId, id);
-      await SaveHandler.removeSave(categoryId, id);
-      fetchSavedCards();
+      await SaveHandler.removeCourse(id);
+      fetchSavedCourses();
     } catch (error) {
       console.error('Error removing card:', error);
     }
   };
 
-  const handleCardPress = (content) => {
-    console.log("Opening Card", content)
-    analytics.sendContentOpenEvent(content.categoryId, content.id);
-    navigation.navigate('CourseScreen', { content });
+  const handleCardPress = (course) => {
+    analytics.sendContentOpenEvent( course.id);
+    navigation.navigate('CourseScreen', { course: course });
   };
-
-  const handleCategorySelect = (categoryID) => {
-    setSelectedCategory(categoryID);
-    analytics.sendCategoryClickedEvent(categoryID);
-  };
-
-  const categoryOptions = [
-    { id: 0, title: 'All' },
-    ...categories.map((category) => ({
-      id: category.id,
-      title: category.name,
-    })),
-  ];
 
 
   const handleSearch = (query: string) => {
@@ -102,118 +68,147 @@ const MyCourseScreen = () => {
     setSearchedCards(filteredCards);
   };
 
+  const getCardsForSelectedTab = () => {
+    let cards = [];
+    if (selectedTab === 'Saved') cards = allSavedCourses;
+    else if (selectedTab === 'Ongoing') cards = ongoingCourses;
+    else if (selectedTab === 'Completed') cards = completedCourses;
+
+    return cards.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
+  const filteredCards = getCardsForSelectedTab();
+  const isSavedTab = selectedTab === 'Saved';
+
 
   const handleDelete = (contentId: string) => {
     //setCards(cards.filter((card) => card.contentId !== contentId));
   };
 
-  const renderRightActions = (progress: Animated.AnimatedInterpolation, item: any) => {
-    const scale = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.5, 1],
-      extrapolate: 'clamp',
-    });
-
+  const renderRightActions = (_: any, item: any) => {
     return (
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => handleRemoveCard(item.categoryId, item.id)}
       >
-        <Animated.View style={{ transform: [{ scale }] }}>
-          <Ionicons name="trash" size={30} color={theme.colors.white} />
-        </Animated.View>
+        <Ionicons name="trash" size={30} color={theme.colors.white} />
       </TouchableOpacity>
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.dropdownContainer}>
-        <DropDownList
-          source={'Save_Category'}
-          data={categoryOptions}
-          defaultId={selectedCategory}
-          onSelection={(value) => handleCategorySelect(value)}
-          accessibilityLabel="Filter saved items by category"
-          accessibilityRole="combobox"
-        />
-      </View>
+    {/* <View style={styles.dropdownContainer}>
+      <DropDownList
+        source={'Save_Category'}
+        data={categoryOptions}
+        defaultId={selectedCategory}
+        onSelection={handleCategorySelect}
+        accessibilityLabel="Filter saved items by category"
+        accessibilityRole="combobox"
+      />
+    </View> */}
 
-      <View style={styles.searchBar}>
-        {/* Search Icon */}
-        <Ionicons name="search" size={20} color="#aaa" style={styles.searchIcon} />
+    {/* Tab Bar */}
+    <View style={styles.tabBarContainer}>
+  {['Saved', 'Ongoing', 'Completed'].map((tab) => {
+    const isSelected = selectedTab === tab;
+    return (
+      <TouchableOpacity
+        key={tab}
+        onPress={() => setSelectedTab(tab)}
+        style={styles.tabItem}
+        accessibilityRole="button"
+        accessibilityLabel={`View ${tab} courses`}
+      >
+        <Text
+          style={[
+            styles.tabItemText,
+            isSelected && styles.tabItemTextSelected,
+          ]}
+        >
+          {tab}
+        </Text>
+        {isSelected && <View style={styles.tabIndicator} />}
+      </TouchableOpacity>
+    );
+  })}
+</View>
 
-        <TextInput
-          value={searchQuery}
-          onChangeText={handleSearch}
-          placeholder="Search by title..."
-          placeholderTextColor="#aaa"
-          style={styles.searchInput}
-        />
+    {/* Search Bar */}
+    <View style={styles.searchBar}>
+      <Ionicons name="search" size={20} color="#aaa" style={styles.searchIcon} />
 
-        {/* Cross Button */}
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
-            <Ionicons name="close" size={20} color="#aaa" />
-          </TouchableOpacity>
-        )}
-      </View>
+      <TextInput
+        value={searchQuery}
+        onChangeText={handleSearch}
+        placeholder="Search by title..."
+        placeholderTextColor="#aaa"
+        style={styles.searchInput}
+      />
 
-      <FlatList
-        data={searchedCards}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Swipeable
-            renderRightActions={(progress) => renderRightActions(progress, item)}
-          >
-          <TouchableOpacity
-            style={[styles.cardView]}
-            onPress={() => handleCardPress(item)}
-            accessibilityLabel={`Open details for ${item.title}`}
-            accessibilityRole="button"
-          >
-           <View style = {styles.leftCardView}>
-                <Text style={styles.cardTitle}  
-                      numberOfLines={3} 
-                     ellipsizeMode="tail" >{item.title}</Text>
-                <View style = {styles.leftBottomView}>
-                 <Text style={styles.cardCategoryText}>{item.categoryTitle}</Text>
-                 <Text style={styles.cardReadMeText}>{item.readMin} min read</Text>
-                </View>
-              </View>
-              
-              <View style = {styles.rightCardView}>
-              <Image 
-                source={{ uri: item.thumbnail }} 
-                style={styles.tileImage} 
-               />
-                
+      {searchQuery.length > 0 && (
+        <TouchableOpacity onPress={clearSearch} style={styles.clearButton}>
+          <Ionicons name="close" size={20} color="#aaa" />
+        </TouchableOpacity>
+      )}
+    </View>
+
+    <FlatList
+      data={filteredCards}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <Swipeable
+        renderRightActions={(progress, dragX) => renderRightActions(progress, item)}
+      >
+        <TouchableOpacity
+          style={[styles.cardView]}
+          onPress={() => handleCardPress(item)}
+          accessibilityLabel={`Open details for ${item.title}`}
+          accessibilityRole="button"
+        >
+          <View style={styles.leftCardView}>
+            <Text style={styles.cardTitle} numberOfLines={2} ellipsizeMode="tail">
+              {item.title}
+            </Text>
+
+            <View style={styles.leftBottomView}>
+              <View style={styles.tagContainer}>
+                <Text style={styles.cardCategoryText}>{item.topic}</Text>
+               </View>
+
+               {item.isLiveCourse ? (
+                  <Text style={styles.liveText}>LIVE</Text>
+                ) : isSavedTab ? (
+                   <Text style={styles.cardMetaText}>{item.duration} </Text>
+                ) : (
+                  <Text style={styles.cardMetaText}>{item.chapterCount} chapters</Text>
+                 )}
             </View>
             
-           
-          </TouchableOpacity>
-          </Swipeable>
-        )}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-
-        contentContainerStyle={searchedCards.length === 0 ? styles.emptyContainer : styles.taskList}
-        ListEmptyComponent={
-          <View style={styles.noTaskView}>
-           <Text style={styles.emptyText} accessibilityLabel="No saved card">
-           No saved cards...
-            </Text>
-            {/* <Ionicons
-                  name={'clipboard-outline'}
-                  size={30}
-                  color={theme.colors.greyLight3}
-                /> */}
           </View>
-          
-        }
-        accessibilityLabel="List of saved items"
-        accessibilityRole="list"
-      />
-    </SafeAreaView>
+      
+          <View style={styles.rightCardView}>
+            <Image source={{ uri: item.thumbnail }} style={styles.tileImage} />
+          </View>
+        </TouchableOpacity>
+      </Swipeable>
+      )}
+      ItemSeparatorComponent={() => <View style={styles.separator} />}
+      contentContainerStyle={
+        filteredCards.length === 0 ? styles.emptyContainer : styles.taskList
+      }
+      ListEmptyComponent={
+        <View style={styles.noTaskView}>
+          <Text style={styles.emptyText}>Nothing here yet...</Text>
+        </View>
+      }
+      accessibilityLabel="List of saved items"
+      accessibilityRole="list"
+    />
+  </SafeAreaView>
   );
 };
 
@@ -223,101 +218,102 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     padding: 10,
   },
-  title: {
-    fontSize: 34,
+  tabBarContainer: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.greyLight2,
+    marginVertical: 10,
+  },
+  cardView: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.white,
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    height: 100,
+  },
+  
+  leftCardView: {
+    flex: 1,
+    marginRight: 15,
+    justifyContent: 'space-between',
+    height: 80,
+  },
+  
+  rightCardView: {
+    width: 80,
+    height: 80,
+  },
+  
+  tileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+  
+  cardTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
+  
+  cardCategoryText: {
+    fontSize: 12,
+    color: '#555',
+    backgroundColor: '#e0e0e0',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  
+  cardMetaText: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 4,
+  },
+  
+  liveText: {
+    fontSize: 12,
+    color: 'red',
     fontWeight: 'bold',
-    color: theme.colors.black,
-    marginBottom: 0,
-    marginHorizontal: 10,
+    marginTop: 4,
+  },
+  
+  tabItem: {
+    flex: 1, // This divides all items equally
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    position: 'relative',
+  },
+  
+  tabItemText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: theme.colors.secondaryThemeDisabled,
+  },
+  
+  tabItemTextSelected: {
+    color: theme.colors.secondaryTheme || theme.colors.primary,
+  },
+  
+  tabIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    height: 1,
+    width: '100%',
+    backgroundColor: theme.colors.secondaryTheme,
   },
   dropdownContainer: {
     marginTop: 10,
     alignSelf: 'flex-end',
-    marginBottom: 20,
+    marginBottom: 10,
     marginHorizontal: 10,
   },
-  flatListContainer: {
-    marginTop: 20,
-    marginHorizontal: 20,
-    paddingBottom: 20,
-  },
-  taskList: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  emptyContainer: {
-    flexGrow: 1, // Ensures the empty container takes full space
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%', // Match the screen height
-  },
-  noTaskView: {
-    flexDirection: 'row',
-    flex: 1,
-    gap: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyText: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: theme.colors.greyLight3
-  },
-  cardTitle: {
-    color: theme.colors.black,
-    fontSize: 18,
-    fontWeight: '500',
-    flex: 1,
-    flexWrap: 'wrap',
-  },
-  removeButton: {
-    marginLeft: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardView: {
-    //backgroundColor: 'red',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.greyLight,
-  },
-  leftCardView: {
-    flex: 0.9,
-   // backgroundColor: 'red',
-    flexDirection: 'column',
-    gap: 10
-  },
-  leftBottomView: {
-    width: 200,
-    gap: 4,
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  rightCardView: {
-    //backgroundColor: 'green',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  cardCategoryText: {
-    color: theme.colors.greyLight3,
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  cardReadMeText: {
-    color: theme.colors.greyLight3,
-    fontSize: 12,
-  },
-  tileImage: {
-    width: 90,
-    height: 70,
-    borderRadius: 5,
-    marginBottom: 5, // Space between image and button
-    resizeMode: 'cover',
-  },
-
   searchBar: {
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -339,15 +335,41 @@ const styles = StyleSheet.create({
   clearButton: {
     padding: 5,
   },
-  deleteButton: {
-    backgroundColor: theme.colors.red,
+  taskList: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  emptyContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 80,
     height: '100%',
-    borderRadius: 10,
-    paddingVertical: 5,
   },
+  noTaskView: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: theme.colors.greyLight3,
+  },
+  leftBottomView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10
+  } ,
+
+
+  separator: {
+    height: 1,
+    backgroundColor: theme.colors.grey2,
+    marginHorizontal: 10, // Optional: match your card padding
+  },
+  
 });
 
 export default MyCourseScreen;
