@@ -4,6 +4,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { CategoryHandler } from '../Handlers/CategoryHandler';
 import { SaveHandler } from '../Handlers/SaveHandler';
+import { CompletedCourseHandler } from '../Handlers/CompletedCourseHandler';
+import { OngoingCourseHandler } from '../Handlers/OngoingCourseHandler';
 import DropDownList from './Common/DropDownList';
 import theme from '../Theme/Theme';
 import { SaveAnalytics } from '../Analytics/SaveAnalytics';
@@ -14,7 +16,6 @@ const MyCourseScreen = () => {
   const [ongoingCourses, setOngoingCourses] = useState([]);
   const [completedCourses, setCompletedCourses] = useState([]);
   const [searchedCards, setSearchedCards] = useState([]);
-  const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const analytics = new SaveAnalytics()
@@ -24,8 +25,30 @@ const MyCourseScreen = () => {
   const fetchSavedCourses = async () => {
     try {
       const savedCourses = await SaveHandler.getSavedCourses();
-      setAllSavedCourses(savedCourses);
-      console.log('Fetched Saved Card', savedCourses)
+      const ongoingCourses = await OngoingCourseHandler.getOngoingingCourses()
+      const completedCourses = await CompletedCourseHandler.getCompletedCourses()
+
+      const appendProgressToCourses = async (courses) => {
+        const updatedCourses = await Promise.all(courses.map(async (course) => {
+          const completedChapters = await OngoingCourseHandler.getCompletedChapters(course.id);
+          const chapterCount = course.chaptetCount || 0; // default to 0 if not present
+          const progress = `${completedChapters.length}/${chapterCount}`;
+          console.log('Fetched chapterCount', chapterCount)
+          console.log('Fetched progress', progress)
+          return { ...course, progress };
+        }));
+        return updatedCourses;
+      };
+  
+      const updatedOngoingCourses = await appendProgressToCourses(ongoingCourses);
+      const updatedCompletedCourses = await appendProgressToCourses(completedCourses);
+      setAllSavedCourses(savedCourses)
+      setOngoingCourses(updatedOngoingCourses);
+      setCompletedCourses(updatedCompletedCourses);
+
+      // console.log('Fetched Saved Card', savedCourses)
+      // console.log('Fetched ongoingCourses Card', updatedOngoingCourses)
+      // console.log('Fetched completedCourses Card', updatedCompletedCourses)
     } catch (error) {
       console.error('Error fetching saved cards:', error);
     }
@@ -184,7 +207,7 @@ const MyCourseScreen = () => {
                 ) : isSavedTab ? (
                    <Text style={styles.cardMetaText}>{item.duration} </Text>
                 ) : (
-                  <Text style={styles.cardMetaText}>{item.chapterCount} chapters</Text>
+                  <Text style={styles.cardMetaText}>{item.progress} </Text>
                  )}
             </View>
             

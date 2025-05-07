@@ -16,6 +16,7 @@ import FastImage from 'react-native-fast-image';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
+import { OngoingCourseHandler } from '../../Handlers/OngoingCourseHandler.tsx';
 import { CourseAnalytics } from '../../Analytics/CourseAnalytics.ts';
 import theme from '../../Theme/Theme.js';
 import { useFocusEffect } from '@react-navigation/native'; 
@@ -44,10 +45,20 @@ const CourseScreen = () => {
         
         // Map the fetched documents to include doc.id and category name
         const chapterList  = await ContentHandler.fetchChapters(course.id);
-        setChapterList(chapterList)
+        
         
         let isSaved = await SaveHandler.isCourseSaved(course.id);
         setIsCourseSaved(isSaved)
+        let compltedChapters = await OngoingCourseHandler.getCompletedChapters(course.id)
+
+        const updatedChapters = chapterList.map((chapter) => ({
+          ...chapter,
+          completed: compltedChapters.includes(chapter.id),
+        }));
+
+        setChapterList(updatedChapters)
+
+
         analytics.sendCoursePresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
@@ -86,7 +97,7 @@ useFocusEffect(
 const onChapterPress = (content) => {
   analytics.sendCourseOpenEvent()
   console.log('chapterId', content);
-  navigation.navigate('ChapterScreen', { chapterId: content.id });
+  navigation.navigate('ChapterScreen', { course: course, chapter: content });
 };
 
 const onToggleSave = async () => {
@@ -142,25 +153,25 @@ return (
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.chapterItem}
-            onPress={() => onChapterPress(item)}
-          >
-            <View style={styles.chapterLeft}>
-              <Text style={styles.chapterTitle}>{item.title}</Text>
-              <Text style={styles.chapterDescription}>{item.description}</Text>
-              <Text style={styles.chapterDuration}>{item.duration ?? '5 min'}</Text>
-            </View>
-            <Image
-              source={{ uri: item.thumbnail }}
-              style={styles.chapterThumbnail}
-              resizeMode="cover"
-            />
-            <View style={styles.chapterStatusRow}>
-              {item.completed && (
-                <Ionicons name="checkmark-circle" size={18} color="green" />
-              )}
-            </View>
-          </TouchableOpacity>
+    style={styles.chapterItem}
+    onPress={() => onChapterPress(item)}
+  >
+    <View style={styles.chapterLeft}>
+      <Text style={styles.chapterTitle}>{item.title}</Text>
+      <Text style={styles.chapterDescription}>{item.description}</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+         {item.completed  && (
+          <Ionicons name="checkmark-circle" size={16} color="green" />
+        )}
+        <Text style={styles.chapterDuration}>{item.duration ?? '15 min'}</Text>
+      </View>
+    </View>
+    <Image
+      source={{ uri: item.thumbnail }}
+      style={styles.chapterThumbnail}
+      resizeMode="cover"
+    />
+  </TouchableOpacity>
         )}
         contentContainerStyle={styles.chapterList}
         ListEmptyComponent={

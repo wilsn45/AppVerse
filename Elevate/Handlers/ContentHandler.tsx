@@ -30,7 +30,8 @@ export class ContentHandler {
           doc.data().rating,
           doc.data().duration,
           doc.data().topic,
-          doc.data().isLiveCourse
+          doc.data().isLiveCourse,
+          doc.data().chapterCount
         )
       );
   
@@ -65,8 +66,10 @@ export class ContentHandler {
           item.title,
           item.description,
           item.thumbnail,
+          item.duration,
           item.index,
-          item.isLive
+          item.isLive,
+          item.isLastChapter
         );
       });
   

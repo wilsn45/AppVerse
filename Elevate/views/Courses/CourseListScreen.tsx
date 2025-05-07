@@ -18,6 +18,7 @@ import theme from '../../Theme/Theme.js';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
 
+
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const CourseListScreen = () => {
