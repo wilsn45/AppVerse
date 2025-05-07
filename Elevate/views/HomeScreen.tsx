@@ -7,7 +7,8 @@ import ProfileHandler from '../Handlers/ProfileHandler';
 import { HomeAnalytics } from '../Analytics/HomeAnalytics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { SaveHandler } from '../Handlers/SaveHandler.tsx';
+import { SaveHandler } from '../Handlers/SaveHandler';
+import { OngoingCourseHandler } from '../Handlers/OngoingCourseHandler';
 import { ContentData, CategoryData } from '../Data/DataModel';
 import { BackHandler } from 'react-native';
 
@@ -29,6 +30,7 @@ const HomeScreen = () => {
   // Example dynamic data for the horizontal FlatLists
   const categoryData = [];
   const homeCards = [];
+  let homeData = null
 
   useFocusEffect(
     useCallback(() => {
@@ -46,7 +48,7 @@ const HomeScreen = () => {
     const fetchHomeData = async () => {
       try {
         analytics.sendHomeImpressionEvent()
-        const homeData = await HomeHandler.getHome();
+        homeData = await HomeHandler.getHome();
         
         const liveCategories = homeData['Categories']
 
@@ -60,28 +62,7 @@ const HomeScreen = () => {
         setCategories(sortedLiveCategories);
         //console.log("Categories", liveCategories)
 
-        const newSectionDataArray = [];
-        const newSavedCards = new Map();
-        const homeCardsList = [];
-
-        //console.log("Saved Home Data", homeData)
-        for (const key in homeData) {
-          if (key !== 'Categories') {
-              const data =  homeData[key] 
-              const sortedData = Object.values(data).sort((a, b) => a.index - b.index);
-              const sectionData = {'title': key, 'data': sortedData}
-              newSectionDataArray.push(sectionData)
-              
-              for (const item of data) {
-                const isSaved = await SaveHandler.isCourseSaved(item.id);
-                newSavedCards.set(item.id, isSaved); 
-                homeCards.push(item)
-              }
-          }
-       }
-
-      setSectionDataModel(newSectionDataArray)
-       setSavedCards(newSavedCards);
+      await reloadSectionData(homeData);
        //console.log("All Home cards", homeCardsList)
        //console.log("Load All Home Crds", homeCards)
 
@@ -92,7 +73,7 @@ const HomeScreen = () => {
         console.error("Error fetching categories:", error);
       }
     };
-
+   
     const fetchUserName = async () => {
       try {
         const userName = await ProfileHandler.getUserName();
@@ -118,6 +99,53 @@ const HomeScreen = () => {
   useEffect(() => {
     
   }, [savedCards]);
+
+  const reloadSectionData = async () => {
+    const newSectionDataArray = [];
+    const newSavedCards = new Map();
+    console.log("Reloaded Home Page")
+    const savedCourses = await SaveHandler.getSavedCourses();
+    const lastFive = savedCourses.slice(-5).reverse();
+
+    const ongoingCourses = await OngoingCourseHandler.getOngoingingCourses();
+    const lastFiveOnGoingCourses = ongoingCourses.slice(-5).reverse();
+
+
+      if (lastFive.length > 0) {
+          homeData["Recently Saved"] = lastFive;
+       }
+
+       if (lastFiveOnGoingCourses.length > 0) {
+        homeData["Continue Where you left"] = lastFiveOnGoingCourses;
+     }
+
+    // Loop over each section in homeData to organize and check saved courses
+    for (const key in homeData) {
+      if (key !== 'Categories') {
+        const data = homeData[key];
+        const sortedData = Object.values(data).sort((a, b) => a.index - b.index);
+        const sectionData = { 'title': key, 'data': sortedData };
+
+        newSectionDataArray.push(sectionData);
+
+        // Check for saved courses in the section
+        for (const item of data) {
+          const isSaved = await SaveHandler.isCourseSaved(item.id);
+          newSavedCards.set(item.id, isSaved); 
+        }
+      }
+    }
+
+    // Update the state with the section data and saved course info
+    setSectionDataModel(newSectionDataArray);
+    setSavedCards(newSavedCards);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      reloadSectionData(); // Call your method when the screen comes into focus
+    }, [])
+  );
 
 
   const updateSavedCard = async () => {
@@ -210,8 +238,20 @@ const HomeScreen = () => {
         ellipsizeMode="tail" 
         >{item.title}</Text>
         <View>
-        <Text style={styles.categoryText}>{item.categoryTitle}</Text>
-        <Text style={styles.readTimeText}>{item.readMin} min read</Text>
+        <View style={styles.courseInfo}>
+        <View style={styles.tag}>
+                    <Text style={styles.tagText}>{item.topic || 'Category'}</Text>
+                  </View>
+        <Text style={styles.readTimeText}>
+            {item.isLiveCourse ? (
+                <Text style={{ color: 'red' }}>LIVE</Text>
+         ) : (
+              item.duration
+           )}
+        </Text>
+         <Text style={styles.ratingText}>⭐ {item.rating ?? '4.5'}</Text>
+        </View>
+        
         </View>
         
       </View>
@@ -444,6 +484,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 5, // Space between image and button
     resizeMode: 'contain',
+  },
+  ratingText: {
+    fontSize: 12,
+    color: '#777',
+  },
+  courseInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  tag: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  tagText: {
+    fontSize: 12,
+    color: '#333',
   },
 });
 

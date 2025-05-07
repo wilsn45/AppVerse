@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import { CategoryHandler } from './CategoryHandler';
-import { ContentData, CategoryData } from '../Data/DataModel';
+import { CourseData, CategoryData } from '../Data/DataModel';
+
 
 export class HomeHandler {
   // Define the key for storing live categories in AsyncStorage
@@ -24,6 +25,8 @@ export class HomeHandler {
               }))
               .sort((a, b) => a.index - b.index);
 
+            console.log("categories -->", categories)
+
           const Home = {};
 
           for (const category of categories) {
@@ -31,25 +34,27 @@ export class HomeHandler {
               const colRef = firestore().collection(`Home/${collectionName}/List`);
               const snapshot = await colRef.get();
 
+              console.log("snapshot -->", snapshot)
+
               if (collectionName === 'LiveCategories') {
                 Home["Categories"] = snapshot.docs.map(doc => 
                   new CategoryData(doc.id, doc.data().index, doc.data().name, doc.data().thumbnail)
               );
               } else {
                 Home[category.name] = snapshot.docs.map(doc => 
-                  new ContentData(
-                      doc.id,
-                      doc.data().index,
-                      doc.data().title,
-                      doc.data().description,
-                      doc.data().categoryId,
-                      doc.data().categoryTitle,
-                      doc.data().likeCount,
-                      doc.data().readMin,
-                      doc.data().imageUrl,
-                      doc.data().thumbnail
-                  )
-              );
+                        new CourseData(
+                          doc.id,
+                          doc.data().title,
+                          doc.data().description,
+                          doc.data().thumbnail,
+                          doc.data().isLive,
+                          doc.data().rating,
+                          doc.data().duration,
+                          doc.data().topic,
+                          doc.data().isLiveCourse,
+                          doc.data().chapterCount
+                        )
+                      );
               }
           }
 
