@@ -23,6 +23,7 @@ import { CourseAnalytics } from '../../Analytics/CourseAnalytics.ts';
 import theme from '../../Theme/Theme.js';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
+import { CompletedCourseHandler } from '../../Handlers/CompletedCourseHandler.tsx';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -32,7 +33,7 @@ const CourseScreen = () => {
   const { course } = route.params;
   const [chaptereList, setChapterList] = useState([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
-  const [isEnrolled, setIsEnrolled] = useState(true);
+  const [isOngoingCourse, setIsOngoingCourse] = useState(true);
   const insets = useSafeAreaInsets();
   const footerHeight = 40 + insets.bottom;
   
@@ -56,7 +57,7 @@ const CourseScreen = () => {
         setIsCourseSaved(isSaved)
         let compltedChapters = await OngoingCourseHandler.getCompletedChapters(course.id)
         let isCourseOngoing  = await OngoingCourseHandler.isCourseOngoing(course.id)
-        setIsEnrolled(isCourseOngoing)
+        setIsOngoingCourse(isCourseOngoing)
 
         const updatedChapters = chapterList.map((chapter) => ({
           ...chapter,
@@ -101,13 +102,13 @@ useFocusEffect(
 );
 
 const changeCourseEnroll = async () => { 
-  if (isEnrolled) {
+  if (isOngoingCourse) {
     await OngoingCourseHandler.removeOngoingCourse(course.id)
   } else {
-    console.log("Remove Ongoing")
+    await CompletedCourseHandler.removeCompletedCourse(course.id)
     await OngoingCourseHandler.saveOngoingCourse(course)
   }
-  setIsEnrolled(!isEnrolled)
+  setIsOngoingCourse(!isOngoingCourse)
   
 };
 
@@ -222,11 +223,11 @@ return (
     onPress={() => changeCourseEnroll()}
     style={[
       styles.ctaButton,
-      { backgroundColor: isEnrolled ? theme.colors.primaryTheme : theme.colors.secondaryTheme },
+      { backgroundColor: isOngoingCourse ? theme.colors.primaryTheme : theme.colors.secondaryTheme },
     ]}
   >
     <Text style={styles.ctaText}>
-      {isEnrolled ? 'Leave' : 'Enroll'}
+      {isOngoingCourse ? 'Leave' : 'Enroll'}
     </Text>
   </TouchableOpacity>
 </View>

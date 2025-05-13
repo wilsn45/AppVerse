@@ -28,11 +28,15 @@ const ChapterScreen = () => {
   const analytics = new ChapterAnalytics(chapter.id);
   const insets = useSafeAreaInsets();
   const footerHeight = 40 + insets.bottom;
+  const [chapterDataLoaded, setChapterDataLoaded] = useState(false);
+  const [isOngoingCourse, setIsOngoingCourse] = useState(false);
+  const [isCourseCompleted, setisCourseCompleted] = useState(false);
 
   useEffect(() => {
     analytics.sendChapterImpressionEvent();
 
     const fetchContent = async () => {
+      setChapterDataLoaded(false);
       const doc = await ContentHandler.fetchChapter(currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
 
@@ -45,6 +49,14 @@ const ChapterScreen = () => {
       const prevChapter = await ContentHandler.fetchPrevChapter(course.id, currentChapter.id)
       setPrevChapter(prevChapter)
       console.log("Prev chapter", prevChapter)
+
+      let isCourseOngoing  = await OngoingCourseHandler.isCourseOngoing(course.id)
+      setIsOngoingCourse(isCourseOngoing)
+
+      let isCourseCompleted  = await CompletedCourseHandler.isCourseCompleted(course.id)
+      setisCourseCompleted(isCourseCompleted)
+
+      setChapterDataLoaded(true);
 
     };
 
@@ -101,6 +113,7 @@ const ChapterScreen = () => {
     console.log('Completed pressed');
     OngoingCourseHandler.removeOngoingCourse(course.id)
     CompletedCourseHandler.completeCourse(course)
+    navigation.goBack();
   };
 
   return (
@@ -122,34 +135,53 @@ const ChapterScreen = () => {
       </View>
 
       {/* Footer Section */}
-      <View style={[styles.footer, { height: footerHeight }]}>
-  {currentChapter && (
+      { currentChapter && (
+  <View style={[styles.footer, { height: footerHeight }]}>
     <View style={styles.buttonContainer}>
+
       {/* LEFT CTA */}
       {currentChapter.isFirstChapter ? (
-        <TouchableOpacity style={[styles.button, styles.startCourseButton]} onPress={onStartCourse}>
-          <Text style={styles.buttonText}>Start Course</Text>
-        </TouchableOpacity>
+        !isOngoingCourse ? (
+          <TouchableOpacity
+            style={[styles.button, styles.startCourseButton]}
+            onPress={onStartCourse}
+          >
+            <Text style={styles.buttonText}>Start Course</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} /> // placeholder
+        )
       ) : prevChapter ? (
-        <TouchableOpacity style={[styles.iconButton]} onPress={onPrev}>
+        <TouchableOpacity style={styles.iconButton} onPress={onPrev}>
           <Ionicons name="arrow-back-outline" size={32} color={theme.colors.greyDark} />
         </TouchableOpacity>
-      ) : null}
+      ) : (
+        <View style={[styles.iconButton, { width: 48, opacity: 0 }]} />
+      )}
 
       {/* RIGHT CTA */}
       {currentChapter.isLastChapter ? (
-        <TouchableOpacity style={[styles.button, styles.completeCourseButton]} onPress={onComplete}>
-          <Text style={styles.buttonText}>Completed</Text>
-        </TouchableOpacity>
+        !(isCourseCompleted || course.isLiveCourse) ? (
+          <TouchableOpacity
+            style={[styles.button, styles.completeCourseButton]}
+            onPress={onComplete}
+          >
+            <Text style={styles.buttonText}>Completed</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} />
+        )
       ) : nextChapter ? (
-        <TouchableOpacity style={[styles.iconButton]} onPress={onNext}>
+        <TouchableOpacity style={styles.iconButton} onPress={onNext}>
           <Ionicons name="arrow-forward-outline" size={32} color={theme.colors.greyDark} />
         </TouchableOpacity>
-      ) : null}
+      ) : (
+        <View style={[styles.iconButton, { width: 48, opacity: 0 }]} />
+      )}
     </View>
-  )}
+  </View>
+)}
 </View>
-    </View>
   );
 };
 
