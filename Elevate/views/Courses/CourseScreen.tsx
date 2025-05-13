@@ -44,6 +44,7 @@ const CourseScreen = () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
+        console.log("Course Screen Course id", course.id)
         const chapterList  = await ContentHandler.fetchChapters(course.id);
         
         
@@ -133,7 +134,7 @@ return (
         >
           {course.isLiveCourse ? 'Live' : `${chaptereList.length} Chapters`}
         </Text>
-        <View style={{ flex: 1 }} /> {/* Push save icon to the end */}
+        <View style={{ flex: 1 }} /> 
       <TouchableOpacity onPress={onToggleSave}>
         <Ionicons
           name={isCourseSaved ? 'bookmark' : 'bookmark-outline'}

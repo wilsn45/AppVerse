@@ -43,7 +43,7 @@ export class HomeHandler {
               } else {
                 Home[category.name] = snapshot.docs.map(doc => 
                         new CourseData(
-                          doc.id,
+                          doc.data().courseId,
                           doc.data().title,
                           doc.data().description,
                           doc.data().thumbnail,

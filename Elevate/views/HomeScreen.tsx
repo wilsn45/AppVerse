@@ -277,9 +277,10 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  const handleCardPress = (content) => {
-    analytics.sendContentOpenEvent(content.categoryId, content.id);
-    navigation.navigate('CourseScreen', { content });
+  const handleCardPress = (course) => {
+    analytics.sendContentOpenEvent(course.categoryId, course.id);
+    console.log("Course", course)
+    navigation.navigate('CourseScreen', { course: course });
   };
 
   return (
