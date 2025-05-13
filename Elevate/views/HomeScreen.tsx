@@ -262,6 +262,7 @@ const HomeScreen = () => {
           source={{ uri: item.thumbnail }} 
           style={styles.tileImage} 
         />
+        
 
         <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item)}
                 accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
@@ -284,7 +285,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       {sectionDataModel.length === 0 ? (
       <View style={styles.emptyDataView}>
         <Text style={styles.emptyDataLabel}>Hang tight... fetching new growth!!</Text>
@@ -386,15 +387,11 @@ const styles = StyleSheet.create({
   tile: {
     backgroundColor: theme.colors.white,
     borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 2,
     paddingBottom: 10,
     justifyContent: 'space-between',
     borderColor: theme.colors.greyLight2,
     height: 170,
-    shadowColor: theme.colors.grey,
-    shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.8, 
-    shadowRadius: 6, 
     elevation: 8, 
     gap: 10,
   },
@@ -428,18 +425,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: theme.colors.white,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: theme.colors.greyLight2,
     borderRadius: 10,
     padding: 12,
     marginHorizontal: 10,
     height: 150,
     width: 350,
-    shadowColor: theme.colors.grey,
-    shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.8, 
-    shadowRadius: 6, 
-    elevation: 8,
   },
   leftSection: {
     flex: 0.9,
@@ -466,18 +458,17 @@ const styles = StyleSheet.create({
   rightSection: {
    //backgroundColor: 'grey',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'flex-end' ,
     width: 100, // Ensures alignment for the right section
     gap: 10,
     height: '100%',
   },
   tileSaveButton: {
+   // backgroundColor: 'grey',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     gap: 5,
-    width: 40,
     height: 20,
-    marginLeft: 10,
   },
   tileImage: {
     width: 100,

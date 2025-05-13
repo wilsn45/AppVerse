@@ -224,9 +224,9 @@ const styles = StyleSheet.create({
   
   contentText: {
     fontSize: 22,
-    fontWeight: 'semibold',
+    fontWeight: '500',
     color: '#000',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   
   bottomRow: {

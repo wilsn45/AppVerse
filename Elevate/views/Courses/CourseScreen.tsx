@@ -9,9 +9,11 @@ import {
   Modal,
   TextInput,
   Alert,
-  Image
+  Image,
+  ScrollView
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -30,6 +32,9 @@ const CourseScreen = () => {
   const { course } = route.params;
   const [chaptereList, setChapterList] = useState([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(true);
+  const insets = useSafeAreaInsets();
+  const footerHeight = 40 + insets.bottom;
   
   const analytics = new CourseAnalytics(course.id)
 
@@ -44,13 +49,14 @@ const CourseScreen = () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
-        console.log("Course Screen Course id", course.id)
         const chapterList  = await ContentHandler.fetchChapters(course.id);
-        
-        
+       // console.log("Chapter List", chapterList)
+       
         let isSaved = await SaveHandler.isCourseSaved(course.id);
         setIsCourseSaved(isSaved)
         let compltedChapters = await OngoingCourseHandler.getCompletedChapters(course.id)
+        let isCourseOngoing  = await OngoingCourseHandler.isCourseOngoing(course.id)
+        setIsEnrolled(isCourseOngoing)
 
         const updatedChapters = chapterList.map((chapter) => ({
           ...chapter,
@@ -94,6 +100,17 @@ useFocusEffect(
   }, [ navigation, course])
 );
 
+const changeCourseEnroll = async () => { 
+  if (isEnrolled) {
+    await OngoingCourseHandler.removeOngoingCourse(course.id)
+  } else {
+    console.log("Remove Ongoing")
+    await OngoingCourseHandler.saveOngoingCourse(course)
+  }
+  setIsEnrolled(!isEnrolled)
+  
+};
+
 
 const onChapterPress = (content) => {
   analytics.sendCourseOpenEvent()
@@ -118,23 +135,34 @@ const onToggleSave = async () => {
 return (
   <View style={styles.container}>
     {/* Course Info Box */}
+
+    <ScrollView contentContainerStyle={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
     <View style={styles.courseInfoBox}>
-  <View style={styles.courseInfoContent}>
-    <View style={styles.courseInfoLeft}>
-      <Text style={styles.courseTitle}>{course.title}</Text>
-      <Text style={styles.courseDescription}>{course.description}</Text>
-      <View style={styles.courseMetaRow}>
-        <Text style={styles.metaText}>⭐ {course.rating ?? '4.5'}</Text>
-        <Text style={styles.metaText}>⏱️ {course.duration ?? '25 Min'}</Text>
-        <Text
-          style={[
-            styles.metaText,
-            { color: course.isLiveCourse ? 'red' : theme.colors.greyDark1 },
-          ]}
-        >
-          {course.isLiveCourse ? 'Live' : `${chaptereList.length} Chapters`}
-        </Text>
-        <View style={{ flex: 1 }} /> 
+    <View style={styles.courseInfoContent}>
+  {/* Left side (text content) takes all available space */}
+  <View style={styles.courseInfoLeft}>
+    <View style={styles.contentTitleView}>
+    <Text style={styles.courseTitle}>{course.title}</Text>
+    <Image
+    source={{ uri: course.thumbnail }}
+    style={styles.courseThumbnail}
+    resizeMode="cover"
+  />
+    </View>
+   
+    <Text style={styles.courseDescription}>{course.description}</Text>
+    <View style={styles.courseMetaRow}>
+      <Text style={styles.metaText}>⭐ {course.rating ?? '4.5'}</Text>
+      <Text style={styles.metaText}>⏱️ {course.duration ?? '25 Min'}</Text>
+      <Text
+        style={[
+          styles.metaText,
+          { color: course.isLiveCourse ? 'red' : theme.colors.greyDark1 },
+        ]}
+      >
+        {course.isLiveCourse ? 'Live' : `${chaptereList.length} Chapters`}
+      </Text>
+      <View style={{ flex: 1 }} />
       <TouchableOpacity onPress={onToggleSave}>
         <Ionicons
           name={isCourseSaved ? 'bookmark' : 'bookmark-outline'}
@@ -142,10 +170,12 @@ return (
           color={isCourseSaved ? theme.colors.secondaryTheme : theme.colors.greyDark1}
         />
       </TouchableOpacity>
-      </View>
     </View>
-
   </View>
+
+  {/* Right side (thumbnail) fixed size */}
+  
+</View>
 </View>
 
     {/* Chapter List */}
@@ -158,8 +188,11 @@ return (
     onPress={() => onChapterPress(item)}
   >
     <View style={styles.chapterLeft}>
-      <Text style={styles.chapterTitle}>{item.title}</Text>
-      <Text style={styles.chapterDescription}>{item.description}</Text>
+      <View style={styles.chapterTitleView}>
+        <Text style={styles.chapterTitle}>{item.title}</Text>
+       <Text style={styles.chapterDescription}>{item.description}</Text>
+      </View>
+     
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
          {item.completed  && (
           <Ionicons name="checkmark-circle" size={16} color="green" />
@@ -181,11 +214,22 @@ return (
           </View>
         }
       />
+  </ScrollView>
 
     {/* Footer */}
-    <View style={styles.footer}>
-      {/* Add your footer buttons or actions here */}
-    </View>
+    <View style={[styles.footer, { height: footerHeight }]}>
+  <TouchableOpacity
+    onPress={() => changeCourseEnroll()}
+    style={[
+      styles.ctaButton,
+      { backgroundColor: isEnrolled ? theme.colors.primaryTheme : theme.colors.secondaryTheme },
+    ]}
+  >
+    <Text style={styles.ctaText}>
+      {isEnrolled ? 'Leave' : 'Enroll'}
+    </Text>
+  </TouchableOpacity>
+</View>
   </View>
 );
 };
@@ -205,16 +249,26 @@ const styles = StyleSheet.create({
     elevation: 2,
     position: 'relative', // Ensures save button positions inside this
   },
-  
   courseInfoContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'flex-start', // or 'center' if you want the image vertically centered
+    padding: 4,
   },
   
   courseInfoLeft: {
-    flex: 1,
+    flex: 1, // This makes the text section take all available width except for the image
+    paddingRight: 8, // To give space between text and image
   },
-  
+  contentTitleView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12
+  },
+  courseThumbnail: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+  },
   saveButton: {
     position: 'absolute',
     bottom: 12,
@@ -224,7 +278,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: theme.colors.black,
-    marginBottom: 8,
+    width: '70%'
+  },
+  chapterTitleView: {
+    gap: 4
   },
   courseDescription: {
     fontSize: 14,
@@ -246,19 +303,22 @@ const styles = StyleSheet.create({
   },
   chapterItem: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.white,
+    backgroundColor:  theme.colors.white,
     marginBottom: 12,
     paddingLeft: 12,
     marginRight: 12,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#eee',
-    height: 102,
-    alignItems: 'flex-start',
+    height: 100,
+    alignItems: 'center',
   },
   chapterLeft: {
     flex: 1,
+    justifyContent: 'space-between',
+   // backgroundColor: 'red',
     paddingRight: 8,
+    height: 88,
   },
   chapterTitle: {
     fontSize: 16,
@@ -289,21 +349,38 @@ const styles = StyleSheet.create({
     right: 12,
     bottom: 8,
   },
-  footer: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    backgroundColor: theme.colors.white,
-    padding: 10,
-    borderRadius: 50,
-    elevation: 3,
-  },
   emptyDataView: {
     padding: 20,
     alignItems: 'center',
   },
   emptyDataLabel: {
     color: theme.colors.greyDark2,
+  },
+
+  footer: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    marginBottom: 12
+  },
+  
+  ctaButton: {
+    width: '100%',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  
+  ctaText: {
+    color: theme.colors.white,
+    fontWeight: 'bold',
+    fontSize: 18,
   },
 });
 

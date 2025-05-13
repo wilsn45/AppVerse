@@ -316,8 +316,8 @@ const styles = StyleSheet.create({
   
   tabItemText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: theme.colors.secondaryThemeDisabled,
+    fontWeight: '600',
+    color: theme.colors.greyDark1,
   },
   
   tabItemTextSelected: {

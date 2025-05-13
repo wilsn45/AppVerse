@@ -6,7 +6,7 @@ export const taskType: TaskType[] = [
   ChapterData
 
   export class ChapterData {
-    constructor(id, title, description, thumbnail, duration,index,isLive, isLastChapter) {
+    constructor(id, title, description, thumbnail, duration,index,isLive, isLastChapter, isFirstChapter, nextChapterId, prevChapterId) {
       this.id = id;
       this.title = title;
       this.description = description;
@@ -15,6 +15,9 @@ export const taskType: TaskType[] = [
       this.duration = duration
       this.isLive = isLive
       this.isLastChapter = isLastChapter
+      this.isFirstChapter = isFirstChapter
+      this.nextChapterId = nextChapterId
+      this.prevChapterId = prevChapterId
     }
   }
 
