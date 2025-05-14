@@ -230,8 +230,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: theme.colors.greyLight2,
-    elevation: 2,
-    position: 'relative', // Ensures save button positions inside this
   },
   courseInfoContent: {
     flexDirection: 'row',
@@ -347,6 +345,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
+    borderTopWidth: 2,
+    borderColor: theme.colors.greyLight2
   },
   
   ctaButton: {

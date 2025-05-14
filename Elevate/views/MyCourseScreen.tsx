@@ -219,7 +219,6 @@ const MyCourseScreen = () => {
         </TouchableOpacity>
       </Swipeable>
       )}
-      ItemSeparatorComponent={() => <View style={styles.separator} />}
       contentContainerStyle={
         filteredCards.length === 0 ? styles.emptyContainer : styles.taskList
       }
@@ -255,6 +254,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     height: 100,
+     borderWidth: 2,
+    borderColor: theme.colors.greyLight2,
+    marginTop: 10
   },
   
   leftCardView: {
@@ -385,11 +387,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10
   } ,
-
-
   separator: {
     height: 1,
-    backgroundColor: theme.colors.grey2,
+    backgroundColor: theme.colors.greyLight2,
     marginHorizontal: 10, // Optional: match your card padding
   },
   
