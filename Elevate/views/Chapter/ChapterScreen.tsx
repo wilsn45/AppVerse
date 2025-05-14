@@ -94,7 +94,8 @@ const ChapterScreen = () => {
 
   const onStartCourse = async() => {
     console.log('Start Course pressed');
-    await OngoingCourseHandler.removeOngoingCourse(course.id)
+    await OngoingCourseHandler.saveOngoingCourse(course)
+    setIsOngoingCourse(true)
   };
   
   const onNext = () => {
@@ -156,6 +157,7 @@ const ChapterScreen = () => {
       ) : prevChapter ? (
         <TouchableOpacity style={styles.iconButton} onPress={onPrev}>
           <Ionicons name="arrow-back-outline" size={32} color={theme.colors.greyDark} />
+          <Text style={styles.iconButtonText}>PREV</Text>
         </TouchableOpacity>
       ) : (
         <View style={[styles.iconButton, { width: 48, opacity: 0 }]} />
@@ -175,6 +177,7 @@ const ChapterScreen = () => {
         )
       ) : nextChapter ? (
         <TouchableOpacity style={styles.iconButton} onPress={onNext}>
+           <Text style={styles.iconButtonText}>NEXT</Text>
           <Ionicons name="arrow-forward-outline" size={32} color={theme.colors.greyDark} />
         </TouchableOpacity>
       ) : (
@@ -254,7 +257,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16
   },
+  iconButtonText: {
+    color: theme.colors.greyDark,
+    fontWeight: 'bold',
+    fontSize: 16
+  },
   iconButton: {
+    flexDirection: 'row',
+    gap: 4,
     width: 84,
     height: 48,
     borderRadius: 24,

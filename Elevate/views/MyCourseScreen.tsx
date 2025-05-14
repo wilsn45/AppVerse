@@ -94,7 +94,7 @@ const MyCourseScreen = () => {
   const getCardsForSelectedTab = () => {
     let cards = [];
     if (selectedTab === 'Saved') cards = allSavedCourses;
-    else if (selectedTab === 'Ongoing') cards = ongoingCourses;
+    else if (selectedTab === 'In Progress') cards = ongoingCourses;
     else if (selectedTab === 'Completed') cards = completedCourses;
 
     return cards.filter((item) =>
@@ -136,7 +136,7 @@ const MyCourseScreen = () => {
 
     {/* Tab Bar */}
     <View style={styles.tabBarContainer}>
-  {['Saved', 'Ongoing', 'Completed'].map((tab) => {
+  {['Saved', 'In Progress', 'Completed'].map((tab) => {
     const isSelected = selectedTab === tab;
     return (
       <TouchableOpacity
@@ -193,7 +193,8 @@ const MyCourseScreen = () => {
           accessibilityRole="button"
         >
           <View style={styles.leftCardView}>
-            <Text style={styles.cardTitle} numberOfLines={2} ellipsizeMode="tail">
+            <Text style={styles.cardTitle} numberOfLines={3} 
+        ellipsizeMode="tail" >
               {item.title}
             </Text>
 
@@ -251,24 +252,25 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     borderRadius: 8,
     padding: 10,
+    gap: 10,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    height: 100,
-     borderWidth: 2,
+    height: 120,
+    borderWidth: 2,
     borderColor: theme.colors.greyLight2,
     marginTop: 10
   },
   
   leftCardView: {
     flex: 1,
-    marginRight: 15,
+    height: '100%',
+    gap: 8,
     justifyContent: 'space-between',
-    height: 80,
   },
   
   rightCardView: {
     width: 80,
-    height: 80,
+    height: '100%',
   },
   
   tileImage: {
@@ -279,9 +281,9 @@ const styles = StyleSheet.create({
   },
   
   cardTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: theme.colors.greyDark,
   },
   
   cardCategoryText: {
@@ -385,7 +387,7 @@ const styles = StyleSheet.create({
   leftBottomView: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10
+    gap: 10,
   } ,
   separator: {
     height: 1,

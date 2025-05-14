@@ -244,7 +244,8 @@ const styles = StyleSheet.create({
   contentTitleView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12
+    marginBottom: 12,
+    gap: 16
   },
   courseThumbnail: {
     width: 100,
