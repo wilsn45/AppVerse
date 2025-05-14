@@ -27,7 +27,7 @@ const ChapterScreen = () => {
 
   const analytics = new ChapterAnalytics(chapter.id);
   const insets = useSafeAreaInsets();
-  const footerHeight = 50 + insets.bottom;
+  const footerHeight = 70 + insets.bottom;
   const [chapterDataLoaded, setChapterDataLoaded] = useState(false);
   const [isOngoingCourse, setIsOngoingCourse] = useState(false);
   const [isCourseCompleted, setisCourseCompleted] = useState(false);
@@ -224,20 +224,18 @@ const styles = StyleSheet.create({
   },
 
   footer: {
-    paddingTop: 10,
     paddingHorizontal: 8,
     borderTopWidth: 2,
     borderColor: theme.colors.greyLight2,
-    backgroundColor: theme.colors.backgroundWhite,
+    backgroundColor:  theme.colors.backgroundWhite,
+    paddingVertical: 8,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10
   },
   button: {
     flex: 1,
-    marginHorizontal: 8,
     paddingVertical: 12,
     borderRadius: 6,
     alignItems: 'center',

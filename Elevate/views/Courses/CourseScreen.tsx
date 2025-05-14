@@ -35,7 +35,7 @@ const CourseScreen = () => {
   const [isCourseSaved, setIsCourseSaved] = useState(false);
   const [isOngoingCourse, setIsOngoingCourse] = useState(true);
   const insets = useSafeAreaInsets();
-  const footerHeight = 50 + insets.bottom;
+  const footerHeight = 70 + insets.bottom;
   
   const analytics = new CourseAnalytics(course.id)
 
@@ -346,7 +346,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     borderTopWidth: 2,
-    borderColor: theme.colors.greyLight2
+    borderColor: theme.colors.greyLight2,
+    paddingVertical: 8,
   },
   
   ctaButton: {
