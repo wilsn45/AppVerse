@@ -27,10 +27,11 @@ const ChapterScreen = () => {
 
   const analytics = new ChapterAnalytics(chapter.id);
   const insets = useSafeAreaInsets();
-  const footerHeight = 40 + insets.bottom;
+  const footerHeight = 50 + insets.bottom;
   const [chapterDataLoaded, setChapterDataLoaded] = useState(false);
   const [isOngoingCourse, setIsOngoingCourse] = useState(false);
   const [isCourseCompleted, setisCourseCompleted] = useState(false);
+  
 
   useEffect(() => {
     analytics.sendChapterImpressionEvent();
@@ -113,6 +114,7 @@ const ChapterScreen = () => {
     console.log('Completed pressed');
     OngoingCourseHandler.removeOngoingCourse(course.id)
     CompletedCourseHandler.completeCourse(course)
+    OngoingCourseHandler.saveChapter(course.id,currentChapter.id)
     navigation.goBack();
   };
 
@@ -217,16 +219,15 @@ const styles = StyleSheet.create({
   },
   contentText: {
     fontSize: 18,
-    color: theme.colors.grey1,
+    color: theme.colors.greyDark1,
     textAlign: 'justify',
   },
 
   footer: {
-    padding: 16,
+    paddingHorizontal: 8,
     borderTopWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#fff',
-    marginBottom: 10
+    borderColor: theme.colors.greyLight2,
+    backgroundColor: theme.colors.backgroundWhite,
   },
   buttonContainer: {
     flexDirection: 'row',

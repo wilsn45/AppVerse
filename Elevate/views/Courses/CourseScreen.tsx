@@ -35,7 +35,7 @@ const CourseScreen = () => {
   const [isCourseSaved, setIsCourseSaved] = useState(false);
   const [isOngoingCourse, setIsOngoingCourse] = useState(true);
   const insets = useSafeAreaInsets();
-  const footerHeight = 40 + insets.bottom;
+  const footerHeight = 50 + insets.bottom;
   
   const analytics = new CourseAnalytics(course.id)
 
@@ -58,7 +58,7 @@ const CourseScreen = () => {
         let compltedChapters = await OngoingCourseHandler.getCompletedChapters(course.id)
         let isCourseOngoing  = await OngoingCourseHandler.isCourseOngoing(course.id)
         setIsOngoingCourse(isCourseOngoing)
-
+        
         const updatedChapters = chapterList.map((chapter) => ({
           ...chapter,
           completed: compltedChapters.includes(chapter.id),
@@ -76,25 +76,6 @@ const CourseScreen = () => {
 };
 
 
-const preloadImages = (index) => {
-  const nextItems = chaptereList.slice(index, index + 10); // Prefetch the next 10 items
-  nextItems.forEach(item => {
-    Image.prefetch(item.thumbnail); // Preload the image URL
-  });
-};
-
-
-const handleScroll = (event) => {
-  const contentOffsetY = event.nativeEvent.contentOffset.y;
-  const contentHeight = event.nativeEvent.contentSize.height;
-
-  // If user is within the last 10% of the list, start preloading images
-  if (contentHeight - contentOffsetY - SCREEN_HEIGHT < 100) {
-    preloadImages(chaptereList.length - 10); // Prefetch next 10 items
-  }
-};
-
-
 useFocusEffect(
   useCallback(() => {
     fetchChapterList()
@@ -107,13 +88,15 @@ const changeCourseEnroll = async () => {
   } else {
     await CompletedCourseHandler.removeCompletedCourse(course.id)
     await OngoingCourseHandler.saveOngoingCourse(course)
+    let firstChapter = chaptereList[0]
+    await onChapterPress(firstChapter)
   }
   setIsOngoingCourse(!isOngoingCourse)
   
 };
 
 
-const onChapterPress = (content) => {
+const onChapterPress = async (content) => {
   analytics.sendCourseOpenEvent()
   console.log('chapterId', content);
   navigation.navigate('ChapterScreen', { course: course, chapter: content });
@@ -158,10 +141,10 @@ return (
       <Text
         style={[
           styles.metaText,
-          { color: course.isLiveCourse ? 'red' : theme.colors.greyDark1 },
+          { color: course.isLiveCourse ? theme.colors.red : theme.colors.greyDark1, fontWeight: 'bold' },
         ]}
       >
-        {course.isLiveCourse ? 'Live' : `${chaptereList.length} Chapters`}
+        {course.isLiveCourse ? 'LIVE' : `${chaptereList.length} Chapters`}
       </Text>
       <View style={{ flex: 1 }} />
       <TouchableOpacity onPress={onToggleSave}>
@@ -227,7 +210,7 @@ return (
     ]}
   >
     <Text style={styles.ctaText}>
-      {isOngoingCourse ? 'Leave' : 'Enroll'}
+      {isOngoingCourse ? 'Leave' : 'Start Course'}
     </Text>
   </TouchableOpacity>
 </View>
@@ -245,8 +228,8 @@ const styles = StyleSheet.create({
     padding: 16,
     margin: 16,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    borderWidth: 2,
+    borderColor: theme.colors.greyLight2,
     elevation: 2,
     position: 'relative', // Ensures save button positions inside this
   },
@@ -309,8 +292,8 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     marginRight: 12,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#eee',
+    borderWidth: 2,
+    borderColor: theme.colors.greyLight2,
     height: 100,
     alignItems: 'center',
   },
@@ -359,15 +342,11 @@ const styles = StyleSheet.create({
   },
 
   footer: {
+    backgroundColor: theme.colors.backgroundWhite,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    marginBottom: 12
   },
   
   ctaButton: {

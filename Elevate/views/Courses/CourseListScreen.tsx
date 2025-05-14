@@ -173,7 +173,14 @@ const handleCardPress = (course) => {
           <View style={styles.tag}>
             <Text style={styles.tagText}>{item.topic || 'Category'}</Text>
           </View>
-          <Text style={styles.durationText}>{item.duration ?? '1 Hour'}</Text>
+          <Text
+        style={[
+          styles.metaText,
+          { color: item.isLiveCourse ? theme.colors.red : theme.colors.greyDark1, fontWeight: 'bold' },
+        ]}
+      >
+        {item.isLiveCourse ? 'LIVE' : `${item.duration}`}
+      </Text>
           <Text style={styles.ratingText}>⭐ {item.rating ?? '4.5'}</Text>
         </View>
 
@@ -205,8 +212,8 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     backgroundColor: theme.colors.white,
-    borderColor: '#ccc',
-    borderWidth: 1,
+    borderColor: theme.colors.greyLight2,
+    borderWidth: 2,
     borderRadius: 10,
     marginVertical: 10,
     marginHorizontal: 16,
@@ -285,6 +292,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     marginBottom: 8,
+  },
+   metaText: {
+    fontSize: 13,
+    color: theme.colors.greyDark1,
   },
   bottomLeft: {
     flexDirection: 'row',

@@ -84,6 +84,7 @@ export class OngoingCourseHandler {
   static async isCourseOngoing(id: string): Promise<boolean> {
     try {
       const currentCourses = await this.getOngoingingCourses();
+      console.log("All Courses", currentCourses)
       return currentCourses.some(c => c.id === id);
     } catch (error) {
       console.error('Error checking if course is saved:', error);
