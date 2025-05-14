@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   
   ctaButton: {
     width: '100%',
-    height: 40,
+    height: 45,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,

@@ -137,13 +137,13 @@ const ChapterScreen = () => {
       </View>
 
       {/* Footer Section */}
-      { currentChapter && (
+      {currentChapter  && (
   <View style={[styles.footer, { height: footerHeight }]}>
     <View style={styles.buttonContainer}>
 
       {/* LEFT CTA */}
       {currentChapter.isFirstChapter ? (
-        !isOngoingCourse ? (
+        !isOngoingCourse  && chapterDataLoaded ? (
           <TouchableOpacity
             style={[styles.button, styles.startCourseButton]}
             onPress={onStartCourse}
@@ -151,7 +151,7 @@ const ChapterScreen = () => {
             <Text style={styles.buttonText}>Start Course</Text>
           </TouchableOpacity>
         ) : (
-          <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} /> // placeholder
+          <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} />
         )
       ) : prevChapter ? (
         <TouchableOpacity style={styles.iconButton} onPress={onPrev}>
@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
   },
 
   footer: {
+    paddingTop: 10,
     paddingHorizontal: 8,
     borderTopWidth: 1,
     borderColor: theme.colors.greyLight2,
