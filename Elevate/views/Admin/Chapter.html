@@ -30,6 +30,7 @@
         title: document.getElementById("title").value.trim(),
         description: document.getElementById("description").value.trim(),
         thumbnail: document.getElementById("thumbnail").value.trim(),
+        duration: document.getElementById("duration").value.trim(),
         index: Number(document.getElementById("index").value.trim()),
         isLive: document.getElementById("isLive").checked,
         isLastChapter: document.getElementById("isLastChapter").checked,
@@ -136,6 +137,9 @@
 
     <label>Thumbnail URL</label>
     <input type="text" id="thumbnail" />
+
+    <label>Duration</label>
+    <input type="text" id="duration" />
 
     <label>Index (integer)</label>
     <input type="number" id="index" />
