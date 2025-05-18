@@ -95,6 +95,7 @@ const ChapterScreen = () => {
   const onStartCourse = async() => {
     console.log('Start Course pressed');
     await OngoingCourseHandler.saveOngoingCourse(course)
+    await CompletedCourseHandler.removeCompletedCourse(course.id)
     setIsOngoingCourse(true)
   };
   

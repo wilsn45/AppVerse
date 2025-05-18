@@ -12,7 +12,6 @@ import {
   Image,
   ScrollView
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -32,7 +31,8 @@ const CourseScreen = () => {
   const { course } = route.params;
   const [chaptereList, setChapterList] = useState([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
-  const [isOngoingCourse, setIsOngoingCourse] = useState(true);
+  const [isOngoingCourse, setIsOngoingCourse] = useState(null);
+  const [isCourseCompleted, setIsCourseCompleted] = useState(null);
   const insets = useSafeAreaInsets();
   const footerHeight = 70 + insets.bottom;
   
@@ -56,6 +56,8 @@ const CourseScreen = () => {
         setIsCourseSaved(isSaved)
         let compltedChapters = await OngoingCourseHandler.getCompletedChapters(course.id)
         let isCourseOngoing  = await OngoingCourseHandler.isCourseOngoing(course.id)
+        let isCourseCompleted = await CompletedCourseHandler.isCourseCompleted(course.id)
+        setIsCourseCompleted(isCourseCompleted)
         setIsOngoingCourse(isCourseOngoing)
         
         const updatedChapters = chapterList.map((chapter) => ({
@@ -200,19 +202,33 @@ return (
   </ScrollView>
 
     {/* Footer */}
-    <View style={[styles.footer, { height: footerHeight }]}>
-  <TouchableOpacity
-    onPress={() => changeCourseEnroll()}
-    style={[
-      styles.ctaButton,
-      { backgroundColor: isOngoingCourse ? theme.colors.primaryTheme : theme.colors.secondaryTheme },
-    ]}
-  >
-    <Text style={styles.ctaText}>
-      {isOngoingCourse ? 'Leave' : 'Start Course'}
-    </Text>
-  </TouchableOpacity>
-</View>
+    {(typeof isOngoingCourse === 'boolean' || typeof isCourseCompleted === 'boolean') && (
+  <View style={[styles.footer, { height: footerHeight }]}>
+    <TouchableOpacity
+      onPress={() => changeCourseEnroll()}
+      disabled={isCourseCompleted === true}
+      style={[
+        styles.ctaButton,
+        {
+          backgroundColor: isCourseCompleted
+            ? theme.colors.secondaryThemeDisabled 
+            : isOngoingCourse
+            ? theme.colors.primaryTheme
+            : theme.colors.secondaryTheme,
+        },
+      ]}
+    >
+      <Text style={styles.ctaText}>
+        {isCourseCompleted
+          ? 'Completed'
+          : isOngoingCourse
+          ? 'Leave'
+          : 'Start Course'}
+      </Text>
+    </TouchableOpacity>
+  </View>
+)}
+    
   </View>
 );
 };
