@@ -10,6 +10,7 @@ import DropDownList from './Common/DropDownList';
 import theme from '../Theme/Theme';
 import { SaveAnalytics } from '../Analytics/SaveAnalytics';
 import { Swipeable } from 'react-native-gesture-handler';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 const MyCourseScreen = () => {
   const [allSavedCourses, setAllSavedCourses] = useState([]);
@@ -61,10 +62,15 @@ const MyCourseScreen = () => {
   );
 
 
-  const handleRemoveCard = async (id) => {
+  const handleRightAction = async (id) => {
     try {
-      analytics.sendContentRemovedEvent(categoryId, id);
-      await SaveHandler.removeCourse(id);
+      if (selectedTab === 'Saved') {
+        await SaveHandler.removeCourse(id);
+      } else if (selectedTab === 'In Progress') {
+          await OngoingCourseHandler.removeOngoingCourse(id);
+      }  else {
+        await CompletedCourseHandler.removeCompletedCourse(id);
+     }
       fetchSavedCourses();
     } catch (error) {
       console.error('Error removing card:', error);
@@ -108,17 +114,6 @@ const MyCourseScreen = () => {
 
   const handleDelete = (contentId: string) => {
     //setCards(cards.filter((card) => card.contentId !== contentId));
-  };
-
-  const renderRightActions = (_: any, item: any) => {
-    return (
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => handleRemoveCard(item.categoryId, item.id)}
-      >
-        <Ionicons name="trash" size={30} color={theme.colors.white} />
-      </TouchableOpacity>
-    );
   };
 
   return (
@@ -179,58 +174,64 @@ const MyCourseScreen = () => {
       )}
     </View>
 
-    <FlatList
-      data={filteredCards}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <Swipeable
-        renderRightActions={(progress, dragX) => renderRightActions(progress, item)}
-      >
-        <TouchableOpacity
-          style={[styles.cardView]}
-          onPress={() => handleCardPress(item)}
-          accessibilityLabel={`Open details for ${item.title}`}
-          accessibilityRole="button"
-        >
-          <View style={styles.leftCardView}>
-            <Text style={styles.cardTitle} numberOfLines={3} 
-        ellipsizeMode="tail" >
-              {item.title}
-            </Text>
+    <SwipeListView
+  data={filteredCards}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => (
+    <TouchableOpacity
+      style={[styles.cardView]}
+      onPress={() => handleCardPress(item)}
+      accessibilityLabel={`Open details for ${item.title}`}
+      accessibilityRole="button"
+    >
+      <View style={styles.leftCardView}>
+        <Text style={styles.cardTitle} numberOfLines={3} ellipsizeMode="tail">
+          {item.title}
+        </Text>
 
-            <View style={styles.leftBottomView}>
-              <View style={styles.tagContainer}>
-                <Text style={styles.cardCategoryText}>{item.topic}</Text>
-               </View>
+        <View style={styles.leftBottomView}>
+          <View style={styles.tagContainer}>
+            <Text style={styles.cardCategoryText}>{item.topic}</Text>
+          </View>
 
-               {item.isLiveCourse ? (
-                  <Text style={styles.liveText}>LIVE</Text>
-                ) : isSavedTab ? (
-                   <Text style={styles.cardMetaText}>{item.duration} </Text>
-                ) : (
-                  <Text style={styles.cardMetaText}>{item.progress} </Text>
-                 )}
-            </View>
-            
-          </View>
-      
-          <View style={styles.rightCardView}>
-            <Image source={{ uri: item.thumbnail }} style={styles.tileImage} />
-          </View>
-        </TouchableOpacity>
-      </Swipeable>
-      )}
-      contentContainerStyle={
-        filteredCards.length === 0 ? styles.emptyContainer : styles.taskList
-      }
-      ListEmptyComponent={
-        <View style={styles.noTaskView}>
-          <Text style={styles.emptyText}>Nothing here yet...</Text>
+          {item.isLiveCourse ? (
+            <Text style={styles.liveText}>LIVE</Text>
+          ) : isSavedTab ? (
+            <Text style={styles.cardMetaText}>{item.duration}</Text>
+          ) : (
+            <Text style={styles.cardMetaText}>{item.progress}</Text>
+          )}
         </View>
-      }
-      accessibilityLabel="List of saved items"
-      accessibilityRole="list"
-    />
+      </View>
+
+      <View style={styles.rightCardView}>
+        <Image source={{ uri: item.thumbnail }} style={styles.tileImage} />
+      </View>
+    </TouchableOpacity>
+  )}
+  renderHiddenItem={({ item }) => (
+    <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleRightAction(item.id)}
+      >
+        <Ionicons name= {selectedTab === 'In Progress' ? "exit-outline": 'trash'} size={30} color={theme.colors.white} />
+      </TouchableOpacity>
+    </View>
+  )}
+  ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+  rightOpenValue={-75}
+  contentContainerStyle={
+    filteredCards.length === 0 ? styles.emptyContainer : styles.taskList
+  }
+  ListEmptyComponent={
+    <View style={styles.noTaskView}>
+      <Text style={styles.emptyText}>Nothing here yet...</Text>
+    </View>
+  }
+  accessibilityLabel="List of saved items"
+  accessibilityRole="list"
+/>
   </SafeAreaView>
   );
 };
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
   },
   cardView: {
     flexDirection: 'row',
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.backgroundWhite,
     borderRadius: 8,
     padding: 10,
     gap: 10,
@@ -258,9 +259,16 @@ const styles = StyleSheet.create({
     height: 120,
     borderWidth: 2,
     borderColor: theme.colors.greyLight2,
-    marginTop: 10
   },
-  
+  deleteButton: {
+  backgroundColor: 'red',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: 75,
+  height: '90%',
+  borderRadius: 8,
+  marginVertical: 10
+},
   leftCardView: {
     flex: 1,
     height: '100%',

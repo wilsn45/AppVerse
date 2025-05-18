@@ -156,7 +156,7 @@ const ChapterScreen = () => {
         )
       ) : prevChapter ? (
         <TouchableOpacity style={styles.iconButton} onPress={onPrev}>
-          <Ionicons name="arrow-back-outline" size={32} color={theme.colors.greyDark} />
+          <Ionicons name="chevron-back-outline" size={28} color={theme.colors.greyDark} />
           <Text style={styles.iconButtonText}>PREV</Text>
         </TouchableOpacity>
       ) : (
@@ -178,7 +178,7 @@ const ChapterScreen = () => {
       ) : nextChapter ? (
         <TouchableOpacity style={styles.iconButton} onPress={onNext}>
            <Text style={styles.iconButtonText}>NEXT</Text>
-          <Ionicons name="arrow-forward-outline" size={32} color={theme.colors.greyDark} />
+          <Ionicons name="chevron-forward-outline" size={28} color={theme.colors.greyDark} />
         </TouchableOpacity>
       ) : (
         <View style={[styles.iconButton, { width: 48, opacity: 0 }]} />
@@ -236,6 +236,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 16
   },
   button: {
     flex: 1,
@@ -254,8 +255,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: theme.colors.white,
-    fontWeight: 'bold',
-    fontSize: 16
+    fontWeight: '500',
+    fontSize: 20
   },
   iconButtonText: {
     color: theme.colors.greyDark,

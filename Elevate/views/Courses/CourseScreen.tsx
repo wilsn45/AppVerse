@@ -25,7 +25,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
 import { CompletedCourseHandler } from '../../Handlers/CompletedCourseHandler.tsx';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const CourseScreen = () => {
   const navigation = useNavigation();
@@ -293,15 +292,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: theme.colors.greyLight2,
-    height: 100,
     alignItems: 'center',
   },
   chapterLeft: {
     flex: 1,
     justifyContent: 'space-between',
-   // backgroundColor: 'red',
     paddingRight: 8,
-    height: 88,
   },
   chapterTitle: {
     fontSize: 16,
@@ -320,10 +316,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: theme.colors.greyDark1,
     marginTop: 4,
+    marginBottom: 4
   },
   chapterThumbnail: {
     width: 100,
-    height: 100,
+    height: '90%',
+    maxHeight: 125,
     borderRadius: 8,
     marginLeft: 8,
   },

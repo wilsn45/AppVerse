@@ -46,15 +46,22 @@
       }
 
       try {
-        // Reference to the Chapters subcollection inside the specified Course
-        const chaptersCollectionRef = collection(db, "Courses", courseId, "Chapters");
+         const chaptersCollectionRef = collection(db, "Courses", courseId, "Chapters");
+            const docRef = await addDoc(chaptersCollectionRef, data);
 
-        const docRef = await addDoc(chaptersCollectionRef, data);
-        alert("🎉 Chapter added successfully!\nChapter ID: " + docRef.id);
-      } catch (error) {
-        console.error("❌ Error adding chapter:", error);
-        alert("Failed to add chapter.");
-      }
+         // Show success message
+         const successDiv = document.getElementById("successMessage");
+        successDiv.textContent = `✅ Chapter added successfully! Chapter ID: ${docRef.id}`;
+
+        // Auto-fill the prevChapterId input with the created chapter ID
+        document.getElementById("prevChapterId").value = docRef.id;
+
+    } catch (error) {
+         console.error("❌ Error adding chapter:", error);
+         const errorDiv = document.getElementById("successMessage");
+        errorDiv.style.color = "red";
+        errorDiv.textContent = "❌ Failed to add chapter.";
+    }
     };
   </script>
 
@@ -155,6 +162,8 @@
     <input type="text" id="prevChapterId" />
 
     <button onclick="addChapter()">Add Chapter</button>
+    <div id="successMessage" style="margin-top: 20px; color: green; font-weight: bold;"></div>
+
   </div>
 </body>
 </html>
