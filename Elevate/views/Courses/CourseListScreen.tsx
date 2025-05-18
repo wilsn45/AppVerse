@@ -176,7 +176,7 @@ const handleCardPress = (course) => {
           <Text
         style={[
           styles.metaText,
-          { color: item.isLiveCourse ? theme.colors.red : theme.colors.greyDark1, fontWeight: 'bold' },
+          { color: item.isLiveCourse ? theme.colors.primaryTheme : theme.colors.greyDark1, fontWeight: 'bold' },
         ]}
       >
         {item.isLiveCourse ? 'LIVE' : `${item.duration}`}

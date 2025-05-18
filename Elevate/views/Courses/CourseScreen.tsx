@@ -141,7 +141,7 @@ return (
       <Text
         style={[
           styles.metaText,
-          { color: course.isLiveCourse ? theme.colors.red : theme.colors.greyDark1, fontWeight: 'bold' },
+          { color: course.isLiveCourse ? theme.colors.primaryTheme : theme.colors.greyDark1, fontWeight: 'bold' },
         ]}
       >
         {course.isLiveCourse ? 'LIVE' : `${chaptereList.length} Chapters`}

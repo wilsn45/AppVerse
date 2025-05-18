@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Chapter to Course</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, doc, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAcgNR-FkdJWxuXarpjrHG6gLWuAWveLjU",
+      authDomain: "elevate-a6256.firebaseapp.com",
+      projectId: "elevate-a6256",
+      storageBucket: "elevate-a6256.appspot.com",
+      messagingSenderId: "683687842608",
+      appId: "1:683687842608:web:d7b3703cf9d80ddb9f2ef5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.addChapter = async function () {
+      const courseId = document.getElementById("courseId").value.trim();
+      if (!courseId) {
+        alert("Please enter Course ID");
+        return;
+      }
+
+      const data = {
+        title: document.getElementById("title").value.trim(),
+        description: document.getElementById("description").value.trim(),
+        thumbnail: document.getElementById("thumbnail").value.trim(),
+        index: Number(document.getElementById("index").value.trim()),
+        isLive: document.getElementById("isLive").checked,
+        isLastChapter: document.getElementById("isLastChapter").checked,
+        isFirstChapter: document.getElementById("isFirstChapter").checked,
+        nextChapterId: document.getElementById("nextChapterId").value.trim(),
+        prevChapterId: document.getElementById("prevChapterId").value.trim()
+      };
+
+      // Basic validation
+      if (!data.title || isNaN(data.index)) {
+        alert("Please fill Title and valid Index");
+        return;
+      }
+
+      try {
+        // Reference to the Chapters subcollection inside the specified Course
+        const chaptersCollectionRef = collection(db, "Courses", courseId, "Chapters");
+
+        const docRef = await addDoc(chaptersCollectionRef, data);
+        alert("🎉 Chapter added successfully!\nChapter ID: " + docRef.id);
+      } catch (error) {
+        console.error("❌ Error adding chapter:", error);
+        alert("Failed to add chapter.");
+      }
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      border-top: 6px solid #DD4F5A;
+    }
+
+    h2 {
+      color: #37817B;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 8px;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      background-color: #DD4F5A;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #c23f4a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Add Chapter to Course</h2>
+
+    <label>Course ID</label>
+    <input type="text" id="courseId" placeholder="Enter Course Document ID" />
+
+    <label>Title</label>
+    <input type="text" id="title" />
+
+    <label>Description</label>
+    <input type="text" id="description" />
+
+    <label>Thumbnail URL</label>
+    <input type="text" id="thumbnail" />
+
+    <label>Index (integer)</label>
+    <input type="number" id="index" />
+
+    <label><input type="checkbox" id="isLive" checked /> Is Live</label>
+    <label><input type="checkbox" id="isLastChapter" /> Is Last Chapter</label>
+    <label><input type="checkbox" id="isFirstChapter" /> Is First Chapter</label>
+
+    <label>Next Chapter ID</label>
+    <input type="text" id="nextChapterId" />
+
+    <label>Previous Chapter ID</label>
+    <input type="text" id="prevChapterId" />
+
+    <button onclick="addChapter()">Add Chapter</button>
+  </div>
+</body>
+</html>

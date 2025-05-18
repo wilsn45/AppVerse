@@ -244,7 +244,7 @@ const HomeScreen = () => {
                   </View>
         <Text style={styles.readTimeText}>
             {item.isLiveCourse ? (
-                <Text style={{ color: theme.colors.red, fontWeight: 'bold' }}>LIVE</Text>
+                <Text style={{ color: theme.colors.primaryTheme, fontWeight: 'bold' }}>LIVE</Text>
          ) : (
               item.duration
            )}

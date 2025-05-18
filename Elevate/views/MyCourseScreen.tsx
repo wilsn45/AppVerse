@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   
   liveText: {
     fontSize: 12,
-    color: theme.colors.red,
+    color: theme.colors.primaryTheme,
     fontWeight: 'bold',
     marginTop: 4,
   },
