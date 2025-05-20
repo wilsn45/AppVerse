@@ -38,7 +38,7 @@ const TopicsScreen = () => {
         // Map the fetched documents to include doc.id and category name
         const topicList  = await ContentHandler.fetchTopics();
 
-        console.log("Fetched topicList:", topicList)
+        //console.log("Fetched topicList:", topicList)
         setTopicList(topicList)
         analytics.sendTopicListPresentedEvent()
     } catch (error) {

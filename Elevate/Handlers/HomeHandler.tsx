@@ -25,7 +25,7 @@ export class HomeHandler {
               }))
               .sort((a, b) => a.index - b.index);
 
-            console.log("categories -->", categories)
+            //console.log("categories -->", categories)
 
           const Home = {};
 
@@ -34,7 +34,7 @@ export class HomeHandler {
               const colRef = firestore().collection(`Home/${collectionName}/List`);
               const snapshot = await colRef.get();
 
-              console.log("snapshot -->", snapshot)
+             // console.log("snapshot -->", snapshot)
 
               if (collectionName === 'LiveCategories') {
                 Home["Categories"] = snapshot.docs.map(doc => 

@@ -53,7 +53,7 @@ const HomeScreen = () => {
         const liveCategories = homeData['Categories']
 
         if (!liveCategories || liveCategories.length === 0) {
-          console.log("liveCategories is empty. Exiting function.");
+         // console.log("liveCategories is empty. Exiting function.");
           return; 
         }
 
@@ -103,7 +103,7 @@ const HomeScreen = () => {
   const reloadSectionData = async () => {
     const newSectionDataArray = [];
     const newSavedCards = new Map();
-    console.log("Reloaded Home Page")
+    //console.log("Reloaded Home Page")
     const savedCourses = await SaveHandler.getSavedCourses();
     const lastFive = savedCourses.slice(-5).reverse();
 
@@ -281,7 +281,7 @@ const HomeScreen = () => {
 
   const handleCardPress = (course) => {
     analytics.sendContentOpenEvent(course.categoryId, course.id);
-    console.log("Course", course)
+    //("Course", course)
     navigation.navigate('CourseScreen', { course: course });
   };
 
@@ -293,8 +293,13 @@ const HomeScreen = () => {
   const handleSellAll = (category) => {
     if (category == "Recommended") {
       navigation.navigate('CourseListScreen', { topic: '', showTopRated: false, showRecommended: true });
-    } else {
+    } else if (category == "Top Rated") {
        navigation.navigate('CourseListScreen', { topic: '', showTopRated: true, showRecommended: false  });
+    }  else  if (category == "Recently Saved") {
+      console.log('Recently Saved Clicked')
+       navigation.navigate('My Course', {targetTab: 'saved'});
+    } else {
+      navigation.navigate('My Course', {targetTab: 'in_progress'});
     }
   };
 
@@ -342,7 +347,6 @@ const HomeScreen = () => {
           <View key={index}>
             <View style={styles.ViewAll}>
              <Text style={styles.horizontalListTitle}>{section.title}</Text>
-          {(section.title === 'Recommended' || section.title === 'Top Rated') && (
               <TouchableOpacity
                  style={styles.seeAllView}
                  onPress={() => handleSellAll(section.title)}>
@@ -353,7 +357,6 @@ const HomeScreen = () => {
                   color={theme.colors.secondaryTheme}
                    />
                  </TouchableOpacity>
-           )}
         </View>
            
             

@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   contentTitleView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 20,
     gap: 16
   },
   
@@ -291,7 +291,9 @@ const styles = StyleSheet.create({
   courseDescription: {
     fontSize: 16,
     color: theme.colors.greyDark2,
-    marginBottom: 16,
+    marginBottom: 20,
+    marginTop: 12,
+    lineHeight: 20,
     fontWeight: '400',
   },
   courseMetaRow: {

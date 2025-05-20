@@ -11,6 +11,8 @@ import theme from '../Theme/Theme';
 import { SaveAnalytics } from '../Analytics/SaveAnalytics';
 import { Swipeable } from 'react-native-gesture-handler';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import {  useRoute } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 const MyCourseScreen = () => {
   const [allSavedCourses, setAllSavedCourses] = useState([]);
@@ -21,6 +23,9 @@ const MyCourseScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const analytics = new SaveAnalytics()
   const [selectedTab, setSelectedTab] = useState('Saved');
+
+  const route = useRoute();
+    let { targetTab } = route.params;
 
 
   const fetchSavedCourses = async () => {
@@ -34,8 +39,8 @@ const MyCourseScreen = () => {
           const completedChapters = await OngoingCourseHandler.getCompletedChapters(course.id);
           const chapterCount = course.chaptetCount || 0; // default to 0 if not present
           const progress = `${completedChapters.length}/${chapterCount}`;
-          console.log('Fetched chapterCount', chapterCount)
-          console.log('Fetched progress', progress)
+          //console.log('Fetched chapterCount', chapterCount)
+          //console.log('Fetched progress', progress)
           return { ...course, progress };
         }));
         return updatedCourses;
@@ -54,6 +59,18 @@ const MyCourseScreen = () => {
       console.error('Error fetching saved cards:', error);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.targetTab) {
+        if (route.params.targetTab === 'saved') {
+         setSelectedTab('Saved')
+        } else if (route.params.targetTab === 'in_progress') {
+          setSelectedTab('In Progress');
+        }
+      }
+    }, [route.params?.targetTab])
+  );
 
   useFocusEffect(
     React.useCallback(() => {

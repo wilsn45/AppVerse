@@ -85,7 +85,7 @@ const loadCourseSaveStatus = async () => {
 
 const handleSave = async (course) => {
   const isSaved = savedCourses.get(course.id);
-  console.log('isSaved', isSaved);
+ // console.log('isSaved', isSaved);
 
   // Send analytics event
   analytics.sendCourseSavedEvent(isSaved, course.id);

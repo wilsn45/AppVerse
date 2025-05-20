@@ -41,15 +41,15 @@ const ChapterScreen = () => {
       const doc = await ContentHandler.fetchChapter(currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
 
-      console.log("current chapter", currentChapter)
+      //console.log("current chapter", currentChapter)
 
       const nextChapter = await ContentHandler.fetchNextChapter(course.id, currentChapter.id)
       setNextChapter(nextChapter)
-      console.log("next chapter", nextChapter)
+      //console.log("next chapter", nextChapter)
 
       const prevChapter = await ContentHandler.fetchPrevChapter(course.id, currentChapter.id)
       setPrevChapter(prevChapter)
-      console.log("Prev chapter", prevChapter)
+      //console.log("Prev chapter", prevChapter)
 
       let isCourseOngoing  = await OngoingCourseHandler.isCourseOngoing(course.id)
       setIsOngoingCourse(isCourseOngoing)
@@ -93,7 +93,7 @@ const ChapterScreen = () => {
   };
 
   const onStartCourse = async() => {
-    console.log('Start Course pressed');
+    //console.log('Start Course pressed');
     await OngoingCourseHandler.saveOngoingCourse(course)
     await CompletedCourseHandler.removeCompletedCourse(course.id)
     setIsOngoingCourse(true)
@@ -113,7 +113,7 @@ const ChapterScreen = () => {
   };
   
   const onComplete = () => {
-    console.log('Completed pressed');
+    //console.log('Completed pressed');
     OngoingCourseHandler.removeOngoingCourse(course.id)
     CompletedCourseHandler.completeCourse(course)
     OngoingCourseHandler.saveChapter(course.id,currentChapter.id)
