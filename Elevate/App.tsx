@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -48,7 +48,7 @@ const TabNavigator = () => {
       <Tab.Screen
         name="Home" // Changed name to avoid conflict
         component={HomeScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: false}}
       />
       <Tab.Screen
         name="My Course"
@@ -102,13 +102,16 @@ const App = () => {
         <Stack.Screen
             name="LetsStartScreen"
             component={LetsStartScreen}
-            options={{ headerShown: false }}
+            options={{ 
+             headerShown: false }}
         />
 
          <Stack.Screen
           name="HomeTabNavigator" // HomeTabNavigator will always be available
           component={TabNavigator}
-          options={{ headerShown: false }}
+          options={{ 
+             ...TransitionPresets.ModalSlideFromBottomIOS,
+            headerShown: false }}
         />
 
       

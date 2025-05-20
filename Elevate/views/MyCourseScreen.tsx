@@ -25,7 +25,6 @@ const MyCourseScreen = () => {
   const [selectedTab, setSelectedTab] = useState('Saved');
 
   const route = useRoute();
-    let { targetTab } = route.params;
 
 
   const fetchSavedCourses = async () => {
