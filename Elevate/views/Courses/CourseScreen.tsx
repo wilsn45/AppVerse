@@ -138,6 +138,9 @@ return (
     <Text style={styles.courseDescription}>{course.description}</Text>
     <View style={styles.courseMetaRow}>
       <Text style={styles.metaText}>⭐ {course.rating ?? '4.5'}</Text>
+      <View style={styles.tag}>
+            <Text style={styles.tagText}>{course.topic}</Text>
+        </View>
       <Text style={styles.metaText}>⏱️ {course.duration ?? '25 Min'}</Text>
       <Text
         style={[
@@ -178,9 +181,9 @@ return (
        <Text style={styles.chapterDescription}>{item.description}</Text>
       </View>
      
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
          {item.completed  && (
-          <Ionicons name="checkmark-circle" size={16} color="green" />
+          <Ionicons name="checkmark-done-outline" size={16} color={theme.colors.secondaryTheme} />
         )}
         <Text style={styles.chapterDuration}>{item.duration ?? '15 min'}</Text>
       </View>
@@ -240,7 +243,7 @@ const styles = StyleSheet.create({
   },
   courseInfoBox: {
     backgroundColor: theme.colors.white,
-    padding: 16,
+    padding: 8,
     margin: 16,
     borderRadius: 12,
     borderWidth: 2,
@@ -250,6 +253,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start', // or 'center' if you want the image vertically centered
     padding: 4,
+  },
+  tag: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  
+  tagText: {
+    fontSize: 12,
+    color: '#333',
   },
   
   courseInfoLeft: {
@@ -262,6 +276,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     gap: 16
   },
+  
   courseThumbnail: {
     width: 100,
     height: 100,
@@ -282,13 +297,14 @@ const styles = StyleSheet.create({
     gap: 4
   },
   courseDescription: {
-    fontSize: 14,
+    fontSize: 16,
     color: theme.colors.greyDark2,
-    marginBottom: 12,
+    marginBottom: 16,
+    fontWeight: '400',
   },
   courseMetaRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 14,
     alignItems: 'center',
   },
   metaText: {
@@ -298,12 +314,14 @@ const styles = StyleSheet.create({
   chapterList: {
     paddingLeft: 16,
     paddingBottom: 100,
+    paddingTop: 16
   },
   chapterItem: {
     flexDirection: 'row',
     backgroundColor:  theme.colors.white,
-    marginBottom: 12,
-    paddingLeft: 12,
+    paddingTop: 8,
+    marginBottom: 16,
+    paddingHorizontal: 12,
     marginRight: 12,
     borderRadius: 10,
     borderWidth: 2,
@@ -316,16 +334,19 @@ const styles = StyleSheet.create({
     paddingRight: 8,
   },
   chapterTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.black,
-    marginBottom: 4,
-    marginTop: 4
+    marginBottom: 12,
+    marginTop: 4,
   },
   chapterDescription: {
-    fontSize: 13,
+    fontSize: 14,
     color: theme.colors.greyDark2,
     marginBottom: 8,
+    fontWeight: '400',
+    lineHeight: 18
+   // fontFamily: 'Courier'
     
   },
   chapterDuration: {

@@ -24,7 +24,7 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 const CourseListScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { topic} = route.params;
+  const { topic, showTopRated, showRecommended} = route.params;
   const [courseList, setCourseList] = useState([]);
   const [savedCourses, setSavedCourses] = useState<Map<string, boolean>>(new Map());
   
@@ -41,7 +41,15 @@ const CourseListScreen = () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
-        const coursesList  = await ContentHandler.fetchCourseByTopic(topic);
+        let coursesList = [];
+        if (showTopRated) {
+              coursesList = await ContentHandler.fetchTopRatedCourse();
+          } else if (showRecommended) {
+              coursesList = await ContentHandler.fetchRecommendedCourse();
+         } else {
+             coursesList = await ContentHandler.fetchCourseByTopic(topic);
+         }
+         
 
        // console.log("Fetched ContentList:", coursesList)
         setCourseList(coursesList)
@@ -54,7 +62,7 @@ const CourseListScreen = () => {
 };
 
 useEffect(() => {
-  if (courseList.length > 0) {
+   if (courseList && courseList.length > 0) {
     loadCourseSaveStatus();
   }
 }, [courseList]);

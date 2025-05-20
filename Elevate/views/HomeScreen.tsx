@@ -237,6 +237,7 @@ const HomeScreen = () => {
         numberOfLines={3} 
         ellipsizeMode="tail" 
         >{item.title}</Text>
+        
         <View>
         <View style={styles.courseInfo}>
         <View style={styles.tag}>
@@ -284,6 +285,19 @@ const HomeScreen = () => {
     navigation.navigate('CourseScreen', { course: course });
   };
 
+   const handleSellAllTopics = () => {
+    navigation.navigate('TopicsScreen');
+  };
+
+
+  const handleSellAll = (category) => {
+    if (category == "Recommended") {
+      navigation.navigate('CourseListScreen', { topic: '', showTopRated: true, showRecommended: false });
+    } else {
+       navigation.navigate('CourseListScreen', { topic: '', showTopRated: false, showRecommended: true  });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       {sectionDataModel.length === 0 ? (
@@ -293,8 +307,17 @@ const HomeScreen = () => {
     ) : (
       <ScrollView contentContainerStyle={styles.scrollViewContainer} showsVerticalScrollIndicator={false}>
         <Text style={styles.userNameLabel}>Hi, There!</Text>
-
-        <Text style={styles.horizontalListTitle}>Categories</Text>
+       <View style={styles.ViewAll}>
+            <Text style={styles.horizontalListTitle}>Categories</Text>
+          <TouchableOpacity style={styles.seeAllView} onPress={() => handleSellAllTopics()}>
+                 <Text style={styles.seeAllButton}>See All </Text>
+                  <Ionicons
+                  name={'chevron-forward'}
+                  size={16}
+                 color={theme.colors.secondaryTheme}/>
+          </TouchableOpacity>
+      </View>
+        
         <FlatList
           data={groupCategories()}
           renderItem={({ item }) => (
@@ -317,7 +340,23 @@ const HomeScreen = () => {
 
         {sectionDataModel.map((section, index) => (
           <View key={index}>
-            <Text style={styles.horizontalListTitle}>{section.title}</Text>
+            <View style={styles.ViewAll}>
+             <Text style={styles.horizontalListTitle}>{section.title}</Text>
+          {(section.title === 'Recommended' || section.title === 'Top Rated') && (
+              <TouchableOpacity
+                 style={styles.seeAllView}
+                 onPress={() => handleSellAll(section.title)}>
+                <Text style={styles.seeAllButton}>See All</Text>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={16}
+                  color={theme.colors.secondaryTheme}
+                   />
+                 </TouchableOpacity>
+           )}
+        </View>
+           
+            
             <FlatList
               data={section.data}
               renderItem={renderHorizontalScrollList}
@@ -368,6 +407,24 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     textAlign: 'left',
   },
+  ViewAll: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginTop: 24,
+    marginBottom: 12,
+  },
+  seeAllButton: {
+    fontSize: 16,
+    color: theme.colors.secondaryTheme,
+    fontWeight: '500',
+  },
+  seeAllView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2
+  },
   categoryLabel: {
     fontSize: 20,
     marginVertical: 10,
@@ -412,8 +469,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginVertical: 10,
     fontWeight: '800',
-    color: theme.colors.blackLight1,
-    paddingLeft: 20, 
+    color: theme.colors.blackLight1, 
     //fontFamily: 'Roboto-MediumItalic'
   },
   horizontalListContainer: {

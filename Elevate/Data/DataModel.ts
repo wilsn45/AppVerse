@@ -3,7 +3,15 @@ export const taskType: TaskType[] = [
     { id: 2, title: 'Goal' }
   ];
 
-  ChapterData
+   export class TopicData {
+    constructor(id, title,index, thumbnail,isLive) {
+      this.id = id;
+      this.title = title;
+      this.index = index;
+      this.thumbnail = thumbnail
+      this.isLive = isLive
+    }
+  }
 
   export class ChapterData {
     constructor(id, title, description, thumbnail, duration,index,isLive, isLastChapter, isFirstChapter, nextChapterId, prevChapterId) {

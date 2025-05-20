@@ -5,7 +5,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from './views/HomeScreen';
-import CourseListScreen from './views/Courses/CourseListScreen.tsx';
+import CourseListScreen from './views/Courses/CourseListScreen.tsx'; 
+import TopicsScreen from './views/Courses/TopicsScreen.tsx'; 
 import CourseScreen from './views/Courses/CourseScreen.tsx';
 import ChapterScreen from './views/Chapter/ChapterScreen.tsx';
 import MyCourseScreen from './views/MyCourseScreen.tsx';
@@ -122,6 +123,20 @@ const App = () => {
             headerTintColor: theme.colors.black,
           }}
         />
+
+         {/* Other screens */}
+        <Stack.Screen
+          name="TopicsScreen"
+          component={TopicsScreen}
+          options={{
+            headerShown: true,
+            title: 'Topics',
+            headerBackTitle: '',
+            headerTintColor: theme.colors.black,
+          }}
+        />
+
+        
         <Stack.Screen
           name="CourseScreen"
           component={CourseScreen}

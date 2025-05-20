@@ -249,6 +249,8 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.secondaryTheme,
   },
   completeCourseButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: theme.colors.primaryTheme,
   },
   greyButton: {

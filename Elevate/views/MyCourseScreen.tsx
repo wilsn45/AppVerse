@@ -265,9 +265,10 @@ const styles = StyleSheet.create({
   justifyContent: 'center',
   alignItems: 'center',
   width: 75,
-  height: '90%',
+  height: '100%',
   borderRadius: 8,
-  marginVertical: 10
+  borderTopRightRadius: 8,
+  borderBottomRightRadius: 8,
 },
   leftCardView: {
     flex: 1,
