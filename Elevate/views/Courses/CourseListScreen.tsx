@@ -265,15 +265,15 @@ const styles = StyleSheet.create({
   },
   
   tag: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
+    backgroundColor: theme.colors.greyLight2,
+    borderRadius: 4,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 4,
   },
   
   tagText: {
     fontSize: 12,
-    color: '#333',
+    color: theme.colors.greyDark,
   },
   
   durationText: {

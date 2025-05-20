@@ -206,8 +206,8 @@ const MyCourseScreen = () => {
         </Text>
 
         <View style={styles.leftBottomView}>
-          <View style={styles.tagContainer}>
-            <Text style={styles.cardCategoryText}>{item.topic}</Text>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>{item.topic}</Text>
           </View>
 
           {item.isLiveCourse ? (
@@ -310,16 +310,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: theme.colors.greyDark,
   },
-  
-  cardCategoryText: {
-    fontSize: 12,
-    color: '#555',
-    backgroundColor: '#e0e0e0',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+  tag: {
+    backgroundColor: theme.colors.greyLight2,
     borderRadius: 4,
-    alignSelf: 'flex-start',
-    marginTop: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  
+  tagText: {
+    fontSize: 12,
+    color: theme.colors.greyDark,
   },
   
   cardMetaText: {

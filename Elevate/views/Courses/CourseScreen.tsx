@@ -250,15 +250,15 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   tag: {
-    backgroundColor: '#f0f0f0',
+   backgroundColor: theme.colors.greyLight2,
     borderRadius: 4,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 4,
   },
   
   tagText: {
-    fontSize: 12,
-    color: '#333',
+   fontSize: 12,
+    color: theme.colors.greyDark,
   },
   
   courseInfoLeft: {

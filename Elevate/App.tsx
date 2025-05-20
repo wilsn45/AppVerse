@@ -30,13 +30,9 @@ const TabNavigator = () => {
             //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
           } else if (route.name === 'My Course') {
             iconName = focused ? 'bookmark' : 'bookmark-outline';
-            //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
-          } else if (route.name === 'Tasks') {
-            iconName = focused ? 'checkbox-marked' : 'checkbox-outline';
-            //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
-          }
+          } 
+          return <Ionicons  name={iconName} size={size}  color={color}  />
 
-          return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: theme.colors.black,
         tabBarInactiveTintColor: theme.colors.black,
