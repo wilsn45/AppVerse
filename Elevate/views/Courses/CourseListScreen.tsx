@@ -127,8 +127,16 @@ const handleScroll = (event) => {
 
 useFocusEffect(
   useCallback(() => {
+    let screenTitle = topic;
+
+    if (showRecommended) {
+      screenTitle = 'Recommended';
+    } else if (showTopRated) {
+      screenTitle = 'Top Rated';
+    }
+
     navigation.setOptions({
-      title: topic,
+      title: screenTitle,
     });
     fetchContentList()
   }, [ navigation, topic])

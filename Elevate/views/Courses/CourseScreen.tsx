@@ -175,11 +175,11 @@ return (
     style={styles.chapterItem}
     onPress={() => onChapterPress(item)}
   >
-    <View style={styles.chapterLeft}>
-      <View style={styles.chapterTitleView}>
+
+     
         <Text style={styles.chapterTitle}>{item.title}</Text>
        <Text style={styles.chapterDescription}>{item.description}</Text>
-      </View>
+     
      
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
          {item.completed  && (
@@ -187,12 +187,7 @@ return (
         )}
         <Text style={styles.chapterDuration}>{item.duration ?? '15 min'}</Text>
       </View>
-    </View>
-    <Image
-      source={{ uri: item.thumbnail }}
-      style={styles.chapterThumbnail}
-      resizeMode="cover"
-    />
+
   </TouchableOpacity>
         )}
         contentContainerStyle={styles.chapterList}
@@ -293,9 +288,6 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     width: '70%'
   },
-  chapterTitleView: {
-    gap: 4
-  },
   courseDescription: {
     fontSize: 16,
     color: theme.colors.greyDark2,
@@ -312,26 +304,18 @@ const styles = StyleSheet.create({
     color: theme.colors.greyDark1,
   },
   chapterList: {
-    paddingLeft: 16,
     paddingBottom: 100,
     paddingTop: 16
   },
   chapterItem: {
-    flexDirection: 'row',
     backgroundColor:  theme.colors.white,
-    paddingTop: 8,
+    padding: 16,
+    marginHorizontal: 16,
     marginBottom: 16,
-    paddingHorizontal: 12,
-    marginRight: 12,
     borderRadius: 10,
     borderWidth: 2,
     borderColor: theme.colors.greyLight2,
-    alignItems: 'center',
-  },
-  chapterLeft: {
-    flex: 1,
-    justifyContent: 'space-between',
-    paddingRight: 8,
+    alignItems: 'flex-start',
   },
   chapterTitle: {
     fontSize: 18,

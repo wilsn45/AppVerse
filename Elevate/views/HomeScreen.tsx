@@ -292,9 +292,9 @@ const HomeScreen = () => {
 
   const handleSellAll = (category) => {
     if (category == "Recommended") {
-      navigation.navigate('CourseListScreen', { topic: '', showTopRated: true, showRecommended: false });
+      navigation.navigate('CourseListScreen', { topic: '', showTopRated: false, showRecommended: true });
     } else {
-       navigation.navigate('CourseListScreen', { topic: '', showTopRated: false, showRecommended: true  });
+       navigation.navigate('CourseListScreen', { topic: '', showTopRated: true, showRecommended: false  });
     }
   };
 
