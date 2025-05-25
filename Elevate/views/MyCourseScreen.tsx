@@ -212,7 +212,6 @@ const MyCourseScreen = () => {
       accessibilityRole="button"
     >
       <View style={styles.leftCardView}>
-        <Text style={styles.cardTitle} numberOfLines={3} ellipsizeMode="tail">
         <View style={{ flexDirection: 'row', gap: 2}}>
            <Text style={styles.cardTitle} numberOfLines={3} ellipsizeMode="tail">
           {item.title}
