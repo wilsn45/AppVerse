@@ -6,6 +6,7 @@ import { CategoryHandler } from '../Handlers/CategoryHandler';
 import { SaveHandler } from '../Handlers/SaveHandler';
 import { CompletedCourseHandler } from '../Handlers/CompletedCourseHandler';
 import { OngoingCourseHandler } from '../Handlers/OngoingCourseHandler';
+import { NotificationHandler } from '../Handlers/NotificationHandler';
 import DropDownList from './Common/DropDownList';
 import theme from '../Theme/Theme';
 import { SaveAnalytics } from '../Analytics/SaveAnalytics';
@@ -18,6 +19,7 @@ const MyCourseScreen = () => {
   const [allSavedCourses, setAllSavedCourses] = useState([]);
   const [ongoingCourses, setOngoingCourses] = useState([]);
   const [completedCourses, setCompletedCourses] = useState([]);
+  const [notificationCourse, setNotificationCourse] = useState([]);
   const [searchedCards, setSearchedCards] = useState([]);
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,6 +34,12 @@ const MyCourseScreen = () => {
       const savedCourses = await SaveHandler.getSavedCourses();
       const ongoingCourses = await OngoingCourseHandler.getOngoingingCourses()
       const completedCourses = await CompletedCourseHandler.getCompletedCourses()
+      const notifyCourse = await NotificationHandler.getNewNotificationCourse()
+      const filteredNotifyCourses = notifyCourse.filter(id =>
+              ongoingCourses.some(course => course.id === id)
+      );
+      setNotificationCourse(filteredNotifyCourses)
+      console.log("Notify Course", filteredNotifyCourses)
 
       const appendProgressToCourses = async (courses) => {
         const updatedCourses = await Promise.all(courses.map(async (course) => {
@@ -157,6 +165,9 @@ const MyCourseScreen = () => {
         accessibilityRole="button"
         accessibilityLabel={`View ${tab} courses`}
       >
+        {notificationCourse && notificationCourse.length > 0 && tab == 'In Progress' && (
+           <View style={styles.redDot} />
+        )}
         <Text
           style={[
             styles.tabItemText,
@@ -202,8 +213,16 @@ const MyCourseScreen = () => {
     >
       <View style={styles.leftCardView}>
         <Text style={styles.cardTitle} numberOfLines={3} ellipsizeMode="tail">
+        <View style={{ flexDirection: 'row', gap: 2}}>
+           <Text style={styles.cardTitle} numberOfLines={3} ellipsizeMode="tail">
           {item.title}
         </Text>
+        {selectedTab === 'In Progress' &&
+        notificationCourse.includes(item.id) && (
+          <View style={styles.redDotSmall} />
+      )}
+        </View>
+       
 
         <View style={styles.leftBottomView}>
           <View style={styles.tag}>
@@ -309,6 +328,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: theme.colors.greyDark,
+     fontFamily: 'Roboto-Medium',
   },
   tag: {
     backgroundColor: theme.colors.greyLight2,
@@ -320,20 +340,43 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     color: theme.colors.greyDark,
+     fontFamily: 'Roboto-Medium',
   },
   
   cardMetaText: {
     fontSize: 12,
     color: '#888',
     marginTop: 4,
+     fontFamily: 'Roboto-Medium',
   },
   
   liveText: {
     fontSize: 12,
-    color: theme.colors.primaryTheme,
+    color: theme.colors.red2,
     fontWeight: 'bold',
     marginTop: 4,
+     fontFamily: 'Roboto-Medium',
   },
+  redDot: {
+  position: 'absolute',
+  top: 4,
+  right: 4,
+  width: 8,
+  height: 8,
+  borderRadius: 4,
+  backgroundColor: 'red',
+  zIndex: 1,
+},
+redDotSmall: {
+  position: 'absolute',
+  top: 4,
+  right: 16,
+  width: 6,
+  height: 6,
+  borderRadius: 3,
+  backgroundColor: 'red',
+  zIndex: 1,
+},
   
   tabItem: {
     flex: 1, // This divides all items equally
@@ -347,6 +390,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: theme.colors.greyDark1,
+    fontFamily: 'Roboto-Medium',
   },
   
   tabItemTextSelected: {
@@ -383,6 +427,7 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
     color: '#333',
+     fontFamily: 'Roboto-Medium',
   },
   clearButton: {
     padding: 5,
@@ -408,6 +453,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
     color: theme.colors.greyLight3,
+     fontFamily: 'Roboto-Medium',
   },
   leftBottomView: {
     flexDirection: 'row',

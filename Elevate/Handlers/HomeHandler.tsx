@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import { CategoryHandler } from './CategoryHandler';
 import { CourseData, CategoryData } from '../Data/DataModel';
+import { NotificationAPIClient } from './NotificationAPIClient';
+
 
 
 export class HomeHandler {
@@ -64,6 +66,7 @@ export class HomeHandler {
           // Save LiveCategories using CategoryHandler
           await this.setHomeData(Home)
           await CategoryHandler.setLiveCategory(Home["Categories"])
+          await NotificationAPIClient.fetchNewNotifications()
           return true 
       } catch (error) {
           console.error('Error fetching data:', error);

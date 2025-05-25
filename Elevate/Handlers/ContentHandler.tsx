@@ -1,5 +1,4 @@
 import firestore from '@react-native-firebase/firestore';
-import { CategoryHandler } from './CategoryHandler';
 import { CourseData, ChapterData, TopicData } from '../Data/DataModel';
 
 export class ContentHandler {

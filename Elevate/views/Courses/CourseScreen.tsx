@@ -137,7 +137,14 @@ return (
    
     <Text style={styles.courseDescription}>{course.description}</Text>
     <View style={styles.courseMetaRow}>
-      <Text style={styles.metaText}>⭐ {course.rating ?? '4.5'}</Text>
+      <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center'}}>
+          <Ionicons
+                  name={'star'}
+                  size={16}
+                  color={theme.colors.gold}
+                />
+          <Text style={styles.metaText}> {course.rating ?? '4.5'}</Text>
+        </View>
       <View style={styles.tag}>
             <Text style={styles.tagText}>{course.topic}</Text>
         </View>
@@ -145,7 +152,7 @@ return (
       <Text
         style={[
           styles.metaText,
-          { color: course.isLiveCourse ? theme.colors.primaryTheme : theme.colors.greyDark1, fontWeight: 'bold' },
+          { color: course.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold' },
         ]}
       >
         {course.isLiveCourse ? 'LIVE' : `${chaptereList.length} Chapters`}

@@ -245,12 +245,20 @@ const HomeScreen = () => {
                   </View>
         <Text style={styles.readTimeText}>
             {item.isLiveCourse ? (
-                <Text style={{ color: theme.colors.primaryTheme, fontWeight: 'bold' }}>LIVE</Text>
+                <Text style={{ color: theme.colors.red2, fontWeight: 'bold', fontFamily: 'Roboto-Medium' }}>LIVE</Text>
          ) : (
               item.duration
            )}
         </Text>
-         <Text style={styles.ratingText}>⭐ {item.rating ?? '4.5'}</Text>
+        <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center'}}>
+          <Ionicons
+                  name={'star'}
+                  size={16}
+                  color={theme.colors.gold}
+                />
+          <Text style={styles.ratingText}> {item.rating ?? '4.5'}</Text>
+        </View>
+         
         </View>
         
         </View>
@@ -390,6 +398,7 @@ const styles = StyleSheet.create({
   emptyDataLabel: {
     fontSize: 22,
     fontWeight: '600',
+    fontFamily: 'Roboto-Medium',
     color: theme.colors.greyLight3
   },
   container: {
@@ -401,6 +410,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingLeft: 20,
     textAlign: 'left',
+    fontFamily: 'Roboto-Medium'
   },
   userNameLabel: {
     fontSize: 20,
@@ -409,6 +419,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingVertical: 15,
     textAlign: 'left',
+    fontFamily: 'Roboto-Medium'
   },
   ViewAll: {
     flexDirection: 'row',
@@ -422,6 +433,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.colors.secondaryTheme,
     fontWeight: '500',
+    fontFamily: 'Roboto-Medium'
   },
   seeAllView: {
     flexDirection: 'row',
@@ -434,6 +446,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: theme.colors.blackLight1,
     paddingLeft: 20, 
+    fontFamily: 'Roboto-Medium'
   },
   contentContainer: {
     flexGrow: 1,
@@ -460,6 +473,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     textAlign: 'center',
+    fontFamily: 'Roboto-Medium'
   },
   categoryTileImage: {
     borderTopLeftRadius: 10,
@@ -473,6 +487,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontWeight: '800',
     color: theme.colors.blackLight1, 
+    fontFamily: 'Roboto-Medium'
     //fontFamily: 'Roboto-MediumItalic'
   },
   horizontalListContainer: {
@@ -504,15 +519,18 @@ const styles = StyleSheet.create({
     height: 80,
     textAlign: 'left', 
     maxWidth: '100%',
+    fontFamily: 'Roboto-Medium'
   },
   categoryText: {
     color: theme.colors.greyDark1,
     fontWeight: '400',
     fontSize: 12,
+    fontFamily: 'Roboto-Medium'
   },
   readTimeText: {
     color: theme.colors.greyDark2,
     fontSize: 11,
+    fontFamily: 'Roboto-Medium'
   },
   rightSection: {
    //backgroundColor: 'grey',
@@ -539,6 +557,7 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: 12,
     color: '#777',
+    fontFamily: 'Roboto-Medium'
   },
   courseInfo: {
     flexDirection: 'row',
@@ -554,6 +573,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     color: '#333',
+    fontFamily: 'Roboto-Medium'
   },
 });
 

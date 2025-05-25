@@ -192,12 +192,20 @@ const handleCardPress = (course) => {
           <Text
         style={[
           styles.metaText,
-          { color: item.isLiveCourse ? theme.colors.primaryTheme : theme.colors.greyDark1, fontWeight: 'bold' },
+          { color: item.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold',fontFamily: 'Roboto-Medium', },
         ]}
       >
         {item.isLiveCourse ? 'LIVE' : `${item.duration}`}
       </Text>
-          <Text style={styles.ratingText}>⭐ {item.rating ?? '4.5'}</Text>
+        <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center'}}>
+          <Ionicons
+                  name={'star'}
+                  size={16}
+                  color={theme.colors.gold}
+                />
+          <Text style={styles.ratingText}> {item.rating ?? '4.5'}</Text>
+        </View>
+    
         </View>
 
         <TouchableOpacity
@@ -249,7 +257,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '500',
     color: '#000',
-    marginBottom: 20,
+    marginBottom: 12,
+     fontFamily: 'Roboto-Medium',
   },
   
   bottomRow: {
@@ -274,16 +283,19 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     color: theme.colors.greyDark,
+     fontFamily: 'Roboto-Medium',
   },
   
   durationText: {
     fontSize: 12,
     color: '#666',
+    fontFamily: 'Roboto-Medium',
   },
   
   ratingText: {
     fontSize: 12,
     color: '#777',
+    fontFamily: 'Roboto-Medium',
   },
   
   iconButton: {
@@ -308,10 +320,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     marginBottom: 8,
+    fontFamily: 'Roboto-Medium',
   },
    metaText: {
     fontSize: 13,
     color: theme.colors.greyDark1,
+    fontFamily: 'Roboto-Medium',
   },
   bottomLeft: {
     flexDirection: 'row',
@@ -323,6 +337,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#777',
     marginLeft: 6,
+    fontFamily: 'Roboto-Medium',
   },
   rightContent: {
     width: '25%',

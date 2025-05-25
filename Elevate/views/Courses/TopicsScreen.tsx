@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     justifyContent: 'space-between',
     backgroundColor: theme.colors.backgroundWhite,
-    borderRadius: 4,
+    borderRadius: 8,
     borderWidth: 2,
     borderColor: theme.colors.greyLight2,
     marginBottom: 12
@@ -101,7 +101,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 8,
-    marginVertical: 8
+    marginVertical: 8,
+    marginRight: 8
   },
   title: {
     fontSize: 18,

@@ -129,7 +129,7 @@ const App = () => {
           component={TopicsScreen}
           options={{
             headerShown: true,
-            title: 'Topics',
+            title: 'Categories',
             headerBackTitle: '',
             headerTintColor: theme.colors.black,
           }}

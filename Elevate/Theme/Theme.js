@@ -84,6 +84,8 @@ const theme = {
      
       green: '#4CAF50',
       yellow: '#D4AF37',
+      gold: '#FFD700',
+      red2: '#FF2400',
       selected1: '#0097b2',
       selected2: '#29adb2',
       placeholder: '#aaa'
