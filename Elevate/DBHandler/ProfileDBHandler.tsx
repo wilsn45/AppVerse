@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ProfileHandler = {
+const ProfileDBHandler = {
   // Function to save user name and onboarding status
   saveProfile: async (userName, isOnboarded) => {
     try {
@@ -44,4 +44,4 @@ const ProfileHandler = {
   }
 };
 
-export default ProfileHandler;
+export default ProfileDBHandler;

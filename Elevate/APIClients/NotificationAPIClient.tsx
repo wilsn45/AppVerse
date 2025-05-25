@@ -1,5 +1,5 @@
 import firestore from '@react-native-firebase/firestore';
-import { NotificationHandler } from './NotificationHandler';
+import { NotificationDBHandler } from '../DBHandler/NotificationDBHandler';
 import { NotificationData } from '../Data/DataModel';
 
 export class NotificationAPIClient {
@@ -23,7 +23,7 @@ export class NotificationAPIClient {
                 )
         );
   
-      await NotificationHandler.saveNewNotificationCourses(notificationList)
+      await NotificationDBHandler.saveNewNotificationCourses(notificationList)
   
     } catch (error) {
       console.error('Error fetching topics:', error);

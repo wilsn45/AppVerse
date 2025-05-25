@@ -16,13 +16,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
-import { OngoingCourseHandler } from '../../Handlers/OngoingCourseHandler.tsx';
+import { SaveDBHandler } from '../../DBHandler/SaveDBHandler.tsx';
+import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.tsx';
 import { CourseAnalytics } from '../../Analytics/CourseAnalytics.ts';
 import theme from '../../Theme/Theme.js';
 import { useFocusEffect } from '@react-navigation/native'; 
-import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
-import { CompletedCourseHandler } from '../../Handlers/CompletedCourseHandler.tsx';
+import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
+import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
 
 
 const CourseScreen = () => {
@@ -49,14 +49,14 @@ const CourseScreen = () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
-        const chapterList  = await ContentHandler.fetchChapters(course.id);
+        const chapterList  = await ContentAPIClient.fetchChapters(course.id);
        // console.log("Chapter List", chapterList)
        
-        let isSaved = await SaveHandler.isCourseSaved(course.id);
+        let isSaved = await SaveDBHandler.isCourseSaved(course.id);
         setIsCourseSaved(isSaved)
-        let compltedChapters = await OngoingCourseHandler.getCompletedChapters(course.id)
-        let isCourseOngoing  = await OngoingCourseHandler.isCourseOngoing(course.id)
-        let isCourseCompleted = await CompletedCourseHandler.isCourseCompleted(course.id)
+        let compltedChapters = await OngoingCourseDBHandler.getCompletedChapters(course.id)
+        let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id)
+        let isCourseCompleted = await CompletedCourseDBHandler.isCourseCompleted(course.id)
         setIsCourseCompleted(isCourseCompleted)
         setIsOngoingCourse(isCourseOngoing)
         
@@ -85,10 +85,10 @@ useFocusEffect(
 
 const changeCourseEnroll = async () => { 
   if (isOngoingCourse) {
-    await OngoingCourseHandler.removeOngoingCourse(course.id)
+    await OngoingCourseDBHandler.removeOngoingCourse(course.id)
   } else {
-    await CompletedCourseHandler.removeCompletedCourse(course.id)
-    await OngoingCourseHandler.saveOngoingCourse(course)
+    await CompletedCourseDBHandler.removeCompletedCourse(course.id)
+    await OngoingCourseDBHandler.saveOngoingCourse(course)
     let firstChapter = chaptereList[0]
     await onChapterPress(firstChapter)
   }
@@ -107,10 +107,10 @@ const onToggleSave = async () => {
     const isSaved = isCourseSaved;
     
     if (isSaved) {
-      await SaveHandler.removeCourse(course.id);
+      await SaveDBHandler.removeCourse(course.id);
     } else {
      // console.log("Saving Item", content)
-      await SaveHandler.saveCourse(course);
+      await SaveDBHandler.saveCourse(course);
     }
     // Update only the savedCards state here
     setIsCourseSaved(!isCourseSaved)

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import ProfileHandler from '../../Handlers/ProfileHandler';
+import ProfileDBHandler from '../../DBHandler/ProfileDBHandler';
 import { SplashAnalytics } from '../../Analytics/SplashAnalytics';
 
 const SplashScreen = () => {

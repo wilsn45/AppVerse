@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import ProfileHandler from '../../Handlers/ProfileHandler'; 
+import ProfileDBHandler from '../../DBHandler/ProfileDBHandler'; 
 import theme from '../../Theme/Theme';
 import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
@@ -14,7 +14,7 @@ const LetsStartScreen = ({ navigation }) => {
   const handleStart = async () => {
     if (name.trim()) {
       // Save the user's name and onboarding status (isOnboarded = true)
-      await ProfileHandler.saveProfile(name, true);
+      await ProfileDBHandler.saveProfile(name, true);
       sendNavigateToHomeEvent()
       navigation.navigate('HomeTabNavigator');
     } else {

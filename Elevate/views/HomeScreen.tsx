@@ -2,14 +2,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { HomeHandler } from '../Handlers/HomeHandler'; 
-import ProfileHandler from '../Handlers/ProfileHandler'; 
+import { HomeAPIClient } from '../APIClients/HomeAPIClient'; 
+import ProfileDBHandler from '../DBHandler/ProfileDBHandler';
+import { OngoingCourseDBHandler } from '../DBHandler/OngoingCourseDBHandler';
 import { HomeAnalytics } from '../Analytics/HomeAnalytics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { SaveHandler } from '../Handlers/SaveHandler';
-import { OngoingCourseHandler } from '../Handlers/OngoingCourseHandler';
-import { ContentData, CategoryData } from '../Data/DataModel';
+import { SaveDBHandler } from '../DBHandler/SaveDBHandler';
 import { BackHandler } from 'react-native';
 
 import theme from '../Theme/Theme';
@@ -48,7 +47,7 @@ const HomeScreen = () => {
     const fetchHomeData = async () => {
       try {
         analytics.sendHomeImpressionEvent()
-        homeData = await HomeHandler.getHome();
+        homeData = await HomeAPIClient.getHome();
         
         const liveCategories = homeData['Categories']
 
@@ -76,7 +75,7 @@ const HomeScreen = () => {
    
     const fetchUserName = async () => {
       try {
-        const userName = await ProfileHandler.getUserName();
+        const userName = await ProfileDBHandler.getUserName();
         setUserName(userName);
       } catch (error) {
         console.error("Error fetching user name:", error);
@@ -84,7 +83,7 @@ const HomeScreen = () => {
     };
 
     const fetchLatestHomeData = async() => {
-      let isSuccess = await HomeHandler.fetchLatestHomeData()
+      let isSuccess = await HomeAPIClient.fetchLatestHomeData()
       //console.log("Latest Home data resp", isSuccess)
       if (isSuccess == true) {
         fetchHomeData()
@@ -104,10 +103,10 @@ const HomeScreen = () => {
     const newSectionDataArray = [];
     const newSavedCards = new Map();
     //console.log("Reloaded Home Page")
-    const savedCourses = await SaveHandler.getSavedCourses();
+    const savedCourses = await SaveDBHandler.getSavedCourses();
     const lastFive = savedCourses.slice(-5).reverse();
 
-    const ongoingCourses = await OngoingCourseHandler.getOngoingingCourses();
+    const ongoingCourses = await OngoingCourseDBHandler.getOngoingingCourses();
     const lastFiveOnGoingCourses = ongoingCourses.slice(-5).reverse();
 
 
@@ -130,7 +129,7 @@ const HomeScreen = () => {
 
         // Check for saved courses in the section
         for (const item of data) {
-          const isSaved = await SaveHandler.isCourseSaved(item.id);
+          const isSaved = await SaveDBHandler.isCourseSaved(item.id);
           newSavedCards.set(item.id, isSaved); 
         }
       }
@@ -160,7 +159,7 @@ const HomeScreen = () => {
       }
   
       for (const card of homeCards) {
-        const isSaved = await SaveHandler.isCourseSaved( card.id);
+        const isSaved = await SaveDBHandler.isCourseSaved( card.id);
          newSavedCards.set(card.id, isSaved);
       }
   
@@ -198,9 +197,9 @@ const HomeScreen = () => {
   const handleSave = async (item) => {
     const isSaved = savedCards.get(item.id);
     if (isSaved) {
-      await SaveHandler.removeCourse(item.id);
+      await SaveDBHandler.removeCourse(item.id);
     } else {
-      await SaveHandler.saveCourse(item);
+      await SaveDBHandler.saveCourse(item);
     }
     // Update only the savedCards state here
     setSavedCards((prev) => new Map(prev).set(item.id, !isSaved));

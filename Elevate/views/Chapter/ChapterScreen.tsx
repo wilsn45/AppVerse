@@ -10,9 +10,9 @@ import { ChapterAnalytics } from '../../Analytics/ChapterAnalytics';
 import theme from '../../Theme/Theme';
 import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { ContentHandler } from '../../Handlers/ContentHandler';
-import { OngoingCourseHandler } from '../../Handlers/OngoingCourseHandler.tsx';
-import { CompletedCourseHandler } from '../../Handlers/CompletedCourseHandler.tsx';
+import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
+import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.tsx';
+import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ChapterScreen = () => {
@@ -38,23 +38,23 @@ const ChapterScreen = () => {
 
     const fetchContent = async () => {
       setChapterDataLoaded(false);
-      const doc = await ContentHandler.fetchChapter(currentChapter.id);
+      const doc = await ContentAPIClient.fetchChapter(currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
 
       //console.log("current chapter", currentChapter)
 
-      const nextChapter = await ContentHandler.fetchNextChapter(course.id, currentChapter.id)
+      const nextChapter = await ContentAPIClient.fetchNextChapter(course.id, currentChapter.id)
       setNextChapter(nextChapter)
       //console.log("next chapter", nextChapter)
 
-      const prevChapter = await ContentHandler.fetchPrevChapter(course.id, currentChapter.id)
+      const prevChapter = await ContentAPIClient.fetchPrevChapter(course.id, currentChapter.id)
       setPrevChapter(prevChapter)
       //console.log("Prev chapter", prevChapter)
 
-      let isCourseOngoing  = await OngoingCourseHandler.isCourseOngoing(course.id)
+      let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id)
       setIsOngoingCourse(isCourseOngoing)
 
-      let isCourseCompleted  = await CompletedCourseHandler.isCourseCompleted(course.id)
+      let isCourseCompleted  = await CompletedCourseDBHandler.isCourseCompleted(course.id)
       setisCourseCompleted(isCourseCompleted)
 
       setChapterDataLoaded(true);
@@ -81,12 +81,12 @@ const ChapterScreen = () => {
     //   console.log("chapter", chapter)
     //   if (chapter.isLastChapter === true && !course.isLiveCourse) {
     //     console.log("Mark Course Completed")
-    //     OngoingCourseHandler.removeOngoingCourse(course.id)
-    //     OngoingCourseHandler.saveChapter(course.id,chapter.id)
+    //     OngoingCourseDBHandler.removeOngoingCourse(course.id)
+    //     OngoingCourseDBHandler.saveChapter(course.id,chapter.id)
     //     CompletedCourseHandler.completeCourse(course)
     //   } else {
     //     console.log("Save Course Progress")
-    //     OngoingCourseHandler.saveChapter(course.id,chapter.id)
+    //     OngoingCourseDBHandler.saveChapter(course.id,chapter.id)
     //   }
      
     // }
@@ -94,14 +94,14 @@ const ChapterScreen = () => {
 
   const onStartCourse = async() => {
     //console.log('Start Course pressed');
-    await OngoingCourseHandler.saveOngoingCourse(course)
-    await CompletedCourseHandler.removeCompletedCourse(course.id)
+    await OngoingCourseDBHandler.saveOngoingCourse(course)
+    await CompletedCourseDBHandler.removeCompletedCourse(course.id)
     setIsOngoingCourse(true)
   };
   
   const onNext = () => {
     if (nextChapter) {
-      OngoingCourseHandler.saveChapter(course.id,currentChapter.id)
+      OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id)
       setCurrentChapter(nextChapter); // Trigger re-render with new data
     }
   };
@@ -114,9 +114,9 @@ const ChapterScreen = () => {
   
   const onComplete = () => {
     //console.log('Completed pressed');
-    OngoingCourseHandler.removeOngoingCourse(course.id)
-    CompletedCourseHandler.completeCourse(course)
-    OngoingCourseHandler.saveChapter(course.id,currentChapter.id)
+    OngoingCourseDBHandler.removeOngoingCourse(course.id)
+    CompletedCourseDBHandler.completeCourse(course)
+    OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id)
     navigation.goBack();
   };
 

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export class OngoingCourseHandler {
+export class OngoingCourseDBHandler {
   static STORAGE_KEY_CHAPTERS = 'ONGOING_CHAPTERS';
 
   // Save a chapter ID for a course

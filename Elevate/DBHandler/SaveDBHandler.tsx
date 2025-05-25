@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export class CompletedCourseHandler {
-  static STORAGE_KEY = 'COMPLETED_COURSES';
+export class SaveDBHandler {
+  static STORAGE_KEY = 'SAVED_COURSES';
 
   // Get all saved courses
-  static async getCompletedCourses(): Promise<any[]> {
+  static async getSavedCourses(): Promise<any[]> {
     try {
       const saved = await AsyncStorage.getItem(this.STORAGE_KEY);
       return saved ? JSON.parse(saved) : [];
@@ -15,9 +15,9 @@ export class CompletedCourseHandler {
   }
 
   // Save a course
-  static async completeCourse(course: any): Promise<void> {
+  static async saveCourse(course: any): Promise<void> {
     try {
-      const currentCourses = await this.getCompletedCourses();
+      const currentCourses = await this.getSavedCourses();
       const exists = currentCourses.some(c => c.id === course.id);
 
       if (!exists) {
@@ -32,9 +32,9 @@ export class CompletedCourseHandler {
   }
 
   // Remove a course
-  static async removeCompletedCourse(id: string): Promise<void> {
+  static async removeCourse(id: string): Promise<void> {
     try {
-      const currentCourses = await this.getCompletedCourses();
+      const currentCourses = await this.getSavedCourses();
       const updated = currentCourses.filter(c => c.id !== id);
       await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
       // const updatedCourses = await this.getSavedCourses();
@@ -45,9 +45,9 @@ export class CompletedCourseHandler {
   }
 
   // Check if course is saved
-  static async isCourseCompleted(id: string): Promise<boolean> {
+  static async isCourseSaved(id: string): Promise<boolean> {
     try {
-      const currentCourses = await this.getCompletedCourses();
+      const currentCourses = await this.getSavedCourses();
       return currentCourses.some(c => c.id === id);
     } catch (error) {
       console.error('Error checking if course is saved:', error);

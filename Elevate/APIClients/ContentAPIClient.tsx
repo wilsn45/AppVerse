@@ -1,12 +1,10 @@
 import firestore from '@react-native-firebase/firestore';
 import { CourseData, ChapterData, TopicData } from '../Data/DataModel';
 
-export class ContentHandler {
+export class ContentAPIClient {
   // Define the key for storing live categories in AsyncStorage
-  static LIVE_HOME_STORAGE_KEY = 'Home';
 
   // Helper function to get the current saved categories from AsyncStorage
-
 
   static async fetchTopics() {
     try {

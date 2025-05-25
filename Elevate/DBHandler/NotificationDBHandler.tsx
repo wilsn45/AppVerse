@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NotificationData } from '../Data/DataModel'; 
 
-export class NotificationHandler {
+export class NotificationDBHandler {
   static STORAGE_KEY = 'NEW_NOTIFICATION';
 
   // Get all saved courses
@@ -28,13 +28,9 @@ export class NotificationHandler {
     const newNotifications = newItems.filter(item => !existingNotificationIds.has(item.id));
 
     const updatedList = [...existing, ...newNotifications];
-
-    console.log("New List Before filter", updatedList);
-
+   
     // Remove any items with viewCounter > 2
     const filteredList = updatedList.filter(n => n.viewCounter <= 2);
-
-    console.log("New List After filter", filteredList);
 
     await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredList));
   } catch (error) {

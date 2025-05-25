@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
-import { CategoryHandler } from './CategoryHandler';
+import { CategoryDBHandler } from '../DBHandler/CategoryDBHandler';
 import { CourseData, CategoryData } from '../Data/DataModel';
 import { NotificationAPIClient } from './NotificationAPIClient';
 
 
 
-export class HomeHandler {
+export class HomeAPIClient {
   // Define the key for storing live categories in AsyncStorage
   static LIVE_HOME_STORAGE_KEY = 'Home';
 
@@ -65,7 +65,7 @@ export class HomeHandler {
 
           // Save LiveCategories using CategoryHandler
           await this.setHomeData(Home)
-          await CategoryHandler.setLiveCategory(Home["Categories"])
+          await CategoryDBHandler.setLiveCategory(Home["Categories"])
           await NotificationAPIClient.fetchNewNotifications()
           return true 
       } catch (error) {

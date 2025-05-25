@@ -15,7 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TopicAnalytics } from '../../Analytics/TopicAnalytics.ts';
 import theme from '../../Theme/Theme.js';
 import { useFocusEffect } from '@react-navigation/native'; 
-import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
+import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
 
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -36,7 +36,7 @@ const TopicsScreen = () => {
     try {
         
         // Map the fetched documents to include doc.id and category name
-        const topicList  = await ContentHandler.fetchTopics();
+        const topicList  = await ContentAPIClient.fetchTopics();
 
         //console.log("Fetched topicList:", topicList)
         setTopicList(topicList)

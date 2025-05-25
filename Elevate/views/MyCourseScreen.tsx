@@ -2,15 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, Dimensions, Image, TextInput, Animated } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { CategoryHandler } from '../Handlers/CategoryHandler';
-import { SaveHandler } from '../Handlers/SaveHandler';
-import { CompletedCourseHandler } from '../Handlers/CompletedCourseHandler';
-import { OngoingCourseHandler } from '../Handlers/OngoingCourseHandler';
-import { NotificationHandler } from '../Handlers/NotificationHandler';
-import DropDownList from './Common/DropDownList';
+import { SaveDBHandler } from '../DBHandler/SaveDBHandler';
+import { CompletedCourseDBHandler } from '../DBHandler/CompletedCourseDBHandler';
+import { OngoingCourseDBHandler } from '../DBHandler/OngoingCourseDBHandler';
+import { NotificationDBHandler } from '../DBHandler/NotificationDBHandler';
 import theme from '../Theme/Theme';
 import { SaveAnalytics } from '../Analytics/SaveAnalytics';
-import { Swipeable } from 'react-native-gesture-handler';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import {  useRoute } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -31,10 +28,10 @@ const MyCourseScreen = () => {
 
   const fetchSavedCourses = async () => {
     try {
-      const savedCourses = await SaveHandler.getSavedCourses();
-      const ongoingCourses = await OngoingCourseHandler.getOngoingingCourses()
-      const completedCourses = await CompletedCourseHandler.getCompletedCourses()
-      const notifyCourseData = await NotificationHandler.getNotificationCourse();
+      const savedCourses = await SaveDBHandler.getSavedCourses();
+      const ongoingCourses = await OngoingCourseDBHandler.getOngoingingCourses()
+      const completedCourses = await CompletedCourseDBHandler.getCompletedCourses()
+      const notifyCourseData = await NotificationDBHandler.getNotificationCourse();
        console.log("Notify Course", notifyCourseData)
 
           const filteredNotifyCourses = notifyCourseData
@@ -50,7 +47,7 @@ const MyCourseScreen = () => {
 
       const appendProgressToCourses = async (courses) => {
         const updatedCourses = await Promise.all(courses.map(async (course) => {
-          const completedChapters = await OngoingCourseHandler.getCompletedChapters(course.id);
+          const completedChapters = await OngoingCourseDBHandler.getCompletedChapters(course.id);
           const chapterCount = course.chaptetCount || 0; // default to 0 if not present
           const progress = `${completedChapters.length}/${chapterCount}`;
           //console.log('Fetched chapterCount', chapterCount)
@@ -65,7 +62,7 @@ const MyCourseScreen = () => {
       setAllSavedCourses(savedCourses)
       setOngoingCourses(updatedOngoingCourses);
       setCompletedCourses(updatedCompletedCourses);
-      await NotificationHandler.incrementViewCounters()
+      await NotificationDBHandler.incrementViewCounters()
 
       // console.log('Fetched Saved Card', savedCourses)
       // console.log('Fetched ongoingCourses Card', updatedOngoingCourses)
@@ -97,11 +94,11 @@ const MyCourseScreen = () => {
   const handleRightAction = async (id) => {
     try {
       if (selectedTab === 'Saved') {
-        await SaveHandler.removeCourse(id);
+        await SaveDBHandler.removeCourse(id);
       } else if (selectedTab === 'In Progress') {
-          await OngoingCourseHandler.removeOngoingCourse(id);
+          await OngoingCourseDBHandler.removeOngoingCourse(id);
       }  else {
-        await CompletedCourseHandler.removeCompletedCourse(id);
+        await CompletedCourseDBHandler.removeCompletedCourse(id);
      }
       fetchSavedCourses();
     } catch (error) {

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, FlatList } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import RoutineTaskHandler from '../../Handlers/Tasks/GoalTaskHandler';
-import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
+import RoutineTaskHandler from '../../DBHandler/Tasks/GoalTaskHandler';
+import { TaskHandler } from '../../DBHandler/Tasks/TaskHandler';
 import theme from '../../Theme/Theme';
-import GoalTaskHandler from '../../Handlers/Tasks/GoalTaskHandler';
+import GoalTaskHandler from '../../DBHandler/Tasks/GoalTaskHandler';
 import { TaskDetailAnalytics } from '../../Analytics/TaskDetailAnalytics';
 import { TaskProgress } from '../../Data/DataModel';
 

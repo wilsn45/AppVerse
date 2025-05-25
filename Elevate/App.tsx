@@ -12,7 +12,7 @@ import ChapterScreen from './views/Chapter/ChapterScreen.tsx';
 import MyCourseScreen from './views/MyCourseScreen.tsx';
 import LetsStartScreen from './views/GetStarted/LetsStartScreen.tsx'; 
 import SplashScreen from './views/GetStarted/SplashScreen.tsx'; 
-import ProfileHandler from './Handlers/ProfileHandler'; 
+import ProfileDBHandler from './DBHandler/ProfileDBHandler.tsx'; 
 import theme from './Theme/Theme';
 
 const Stack = createStackNavigator();

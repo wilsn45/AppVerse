@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
-import { CategoryHandler } from '../../Handlers/CategoryHandler';
+import { CategoryHandler } from '../../DBHandler/CategoryDBHandler';
 import { taskType } from '../../Data/DataModel';
 import { useFocusEffect } from '@react-navigation/native';
-import { TaskHandler } from '../../Handlers/Tasks/TaskHandler';
+import { TaskHandler } from '../../DBHandler/Tasks/TaskHandler';
 import { useNavigation } from '@react-navigation/native';
 import theme from '../../Theme/Theme';
 import DropDownList from '../Common/DropDownList';

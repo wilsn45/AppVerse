@@ -12,11 +12,11 @@ import FastImage from 'react-native-fast-image';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { SaveHandler } from '../../Handlers/SaveHandler.tsx';
+import { SaveDBHandler } from '../../DBHandler/SaveDBHandler.tsx';
 import { CourseListAnalytics } from '../../Analytics/CourseListAnalytics.ts';
 import theme from '../../Theme/Theme.js';
 import { useFocusEffect } from '@react-navigation/native'; 
-import { ContentHandler } from '../../Handlers/ContentHandler.tsx';
+import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
 
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -43,11 +43,11 @@ const CourseListScreen = () => {
         // Map the fetched documents to include doc.id and category name
         let coursesList = [];
         if (showTopRated) {
-              coursesList = await ContentHandler.fetchTopRatedCourse();
+              coursesList = await ContentAPIClient.fetchTopRatedCourse();
           } else if (showRecommended) {
-              coursesList = await ContentHandler.fetchRecommendedCourse();
+              coursesList = await ContentAPIClient.fetchRecommendedCourse();
          } else {
-             coursesList = await ContentHandler.fetchCourseByTopic(topic);
+             coursesList = await ContentAPIClient.fetchCourseByTopic(topic);
          }
          
 
@@ -71,7 +71,7 @@ const loadCourseSaveStatus = async () => {
    const updatedSavedCourses = new Map();
   const checkResults = await Promise.all(
     courseList.map(async (course) => {
-      const isSaved = await SaveHandler.isCourseSaved(course.id);
+      const isSaved = await SaveDBHandler.isCourseSaved(course.id);
       return { id: course.id, isSaved };
     })
   );
@@ -92,9 +92,9 @@ const handleSave = async (course) => {
 
   // Perform save/remove action
   if (isSaved) {
-    await SaveHandler.removeCourse(course.id);
+    await SaveDBHandler.removeCourse(course.id);
   } else {
-    await SaveHandler.saveCourse(course);
+    await SaveDBHandler.saveCourse(course);
   }
 
   // Update the savedCourses state

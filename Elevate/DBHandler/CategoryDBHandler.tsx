@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export class CategoryHandler {
+export class CategoryDBHandler {
   // Define the key for storing live categories in AsyncStorage
   static LIVE_CATEGORY_STORAGE_KEY = 'LIVE_CATEGORY';
 
