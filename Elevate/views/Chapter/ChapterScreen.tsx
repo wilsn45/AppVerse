@@ -3,7 +3,8 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Platform
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ChapterAnalytics } from '../../Analytics/ChapterAnalytics';
@@ -12,8 +13,12 @@ import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
 import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.tsx';
+import { AdMobDBManager } from '../../DBHandler/AdMobDBManager.tsx';
 import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
+
 
 const ChapterScreen = () => {
   const route = useRoute();
@@ -31,6 +36,39 @@ const ChapterScreen = () => {
   const [chapterDataLoaded, setChapterDataLoaded] = useState(false);
   const [isOngoingCourse, setIsOngoingCourse] = useState(false);
   const [isCourseCompleted, setisCourseCompleted] = useState(false);
+
+  const interstitialAdUnitId = Platform.select({
+  ios: AdMobDBManager.IOS_APP_ID,
+  android: AdMobDBManager.ANDROID_APP_ID,
+  default: TestIds.INTERSTITIAL, // fallback to test ID if none found
+});
+
+  const interstitial = InterstitialAd.createForAdRequest(interstitialAdUnitId, {
+  requestNonPersonalizedAdsOnly: true,
+})
+
+  async function showInterstitialAd() {
+  const shouldShowAd = await AdMobDBManager.showInterstitialAds();
+
+  if (shouldShowAd) {
+    // Load the ad
+    interstitial.load();
+
+    // Listen for ad events
+    const unsubscribe = interstitial.onAdEvent((type) => {
+      if (type === AdEventType.LOADED) {
+        interstitial.show();
+      }
+      if (type === AdEventType.CLOSED) {
+        unsubscribe(); // Clean up listener after ad is closed
+      }
+      if (type === AdEventType.ERROR) {
+        console.log('Interstitial Ad failed to load');
+        unsubscribe();
+      }
+    });
+  }
+}
   
 
   useEffect(() => {
@@ -58,6 +96,17 @@ const ChapterScreen = () => {
       setisCourseCompleted(isCourseCompleted)
 
       setChapterDataLoaded(true);
+
+      const shouldShowAd = await AdMobDBManager.showInterstitialAds();
+      if (shouldShowAd) {
+         console.log('Show Ads');
+      try {
+             await showInterstitialAd();
+              console.log('Ad closed, continue app flow');
+         } catch {
+           console.log('Ad failed or was not shown');
+         }
+    }
 
     };
 

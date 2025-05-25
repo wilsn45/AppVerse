@@ -14,6 +14,8 @@ import LetsStartScreen from './views/GetStarted/LetsStartScreen.tsx';
 import SplashScreen from './views/GetStarted/SplashScreen.tsx'; 
 import ProfileDBHandler from './DBHandler/ProfileDBHandler.tsx'; 
 import theme from './Theme/Theme';
+import mobileAds from 'react-native-google-mobile-ads';
+import { AppState } from 'react-native';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -77,6 +79,26 @@ const App = () => {
     
     checkOnboardingStatus();
   }, []);
+
+  useEffect(() => {
+  const subscription = AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+      mobileAds()
+        .initialize()
+        .then(() => {
+          console.log('AdMob initialized');
+        })
+        .catch((err) => {
+          console.log('AdMob init error', err);
+        });
+      subscription.remove(); // Call only once
+    }
+  });
+
+  return () => subscription.remove();
+}, []);
+
+ 
 
   return (
     <NavigationContainer>

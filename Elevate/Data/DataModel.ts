@@ -3,6 +3,9 @@ export const taskType: TaskType[] = [
     { id: 2, title: 'Goal' }
   ];
 
+ export const ANDROID_AD_UNIT_ID = 'ca-app-pub-android-unit-id';
+export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
+
   export class NotificationData {
     constructor(id, courseId,timestamp, viewCounter: number = 0) {
       this.id = id;
