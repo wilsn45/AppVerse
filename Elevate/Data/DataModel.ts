@@ -3,6 +3,15 @@ export const taskType: TaskType[] = [
     { id: 2, title: 'Goal' }
   ];
 
+  export class NotificationData {
+    constructor(id, courseId,timestamp, viewCounter: number = 0) {
+      this.id = id;
+      this.courseId = courseId;
+      this.timestamp = timestamp;
+      this.viewCounter = viewCounter; 
+    }
+  }
+
    export class TopicData {
     constructor(id, title,index, thumbnail,isLive) {
       this.id = id;

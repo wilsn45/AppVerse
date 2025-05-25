@@ -1,26 +1,61 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NotificationData } from '../Data/DataModel'; 
 
 export class NotificationHandler {
   static STORAGE_KEY = 'NEW_NOTIFICATION';
 
   // Get all saved courses
-  static async getNewNotificationCourse(): Promise<string[]> {
+  static async getNotificationCourse(): Promise<NotificationData[]> {
+    try {
+      const notifications = await AsyncStorage.getItem(this.STORAGE_KEY);
+      return notifications
+        ? (JSON.parse(notifications) as NotificationData[])
+        : [];
+    } catch (error) {
+      console.error('Error retrieving saved notification course data:', error);
+      return [];
+    }
+  }
+  
+
+  // Save array of NotificationData
+  static async saveNewNotificationCourses(newItems: NotificationData[]): Promise<void> {
   try {
-    const notifications = await AsyncStorage.getItem(this.STORAGE_KEY);
-    return notifications ? JSON.parse(notifications) as string[] : [];
+    const existing = await this.getNotificationCourse();
+    const existingNotificationIds = new Set(existing.map(n => n.id)); // Check by notification id
+
+    // Filter out new notifications that already exist
+    const newNotifications = newItems.filter(item => !existingNotificationIds.has(item.id));
+
+    const updatedList = [...existing, ...newNotifications];
+
+    console.log("New List Before filter", updatedList);
+
+    // Remove any items with viewCounter > 2
+    const filteredList = updatedList.filter(n => n.viewCounter <= 2);
+
+    console.log("New List After filter", filteredList);
+
+    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredList));
   } catch (error) {
-    console.error('Error retrieving saved notification course IDs:', error);
-    return [];
+    console.error('Error saving new notification course data:', error);
   }
 }
 
-static async saveNewNotificationCourses(ids: string[]): Promise<void> {
-  try {
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(ids));
-  } catch (error) {
-    console.error('Error saving new notification course IDs:', error);
+  static async incrementViewCounters(): Promise<void> {
+    try {
+      const existing = await this.getNotificationCourse();
+
+      const updated = existing.map(n => ({
+        ...n,
+        viewCounter: (n.viewCounter || 0) + 1,
+      }));
+
+      await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
+    } catch (error) {
+      console.error('Error incrementing view counters:', error);
+    }
   }
-}
 
   
 

@@ -1,5 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import { NotificationHandler } from './NotificationHandler';
+import { NotificationData } from '../Data/DataModel';
 
 export class NotificationAPIClient {
   // Define the key for storing live categories in AsyncStorage
@@ -13,10 +14,15 @@ export class NotificationAPIClient {
       const snapshot = await firestore()
         .collection('Notification')
         .get();
+
+        const notificationList = snapshot.docs.map(doc => 
+                new NotificationData(
+                  doc.id,
+                  doc.data().courseId,
+                  doc.data().timestamp,
+                )
+        );
   
-      const notificationList = snapshot.docs.map(doc => 
-        doc.id
-      );
       await NotificationHandler.saveNewNotificationCourses(notificationList)
   
     } catch (error) {

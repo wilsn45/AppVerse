@@ -34,12 +34,19 @@ const MyCourseScreen = () => {
       const savedCourses = await SaveHandler.getSavedCourses();
       const ongoingCourses = await OngoingCourseHandler.getOngoingingCourses()
       const completedCourses = await CompletedCourseHandler.getCompletedCourses()
-      const notifyCourse = await NotificationHandler.getNewNotificationCourse()
-      const filteredNotifyCourses = notifyCourse.filter(id =>
-              ongoingCourses.some(course => course.id === id)
-      );
-      setNotificationCourse(filteredNotifyCourses)
-      console.log("Notify Course", filteredNotifyCourses)
+      const notifyCourseData = await NotificationHandler.getNotificationCourse();
+       console.log("Notify Course", notifyCourseData)
+
+          const filteredNotifyCourses = notifyCourseData
+                .map(n => n.courseId)
+              .filter(courseId =>
+                   ongoingCourses.some(course => course.id === courseId)
+           );
+
+        setNotificationCourse(filteredNotifyCourses);
+     
+     
+      console.log("filtered Notify Course", filteredNotifyCourses)
 
       const appendProgressToCourses = async (courses) => {
         const updatedCourses = await Promise.all(courses.map(async (course) => {
@@ -58,6 +65,7 @@ const MyCourseScreen = () => {
       setAllSavedCourses(savedCourses)
       setOngoingCourses(updatedOngoingCourses);
       setCompletedCourses(updatedCompletedCourses);
+      await NotificationHandler.incrementViewCounters()
 
       // console.log('Fetched Saved Card', savedCourses)
       // console.log('Fetched ongoingCourses Card', updatedOngoingCourses)
