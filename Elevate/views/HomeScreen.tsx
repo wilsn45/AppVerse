@@ -67,8 +67,9 @@ const HomeScreen = () => {
 
        //console.log("Load All Home Sections", newSectionDataArray)
 
-       analytics.sendCategoryDisplayedEvent(liveCategories);
+       analytics.sendHomeDataAppearedSuccessEvent()
       } catch (error) {
+        analytics.sendHomeDataAppearedFailedEvent()
         console.error("Error fetching categories:", error);
       }
     };
@@ -177,7 +178,7 @@ const HomeScreen = () => {
 
 
   const handleTilePress = (item) => {
-    analytics.sendCategoryClickedEvent(item.name);
+    analytics.sendOpenTopicEvent(item.name);
     navigation.navigate('CourseListScreen', { topic: item.name });
   };
 
@@ -197,8 +198,10 @@ const HomeScreen = () => {
   const handleSave = async (item) => {
     const isSaved = savedCards.get(item.id);
     if (isSaved) {
+      analytics.sendRemoveSavedCourseEvent(item.id)
       await SaveDBHandler.removeCourse(item.id);
     } else {
+      analytics.sendSaveCourseEvent(item.id)
       await SaveDBHandler.saveCourse(item);
     }
     // Update only the savedCards state here
@@ -287,25 +290,29 @@ const HomeScreen = () => {
   );
 
   const handleCardPress = (course) => {
-    analytics.sendContentOpenEvent(course.categoryId, course.id);
+    analytics.sendOpenCourseEvent(course.id);
     //("Course", course)
     navigation.navigate('CourseScreen', { course: course });
   };
 
-   const handleSellAllTopics = () => {
+   const handleViewAllTopics = () => {
+    analytics.sendViewAllTopicsEvent()
     navigation.navigate('TopicsScreen');
   };
 
 
-  const handleSellAll = (category) => {
+  const handleViewAllCourse = (category) => {
     if (category == "Recommended") {
+      analytics.sendViewAllRecommendedCourseEvent()
       navigation.navigate('CourseListScreen', { topic: '', showTopRated: false, showRecommended: true });
     } else if (category == "Top Rated") {
+      analytics.sendViewAllTopRatedCourseEvent()
        navigation.navigate('CourseListScreen', { topic: '', showTopRated: true, showRecommended: false  });
     }  else  if (category == "Recently Saved") {
-      console.log('Recently Saved Clicked')
-       navigation.navigate('My Course', {targetTab: 'saved'});
+      analytics.sendViewAllRecentlySavedCourseEvent()
+      navigation.navigate('My Course', {targetTab: 'saved'});
     } else {
+      analytics.sendViewAllOngoingCourseCvent()
       navigation.navigate('My Course', {targetTab: 'in_progress'});
     }
   };
@@ -321,7 +328,7 @@ const HomeScreen = () => {
         <Text style={styles.userNameLabel}>Hi, There!</Text>
        <View style={styles.ViewAll}>
             <Text style={styles.horizontalListTitle}>Categories</Text>
-          <TouchableOpacity style={styles.seeAllView} onPress={() => handleSellAllTopics()}>
+          <TouchableOpacity style={styles.seeAllView} onPress={() => handleViewAllTopics()}>
                  <Text style={styles.seeAllButton}>See All </Text>
                   <Ionicons
                   name={'chevron-forward'}
@@ -356,7 +363,7 @@ const HomeScreen = () => {
              <Text style={styles.horizontalListTitle}>{section.title}</Text>
               <TouchableOpacity
                  style={styles.seeAllView}
-                 onPress={() => handleSellAll(section.title)}>
+                 onPress={() => handleViewAllCourse(section.title)}>
                 <Text style={styles.seeAllButton}>See All</Text>
                   <Ionicons
                     name="chevron-forward"

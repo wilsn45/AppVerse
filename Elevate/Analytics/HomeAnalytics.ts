@@ -4,49 +4,110 @@ export class HomeAnalytics {
 
  async sendHomeImpressionEvent() {
     await AnalyticsHelper.sendEvent(
-        '1.0.0',
         'Home_Appeared',
         'Home',
-        '',
         ActionType.IMPRESSION,
-        '',
         {}
       );
   }
 
- async sendCategoryDisplayedEvent(categoryList) {
+  async sendHomeDataAppearedSuccessEvent() {
     await AnalyticsHelper.sendEvent(
-        '1.1.0',
-        'Category_Displayed',
+        'Home_Data_Appeared_Success',
         'Home',
-        'Category_List',
-        ActionType.IMPRESSION,
-        '',
-        { "categoryList": categoryList }
+        ActionType.NETWORK,
+        {}
       );
   }
 
-  async sendCategoryClickedEvent(topic) {
+  async sendHomeDataAppearedFailedEvent() {
     await AnalyticsHelper.sendEvent(
-        '1.1.1',
-        'Category_Clicked',
+        'Home_Data_Appeared_Failed',
         'Home',
-        'Category_List',
-        ActionType.CLICK,
-        '',
+        ActionType.NETWORK,
+        {}
+      );
+  }
+
+
+  async sendOpenTopicEvent(topic) {
+    await AnalyticsHelper.sendEvent(
+        'Open_Topic',
+        'Home',
+        ActionType.NAVIGATION,
         { "topic": topic }
       );
   }
 
-  async sendContentOpenEvent(categoryId, contentId) {
+  async sendOpenCourseEvent(courseId) {
     await AnalyticsHelper.sendEvent(
-        '1.2.1',
-        'Content_Open',
-        'Save',
-        'Section_List',
+        'Open_Course',
+        'Home',
+        ActionType.NAVIGATION,
+        { "courseId" :  courseId }
+      );
+  }
+
+  async sendSaveCourseEvent(courseId) {
+    await AnalyticsHelper.sendEvent(
+        'Save_Course',
+        'Home',
         ActionType.CLICK,
-        'Open',
-        { "categoryId" : categoryId, "contentId":  contentId }
+        { "courseId" :  courseId }
+      );
+  }
+
+  async sendRemoveSavedCourseEvent(courseId) {
+    await AnalyticsHelper.sendEvent(
+        'Remove_Saved_Course',
+        'Home',
+        ActionType.CLICK,
+        { "courseId" :  courseId }
+      );
+  }
+
+  async sendViewAllTopicsEvent() {
+    await AnalyticsHelper.sendEvent(
+        'View_All_Topic',
+        'Home',
+        ActionType.NAVIGATION,
+        {}
+      );
+  }
+
+  async sendViewAllRecentlySavedCourseEvent() {
+    await AnalyticsHelper.sendEvent(
+        'View_All_Recently_Saved_Course',
+        'Home',
+        ActionType.NAVIGATION,
+        {}
+      );
+  }
+
+  async sendViewAllTopRatedCourseEvent() {
+    await AnalyticsHelper.sendEvent(
+        'View_All_Top_Rated_Course',
+        'Home',
+        ActionType.NAVIGATION,
+        {}
+      );
+  }
+
+  async sendViewAllRecommendedCourseEvent() {
+    await AnalyticsHelper.sendEvent(
+        'View_All_Recommended_Course',
+        'Home',
+        ActionType.NAVIGATION,
+        {}
+      );
+  }
+
+  async sendViewAllOngoingCourseCvent() {
+    await AnalyticsHelper.sendEvent(
+        'View_All_Ongoing_Course',
+        'Home',
+        ActionType.NAVIGATION,
+        {}
       );
   }
 

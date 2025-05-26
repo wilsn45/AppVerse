@@ -39,7 +39,7 @@ const CourseScreen = () => {
   const analytics = new CourseAnalytics(course.id)
 
   useEffect(() => {
-     analytics.sendCourseImpressionEvent()
+     //analytics.sendCourseImpressionEvent()
 
      fetchChapterList()
   }, [ navigation, course]);
@@ -68,7 +68,7 @@ const CourseScreen = () => {
         setChapterList(updatedChapters)
 
 
-        analytics.sendCoursePresentedEvent()
+        //analytics.sendCoursePresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
     } finally {
@@ -98,7 +98,7 @@ const changeCourseEnroll = async () => {
 
 
 const onChapterPress = async (content) => {
-  analytics.sendCourseOpenEvent()
+ // analytics.sendCourseOpenEvent()
   console.log('chapterId', content);
   navigation.navigate('ChapterScreen', { course: course, chapter: content });
 };

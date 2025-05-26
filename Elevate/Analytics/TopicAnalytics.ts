@@ -5,48 +5,37 @@ export class TopicAnalytics {
 
  async sendTopicListImpressionEvent() {
     await AnalyticsHelper.sendEvent(
-        '4.0.0',
-        'Course_List_Appeared',
-        'Course_List',
-        '',
+        'Topic_List_Appeared',
+        'Topic_List',
         ActionType.IMPRESSION,
-        '',
+        {},
      );
   }
 
-  async sendTopicListPresentedEvent() {
+  async sendTopicClickEvent(topic) {
     await AnalyticsHelper.sendEvent(
-        '4.1.0',
-        'Course_List_Presented',
-        'Course_List',
-        '',
-        ActionType.IMPRESSION,
-        '',
+        'Click_On_Topic',
+        'Topic_List',
+        ActionType.NAVIGATION,
+        {'topic': topic},
      );
   }
 
-  async sendTopicClickedEvent(topic) {
-     const eventId =   '4.1.1.2'
-     const eventName = 'Topic_Clicked'
+  async sendTopicDataAppearedSuccessEvent() {
     await AnalyticsHelper.sendEvent(
-      eventId,
-      eventName,
-      'Course_List',
-      'Save',
-      ActionType.CLICK,
-      { 'topic': topic}
-   );
+        'Topics_Data_Appeared_Success',
+        'Topic_List',
+        ActionType.NETWORK,
+        {},
+     );
   }
 
-  async sendBackEvent() {
+   async sendTopicDataAppearedFailedEvent() {
     await AnalyticsHelper.sendEvent(
-        '4.4.1.1',
-        'Back_Clicked',
-        'Content_List',
-        'Header',
-        ActionType.CLICK,
-        'Back',
-        { 'topic': this.topic}
+        'Topics_Data_Appeared_Failed',
+        'Topic_List',
+        ActionType.NETWORK,
+        {},
      );
   }
 

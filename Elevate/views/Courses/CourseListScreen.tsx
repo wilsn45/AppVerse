@@ -32,7 +32,7 @@ const CourseListScreen = () => {
   const analytics = new CourseListAnalytics(topic)
 
   useEffect(() => {
-     analytics.sendCourseListImpressionEvent()
+     //analytics.sendCourseListImpressionEvent()
     fetchContentList()
   }, [ navigation, topic]);
 
@@ -53,7 +53,7 @@ const CourseListScreen = () => {
 
        // console.log("Fetched ContentList:", coursesList)
         setCourseList(coursesList)
-        analytics.sendCourseListPresentedEvent()
+       //analytics.sendCourseListPresentedEvent()
     } catch (error) {
         console.error('Error fetching LiveCategory:', error);
     } finally {
@@ -88,7 +88,7 @@ const handleSave = async (course) => {
  // console.log('isSaved', isSaved);
 
   // Send analytics event
-  analytics.sendCourseSavedEvent(isSaved, course.id);
+  //analytics.sendCourseSavedEvent(isSaved, course.id);
 
   // Perform save/remove action
   if (isSaved) {

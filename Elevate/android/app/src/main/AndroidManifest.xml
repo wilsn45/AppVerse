@@ -1,4 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.nextworklab.elevate">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+xmlns:tools="http://schemas.android.com/tools"
+ package="com.nextworklab.elevate">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -22,8 +24,10 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
-      <meta-data
-          android:name="com.google.android.gms.ads.APPLICATION_ID"
-          android:value="ca-app-pub-4487612939766083~1957203592"/> 
+       <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4487612939766083~1957203592"
+            tools:replace="android:value" />
+  
     </application>
 </manifest>

@@ -5,6 +5,8 @@ import analytics from '@react-native-firebase/analytics';
 enum ActionType {
   IMPRESSION = 'impression',
   CLICK = 'click',
+  NAVIGATION = 'Navigation',
+  NETWORK = 'Network'
 }
 
 interface AnalyticsParams {
@@ -25,12 +27,9 @@ class AnalyticsHelper {
   }
 
   public static async sendEvent(
-    eventId: string,
     eventName: string,
     screen: string,
-    subSection: string,
     actionType: ActionType,
-    option: string,
     params: AnalyticsParams = {}
   ): Promise<void> {
     try {
@@ -40,12 +39,9 @@ class AnalyticsHelper {
       const deviceId = await this.getDeviceId();
 
       const eventData = {
-        eventId,
         eventName,
         screen,
-        subSection,
         actionType,
-        option,
         params,
         metadata: {
           timestamp,
@@ -55,16 +51,13 @@ class AnalyticsHelper {
         },
       };
 
-      //console.log('Sending analytics event:', eventData);
+      console.log('Sending analytics event:', eventData);
 
       // Send data to Google Analytics using Firebase Analytics
       await analytics().logEvent(eventName, {
         ...eventData.params,
-        eventId: eventData.eventId,
         screen: eventData.screen,
-        subSection: eventData.subSection,
         actionType: eventData.actionType,
-        option: eventData.option,
         timestamp: eventData.metadata.timestamp,
         appVersion: eventData.metadata.appVersion,
         deviceOs: eventData.metadata.deviceOs,

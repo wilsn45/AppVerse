@@ -40,15 +40,16 @@ const TopicsScreen = () => {
 
         //console.log("Fetched topicList:", topicList)
         setTopicList(topicList)
-        analytics.sendTopicListPresentedEvent()
+       analytics.sendTopicDataAppearedSuccessEvent()
     } catch (error) {
+      analytics.sendTopicDataAppearedFailedEvent()
         console.error('Error fetching LiveCategory:', error);
     } 
 };
 
 
  const handleTilePress = (item) => {
-    analytics.sendTopicClickedEvent(item.title)
+   analytics.sendTopicClickEvent(item.title)
     navigation.navigate('CourseListScreen', { topic: item.title });
  };
 
