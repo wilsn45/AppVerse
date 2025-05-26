@@ -12,52 +12,76 @@ export class CourseAnalytics {
 
  async sendCourseImpressionEvent() {
     await AnalyticsHelper.sendEvent(
-        '10.0.0',
         'Course_Appeared',
         'Course',
-        '',
         ActionType.IMPRESSION,
-        '',
         { 'courseId': this.courseId}
      );
   }
 
-  async sendCoursePresentedEvent() {
+  async sendCourseDataAppearedSuccessEvent() {
     await AnalyticsHelper.sendEvent(
-        '10.1.0',
-        'Course_Presented',
+        'Course_Data_Appeared_Success',
         'Course',
-        '',
-        ActionType.IMPRESSION,
-        '',
+         ActionType.NETWORK,
+         { 'courseId': this.courseId}
+     );
+  }
+
+  async sendCourseDataAppearedFailedEvent() {
+    await AnalyticsHelper.sendEvent(
+        'Course_Data_Appeared_Failed',
+        'Course',
+         ActionType.NETWORK,
         { 'courseId': this.courseId}
      );
   }
 
-  async sendCourseOpenEvent() {
-     const eventId =   '10.1.1.1' 
-     const eventName =  'Chapter_Opened' 
+   async sendSaveCourseEvent() {
     await AnalyticsHelper.sendEvent(
-      eventId,
-      eventName,
-      'Course_List',
-      'Save',
-      ActionType.CLICK,
-      '',
-      { 'courseId': this.courseId}
-   );
-  }
-
-  async sendBackEvent() {
-    await AnalyticsHelper.sendEvent(
-        '4.4.1.1',
-        'Back_Clicked',
-        'Content_List',
-        'Header',
-        ActionType.CLICK,
-        'Back',
-        { 'courseId': this.courseId}
+        'Save_Course',
+        'Course',
+         ActionType.CLICK,
+        {'courseId': this.courseId}
      );
   }
+
+  async sendRemoveSavedCourseEvent() {
+    await AnalyticsHelper.sendEvent(
+        'Remove_Saved_Course',
+        'Course',
+         ActionType.CLICK,
+        {'courseId':this. courseId}
+     );
+  }
+
+  async sendStartCourseEvent() {
+    await AnalyticsHelper.sendEvent(
+        'Start_Course',
+        'Course',
+         ActionType.CLICK,
+        {'courseId':this. courseId}
+     );
+  }
+
+  async sendLeaveCourseEvent() {
+    await AnalyticsHelper.sendEvent(
+        'Leave_Course',
+        'Course',
+         ActionType.CLICK,
+        {'courseId':this. courseId}
+     );
+  }
+
+  async sendClickOnChapterEvent(chapterId) {
+    await AnalyticsHelper.sendEvent(
+        'Open_Chapter',
+        'Course',
+         ActionType.NAVIGATION,
+        {'courseId':this. courseId, 'chapterId': chapterId}
+     );
+  }
+
+  
 
 }

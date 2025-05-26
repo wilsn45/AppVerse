@@ -30,7 +30,7 @@ const ChapterScreen = () => {
   const [prevChapter, setPrevChapter] = useState(null);
   const [currentChapter, setCurrentChapter] = useState(chapter);
 
-  const analytics = new ChapterAnalytics(chapter.id);
+  const analytics = new ChapterAnalytics();
   const insets = useSafeAreaInsets();
   const footerHeight = 70 + insets.bottom;
   const [chapterDataLoaded, setChapterDataLoaded] = useState(false);
@@ -72,13 +72,15 @@ const ChapterScreen = () => {
   
 
   useEffect(() => {
-    analytics.sendChapterImpressionEvent();
+    try {
+    analytics.sendChapterImpressionEvent(currentChapter.id);
 
     const fetchContent = async () => {
+      
       setChapterDataLoaded(false);
       const doc = await ContentAPIClient.fetchChapter(currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
-
+      analytics.sendChapterDataAppearedSuccessEvent(currentChapter.id)
       //console.log("current chapter", currentChapter)
 
       const nextChapter = await ContentAPIClient.fetchNextChapter(course.id, currentChapter.id)
@@ -111,6 +113,13 @@ const ChapterScreen = () => {
     };
 
     fetchContent();
+
+     } catch (error) {
+        analytics.sendChapterDataAppearedFailedEvent(currentChapter.id)
+        console.error('Error fetching Chapter:', error);
+    } finally {
+        
+    }
   }, [currentChapter]);
 
   const injectedJS = `
@@ -143,6 +152,7 @@ const ChapterScreen = () => {
 
   const onStartCourse = async() => {
     //console.log('Start Course pressed');
+    analytics.sendStartCourseEvent(course.id)
     await OngoingCourseDBHandler.saveOngoingCourse(course)
     await CompletedCourseDBHandler.removeCompletedCourse(course.id)
     setIsOngoingCourse(true)
@@ -150,6 +160,7 @@ const ChapterScreen = () => {
   
   const onNext = () => {
     if (nextChapter) {
+      analytics.sendClickOnNextChaptereEvent(nextChapter.id)
       OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id)
       setCurrentChapter(nextChapter); // Trigger re-render with new data
     }
@@ -157,12 +168,14 @@ const ChapterScreen = () => {
   
   const onPrev = () => {
     if (prevChapter) {
+      analytics.sendClickOnPrevChaptereEvent(prevChapter.id)
       setCurrentChapter(prevChapter);
     }
   };
   
   const onComplete = () => {
     //console.log('Completed pressed');
+    analytics.sendCompleteCourseEvent(course.id)
     OngoingCourseDBHandler.removeOngoingCourse(course.id)
     CompletedCourseDBHandler.completeCourse(course)
     OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id)

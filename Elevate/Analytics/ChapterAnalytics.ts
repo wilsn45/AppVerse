@@ -2,48 +2,69 @@ import { AnalyticsHelper, ActionType } from './AnalyticsHelper';
 
 export class ChapterAnalytics {
 
-  chapterId;
 
-  // Constructor to accept and save the argument
-  constructor(chapterId) {
-    this.chapterId = chapterId;
-  }
-
- async sendChapterImpressionEvent() {
+ async sendChapterImpressionEvent(chapterId) {
     await AnalyticsHelper.sendEvent(
-        '5.0.0',
         'Chapter_Appeared',
-        'Chapter_Detail',
-        '',
-        ActionType.IMPRESSION,
-        '',
-        { 'chapterId': this.chapterId}
-     );
-  }
-
-  async sendChapterPresentedEvent() {
-    await AnalyticsHelper.sendEvent(
-        '5.1.0',
-        'Chapter_Presented',
-        'Chapter_Detail',
         'Chapter',
         ActionType.IMPRESSION,
-        '',
-        { 'chapterId': this.chapterId}
+        { 'chapterId':  chapterId}
      );
   }
 
-
- async sendBackEvent() {
+   async sendChapterDataAppearedSuccessEvent(chapterId) {
     await AnalyticsHelper.sendEvent(
-        '5.4.1.1',
-        'Back_Clicked',
-        'Chapter_List',
-        'Header',
-        ActionType.CLICK,
-        'Back',
-        { 'chapterId': this.chapterId}
+        'Chapter_Data_Appeared_Success',
+        'Chapter',
+         ActionType.NETWORK,
+          { 'chapterId': chapterId}
      );
- }
+  }
 
+  async sendChapterDataAppearedFailedEvent(chapterId) {
+    await AnalyticsHelper.sendEvent(
+        'Chapter_Data_Appeared_Failed',
+        'Chapter',
+         ActionType.NETWORK,
+         { 'chapterId': chapterId}
+     );
+  }
+
+  async sendStartCourseEvent(courseId) {
+    await AnalyticsHelper.sendEvent(
+        'Start_Course',
+        'Chapter',
+        ActionType.CLICK,
+        { 'courseId': courseId}
+     );
+  }
+
+  async sendCompleteCourseEvent(courseId) {
+    await AnalyticsHelper.sendEvent(
+        'Complete_Course',
+        'Chapter',
+        ActionType.CLICK,
+        { 'courseId': courseId}
+     );
+  }
+
+  async sendClickOnNextChaptereEvent(chapterId) {
+    await AnalyticsHelper.sendEvent(
+        'Open_Next_Chapter',
+        'Chapter',
+        ActionType.NAVIGATION,
+        { 'chapterId': chapterId}
+     );
+  }
+
+   async sendClickOnPrevChaptereEvent(chapterId) {
+    await AnalyticsHelper.sendEvent(
+        'Open_Prev_Chapter',
+        'Chapter',
+        ActionType.NAVIGATION,
+        { 'chapterId': chapterId}
+     );
+  }
+
+  
 }

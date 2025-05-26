@@ -39,7 +39,7 @@ const CourseScreen = () => {
   const analytics = new CourseAnalytics(course.id)
 
   useEffect(() => {
-     //analytics.sendCourseImpressionEvent()
+     analytics.sendCourseImpressionEvent()
 
      fetchChapterList()
   }, [ navigation, course]);
@@ -68,8 +68,9 @@ const CourseScreen = () => {
         setChapterList(updatedChapters)
 
 
-        //analytics.sendCoursePresentedEvent()
+        analytics.sendCourseDataAppearedSuccessEvent()
     } catch (error) {
+        analytics.sendCourseDataAppearedFailedEvent()
         console.error('Error fetching LiveCategory:', error);
     } finally {
         
@@ -85,8 +86,10 @@ useFocusEffect(
 
 const changeCourseEnroll = async () => { 
   if (isOngoingCourse) {
+    analytics.sendLeaveCourseEvent()
     await OngoingCourseDBHandler.removeOngoingCourse(course.id)
   } else {
+    analytics.sendStartCourseEvent()
     await CompletedCourseDBHandler.removeCompletedCourse(course.id)
     await OngoingCourseDBHandler.saveOngoingCourse(course)
     let firstChapter = chaptereList[0]
@@ -98,7 +101,7 @@ const changeCourseEnroll = async () => {
 
 
 const onChapterPress = async (content) => {
- // analytics.sendCourseOpenEvent()
+   analytics.sendClickOnChapterEvent(content.id)
   console.log('chapterId', content);
   navigation.navigate('ChapterScreen', { course: course, chapter: content });
 };
@@ -107,9 +110,10 @@ const onToggleSave = async () => {
     const isSaved = isCourseSaved;
     
     if (isSaved) {
+      analytics.sendRemoveSavedCourseEvent()
       await SaveDBHandler.removeCourse(course.id);
     } else {
-     // console.log("Saving Item", content)
+      analytics.sendSaveCourseEvent()
       await SaveDBHandler.saveCourse(course);
     }
     // Update only the savedCards state here
