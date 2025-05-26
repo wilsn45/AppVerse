@@ -29,10 +29,10 @@ const CourseListScreen = () => {
   const [savedCourses, setSavedCourses] = useState<Map<string, boolean>>(new Map());
   
 
-  const analytics = new CourseListAnalytics(topic)
+  const analytics = new CourseListAnalytics()
 
   useEffect(() => {
-     //analytics.sendCourseListImpressionEvent()
+     analytics.sendCourseListImpressionEvent(topic)
     fetchContentList()
   }, [ navigation, topic]);
 
@@ -53,9 +53,10 @@ const CourseListScreen = () => {
 
        // console.log("Fetched ContentList:", coursesList)
         setCourseList(coursesList)
-       //analytics.sendCourseListPresentedEvent()
+       analytics.sendCourseListDataAppearedSuccessEvent(topic)
     } catch (error) {
-        console.error('Error fetching LiveCategory:', error);
+      analytics.sendCourseListDataAppearedFailedEvent(topic)
+      console.error('Error fetching LiveCategory:', error);
     } finally {
         
     }
@@ -92,8 +93,10 @@ const handleSave = async (course) => {
 
   // Perform save/remove action
   if (isSaved) {
+    analytics.sendRemoveSavedCourseEvent(course.id)
     await SaveDBHandler.removeCourse(course.id);
   } else {
+    analytics.sendSaveCourseEvent(course.id)
     await SaveDBHandler.saveCourse(course);
   }
 
@@ -144,6 +147,7 @@ useFocusEffect(
 
 
 const handleCardPress = (course) => {
+  analytics.sendClickOnCourseEvent(course.id)
   navigation.navigate('CourseScreen', { course: course });
 };
   

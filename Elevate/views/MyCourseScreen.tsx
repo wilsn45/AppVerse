@@ -7,7 +7,7 @@ import { CompletedCourseDBHandler } from '../DBHandler/CompletedCourseDBHandler'
 import { OngoingCourseDBHandler } from '../DBHandler/OngoingCourseDBHandler';
 import { NotificationDBHandler } from '../DBHandler/NotificationDBHandler';
 import theme from '../Theme/Theme';
-import { SaveAnalytics } from '../Analytics/SaveAnalytics';
+import { MyCourseAnalytics } from '../Analytics/MyCourseAnalytics';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import {  useRoute } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -20,7 +20,7 @@ const MyCourseScreen = () => {
   const [searchedCards, setSearchedCards] = useState([]);
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
-  const analytics = new SaveAnalytics()
+  const analytics = new MyCourseAnalytics()
   const [selectedTab, setSelectedTab] = useState('Saved');
 
   const route = useRoute();
@@ -28,11 +28,12 @@ const MyCourseScreen = () => {
 
   const fetchSavedCourses = async () => {
     try {
+      analytics.sendMyCourseImpressionEvent()
       const savedCourses = await SaveDBHandler.getSavedCourses();
       const ongoingCourses = await OngoingCourseDBHandler.getOngoingingCourses()
       const completedCourses = await CompletedCourseDBHandler.getCompletedCourses()
       const notifyCourseData = await NotificationDBHandler.getNotificationCourse();
-       console.log("Notify Course", notifyCourseData)
+      // console.log("Notify Course", notifyCourseData)
 
           const filteredNotifyCourses = notifyCourseData
                 .map(n => n.courseId)
@@ -94,10 +95,13 @@ const MyCourseScreen = () => {
   const handleRightAction = async (id) => {
     try {
       if (selectedTab === 'Saved') {
+        analytics.sendRemoveFromSavedCourseEvent(id)
         await SaveDBHandler.removeCourse(id);
       } else if (selectedTab === 'In Progress') {
+          analytics.sendRemoveFromInProgressCourseEvent(id)
           await OngoingCourseDBHandler.removeOngoingCourse(id);
       }  else {
+        analytics.sendRemoveFromCompletedCourseEvent(id)
         await CompletedCourseDBHandler.removeCompletedCourse(id);
      }
       fetchSavedCourses();
@@ -107,7 +111,7 @@ const MyCourseScreen = () => {
   };
 
   const handleCardPress = (course) => {
-    analytics.sendContentOpenEvent( course.id);
+    analytics.sendClickOnCourseEvent( course.id);
     navigation.navigate('CourseScreen', { course: course });
   };
 
@@ -128,9 +132,20 @@ const MyCourseScreen = () => {
 
   const getCardsForSelectedTab = () => {
     let cards = [];
-    if (selectedTab === 'Saved') cards = allSavedCourses;
-    else if (selectedTab === 'In Progress') cards = ongoingCourses;
-    else if (selectedTab === 'Completed') cards = completedCourses;
+    if (selectedTab === 'Saved') 
+      { 
+        analytics.sendViewSavedCourseImpressionEvent()
+        cards = allSavedCourses;
+      }
+    else if (selectedTab === 'In Progress')  
+      { 
+        analytics.sendViewInProgressCourseImpressionEvent()
+        cards = ongoingCourses; 
+      }
+    else if (selectedTab === 'Completed') {
+      analytics.sendViewCompletedCourseImpressionEvent()
+      cards = completedCourses; 
+    }
 
     return cards.filter((item) =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase())

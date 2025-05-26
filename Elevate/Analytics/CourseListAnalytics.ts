@@ -2,63 +2,62 @@ import { AnalyticsHelper, ActionType } from './AnalyticsHelper';
 
 export class CourseListAnalytics {
 
-   topic;
-
-    // Constructor to accept and save the argument
-    constructor(topic) {
-      this.topic = topic;
-    }
-  
-
- async sendCourseListImpressionEvent() {
+ async sendCourseListImpressionEvent(topic) {
     await AnalyticsHelper.sendEvent(
-        '4.0.0',
         'Course_List_Appeared',
         'Course_List',
-        '',
-        ActionType.IMPRESSION,
-        '',
-        { 'topic': this.topic}
+         ActionType.IMPRESSION,
+        {'topic': topic }
      );
   }
 
-  async sendCourseListPresentedEvent() {
+  async sendCourseListDataAppearedSuccessEvent(topic) {
     await AnalyticsHelper.sendEvent(
-        '4.1.0',
-        'Course_List_Presented',
+        'Course_List_Data_Appeared_Success',
         'Course_List',
-        '',
-        ActionType.IMPRESSION,
-        '',
-        { 'topic': this.topic}
+         ActionType.NETWORK,
+         {'topic': topic }
      );
   }
 
-  async sendCourseSavedEvent(isSave, courseId) {
-    const optionType =  isSave ? 'Save' : 'Remove'
-     const eventId =  isSave ? '4.1.1.1' : '4.1.1.2'
-     const eventName =  isSave ? 'Course_Saved' : 'Course_Saved_Removed'
+  async sendCourseListDataAppearedFailedEvent(topic) {
     await AnalyticsHelper.sendEvent(
-      eventId,
-      eventName,
-      'Course_List',
-      'Save',
-      ActionType.CLICK,
-      optionType,
-      { 'topic': this.topic, 'courseId': courseId}
-   );
-  }
-
-  async sendBackEvent() {
-    await AnalyticsHelper.sendEvent(
-        '4.4.1.1',
-        'Back_Clicked',
-        'Content_List',
-        'Header',
-        ActionType.CLICK,
-        'Back',
-        { 'topic': this.topic}
+        'Course_List_Data_Appeared_Failed',
+        'Course_List',
+         ActionType.NETWORK,
+        {'topic': topic }
      );
   }
+
+  async sendClickOnCourseEvent(courseId) {
+    await AnalyticsHelper.sendEvent(
+        'Open_Course',
+        'Course_List',
+         ActionType.NAVIGATION,
+        {'courseId': courseId}
+     );
+  }
+
+  async sendSaveCourseEvent(courseId) {
+    await AnalyticsHelper.sendEvent(
+        'Save_Course',
+        'Course_List',
+         ActionType.CLICK,
+        {'courseId': courseId}
+     );
+  }
+
+  async sendRemoveSavedCourseEvent(courseId) {
+    await AnalyticsHelper.sendEvent(
+        'Remove_Saved_Course',
+        'Course_List',
+         ActionType.CLICK,
+        {'courseId': courseId}
+     );
+  }
+
+  
+
+  
 
 }
