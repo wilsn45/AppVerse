@@ -80,26 +80,19 @@ const App = () => {
     checkOnboardingStatus();
   }, []);
 
-  useEffect(() => {
-  const subscription = AppState.addEventListener('change', (state) => {
-    if (state === 'active') {
-      mobileAds()
-        .initialize()
-        .then(() => {
-          console.log('AdMob initialized');
-        })
-        .catch((err) => {
-          console.log('AdMob init error', err);
-        });
-      subscription.remove(); // Call only once
-    }
-  });
-
-  return () => subscription.remove();
-}, []);
+   useEffect(() => {
+    mobileAds()
+      .initialize()
+      .then((adapterStatuses) => {
+        console.log('AdMob initialized successfully:', adapterStatuses);
+        // You can log adapterStatuses for more details on each ad network's status
+      })
+      .catch((err) => {
+        console.error('AdMob initialization error:', err);
+      });
+  }, []);
 
  
-
   return (
     <NavigationContainer>
       <Stack.Navigator  screenOptions={{

@@ -38,8 +38,8 @@ const ChapterScreen = () => {
   const [isCourseCompleted, setisCourseCompleted] = useState(false);
 
   const interstitialAdUnitId = Platform.select({
-  ios: AdMobDBManager.IOS_APP_ID,
-  android: AdMobDBManager.ANDROID_APP_ID,
+  ios: AdMobDBManager.IOS_INTERSTITIAL_AD_ID,
+  android: AdMobDBManager.ANDROID_INTERSTITIAL_AD_ID,
   default: TestIds.INTERSTITIAL, // fallback to test ID if none found
 });
 
@@ -48,26 +48,46 @@ const ChapterScreen = () => {
 })
 
   async function showInterstitialAd() {
-  const shouldShowAd = await AdMobDBManager.showInterstitialAds();
+  return new Promise((resolve, reject) => {
+    try {
+      // const shouldShowAd = true; // or await AdMobDBManager.showInterstitialAds();
 
-  if (shouldShowAd) {
-    // Load the ad
-    interstitial.load();
+      // if (!shouldShowAd) return resolve();
 
-    // Listen for ad events
-    const unsubscribe = interstitial.onAdEvent((type) => {
-      if (type === AdEventType.LOADED) {
-        interstitial.show();
-      }
-      if (type === AdEventType.CLOSED) {
-        unsubscribe(); // Clean up listener after ad is closed
-      }
-      if (type === AdEventType.ERROR) {
-        console.log('Interstitial Ad failed to load');
-        unsubscribe();
-      }
-    });
-  }
+      const unsubscribeLoaded = interstitial.addAdEventListener(
+        AdEventType.LOADED,
+        () => {
+          interstitial.show();
+        }
+      );
+
+      const unsubscribeClosed = interstitial.addAdEventListener(
+        AdEventType.CLOSED,
+        () => {
+          unsubscribeLoaded();
+          unsubscribeClosed();
+          unsubscribeError();
+          resolve();
+        }
+      );
+
+      const unsubscribeError = interstitial.addAdEventListener(
+        AdEventType.ERROR,
+        (error) => {
+          unsubscribeLoaded();
+          unsubscribeClosed();
+          unsubscribeError();
+          console.log('Interstitial Ad Error:', error);
+          reject(error);
+        }
+      );
+
+      interstitial.load();
+    } catch (error) {
+      console.log('Ad load exception:', error);
+      reject(error);
+    }
+  });
 }
   
 
@@ -99,14 +119,14 @@ const ChapterScreen = () => {
 
       setChapterDataLoaded(true);
 
-      const shouldShowAd = await AdMobDBManager.showInterstitialAds();
+      const shouldShowAd =  await AdMobDBManager.showInterstitialAds();
       if (shouldShowAd) {
          console.log('Show Ads');
       try {
              await showInterstitialAd();
               console.log('Ad closed, continue app flow');
          } catch {
-           console.log('Ad failed or was not shown');
+           console.log('Ad failed or was not shown:', error);
          }
     }
 

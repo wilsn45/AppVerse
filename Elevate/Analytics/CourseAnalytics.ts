@@ -81,7 +81,4 @@ export class CourseAnalytics {
         {'courseId':this. courseId, 'chapterId': chapterId}
      );
   }
-
-  
-
 }

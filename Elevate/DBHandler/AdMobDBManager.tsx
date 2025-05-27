@@ -6,6 +6,10 @@ export class AdMobDBManager {
   public static readonly ANDROID_APP_ID = 'ca-app-pub-4487612939766083~1957203592';
   public static readonly IOS_APP_ID = 'ca-app-pub-4487612939766083~1872593054';
 
+  static IOS_INTERSTITIAL_AD_ID = 'ca-app-pub-4487612939766083/2365000345';
+  // static ANDROID_INTERSTITIAL_AD_ID = 'ca-app-pub-4487612939766083/2365000345';
+   static ANDROID_INTERSTITIAL_AD_ID = 'ca-app-pub-3940256099942544/1033173712';
+
 
   static async showInterstitialAds(): Promise<boolean> {
     try {
