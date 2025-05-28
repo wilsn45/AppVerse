@@ -3,6 +3,7 @@ import { NativeModules } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import DeviceInfo from 'react-native-device-info';
 import { Platform } from 'react-native';
+import { AdMobDBHandler } from '../DBHandler/AdMobDBHandler';
 const { InstallReferrer } = NativeModules;
 
 export default class UserReferrerAPI {
@@ -22,6 +23,7 @@ export default class UserReferrerAPI {
 }
 
 static async saveReferralData() {
+  console.log('Updating Referrer');
   if (Platform.OS !== 'android') {
     return;
   }
@@ -40,12 +42,14 @@ static async saveReferralData() {
         deviceId,
         createdAt: firestore.FieldValue.serverTimestamp(),
       });
-      console.log('Referral data saved to Firebase');
+      AdMobDBHandler.setReferStateDone()
+      //console.log('Referral data saved to Firebase');
     } else {
-      console.log('Referral already exists. Skipping save.');
+      AdMobDBHandler.setReferStateDone()
+      //console.log('Referral already exists. Skipping save.');
     }
   } catch (error) {
-    console.error('Failed to get or save referrer:', error);
+    //console.error('Failed to get or save referrer:', error);
   }
 }
 

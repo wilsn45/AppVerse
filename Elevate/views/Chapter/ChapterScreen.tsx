@@ -14,7 +14,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
 import UserReferrerAPI  from '../../APIClients/UserReferrerAPI.tsx';
 import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.tsx';
-import { AdMobDBManager } from '../../DBHandler/AdMobDBManager.tsx';
+import { AdMobDBHandler } from '../../DBHandler/AdMobDBHandler.tsx';
 import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -39,8 +39,8 @@ const ChapterScreen = () => {
   const [isCourseCompleted, setisCourseCompleted] = useState(false);
 
   const interstitialAdUnitId = Platform.select({
-  ios: AdMobDBManager.IOS_INTERSTITIAL_AD_ID,
-  android: AdMobDBManager.ANDROID_INTERSTITIAL_AD_ID,
+  ios: AdMobDBHandler.IOS_INTERSTITIAL_AD_ID,
+  android: AdMobDBHandler.ANDROID_INTERSTITIAL_AD_ID,
   default: TestIds.INTERSTITIAL, // fallback to test ID if none found
 });
 
@@ -51,10 +51,7 @@ const ChapterScreen = () => {
   async function showInterstitialAd() {
   return new Promise((resolve, reject) => {
     try {
-      // const shouldShowAd = true; // or await AdMobDBManager.showInterstitialAds();
-
-      // if (!shouldShowAd) return resolve();
-
+ 
       let unsubscribeLoaded: () => void;
       let unsubscribeClosed: () => void;
       let unsubscribeError: () => void;
@@ -134,7 +131,7 @@ const ChapterScreen = () => {
 
       setChapterDataLoaded(true);
 
-      const shouldShowAd =  await AdMobDBManager.showInterstitialAds();
+      const shouldShowAd =  await AdMobDBHandler.showInterstitialAds();
      
       if (shouldShowAd) {
          console.log('Show Ads');

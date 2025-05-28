@@ -15,6 +15,7 @@ import SplashScreen from './views/GetStarted/SplashScreen.tsx';
 import UserReferrerAPI from './APIClients/UserReferrerAPI.tsx'; 
 import theme from './Theme/Theme';
 import mobileAds from 'react-native-google-mobile-ads';
+import {AdMobDBHandler} from './DBHandler/AdMobDBHandler.tsx'; 
 
 
 const Stack = createStackNavigator();
@@ -73,6 +74,11 @@ const App = () => {
 
   useEffect(() => {
    const updateReferrer = async () => {
+    const alreadyReferred = await AdMobDBHandler.getReferState();
+        if (alreadyReferred) {
+          console.log("Alread Referred, Returning")
+           return;
+       }
        await UserReferrerAPI.saveReferralData();
     };
     
@@ -93,11 +99,11 @@ const App = () => {
     mobileAds()
       .initialize()
       .then((adapterStatuses) => {
-        console.log('AdMob initialized successfully:', adapterStatuses);
+        //console.log('AdMob initialized successfully:', adapterStatuses);
         // You can log adapterStatuses for more details on each ad network's status
       })
       .catch((err) => {
-        console.error('AdMob initialization error:', err);
+        //console.error('AdMob initialization error:', err);
       });
   }, []);
 
