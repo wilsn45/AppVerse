@@ -225,6 +225,7 @@ const MyCourseScreen = () => {
   data={filteredCards}
   keyExtractor={(item) => item.id}
   renderItem={({ item }) => (
+     <View style={styles.rowFront}> {/* Prevent swipe bleed-over */}
     <TouchableOpacity
       style={[styles.cardView]}
       onPress={() => handleCardPress(item)}
@@ -262,9 +263,10 @@ const MyCourseScreen = () => {
         <Image source={{ uri: item.thumbnail }} style={styles.tileImage} />
       </View>
     </TouchableOpacity>
+     </View>
   )}
   renderHiddenItem={({ item }) => (
-    <View style={{ flex: 1, justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-end', borderRadius: 10 }}>
       <TouchableOpacity
         style={styles.deleteButton}
         onPress={() => handleRightAction(item.id)}
@@ -278,6 +280,7 @@ const MyCourseScreen = () => {
   contentContainerStyle={
     filteredCards.length === 0 ? styles.emptyContainer : styles.taskList
   }
+  disableRightSwipe={true}
   ListEmptyComponent={
     <View style={styles.noTaskView}>
       <Text style={styles.emptyText}>Nothing here yet...</Text>
@@ -296,6 +299,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     padding: 10,
   },
+  rowFront: {
+  backgroundColor: theme.colors.backgroundWhite,
+  borderRadius: 10,
+  overflow: 'hidden',
+},
   tabBarContainer: {
     flexDirection: 'row',
     borderBottomWidth: 1,
@@ -305,7 +313,6 @@ const styles = StyleSheet.create({
   cardView: {
     flexDirection: 'row',
     backgroundColor: theme.colors.backgroundWhite,
-    borderRadius: 8,
     padding: 10,
     gap: 10,
     alignItems: 'flex-start',
@@ -315,14 +322,13 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.greyLight2,
   },
   deleteButton: {
-  backgroundColor: 'red',
+  backgroundColor: theme.colors.red2,
   justifyContent: 'center',
   alignItems: 'center',
   width: 75,
   height: '100%',
-  borderRadius: 8,
-  borderTopRightRadius: 8,
-  borderBottomRightRadius: 8,
+  borderTopRightRadius: 10,
+  borderBottomRightRadius: 10,
 },
   leftCardView: {
     flex: 1,
