@@ -2,7 +2,7 @@ import React from 'react';
 import { NativeModules } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import DeviceInfo from 'react-native-device-info';
-
+import { Platform } from 'react-native';
 const { InstallReferrer } = NativeModules;
 
 export default class UserReferrerAPI {
@@ -21,42 +21,43 @@ export default class UserReferrerAPI {
   return params;
 }
 
-  static async saveReferralData(): Promise<void> {
-    try {
-      
-       const referrer: string = await InstallReferrer.getReferrer();
-       const params = this.parseReferrerString(referrer);
-      const influencerCode = params['utm_source'] || 'Organic';
-      const deviceId =  await DeviceInfo.getUniqueId();
-
-      const docRef = firestore().collection('UserReferrals').doc(deviceId); // just the reference
-      const docSnapshot = await docRef.get(); // fetch snapshot using .get()
-       console.log("Add influencer entry");
-       console.log("Add influencer entry 2", docSnapshot);
-      if (!docSnapshot.exists) {
-          console.log("Add influencer entry 3");
-           await docRef.set({
-               influencerCode,
-               deviceId,
-              referrer,
-              createdAt: firestore.FieldValue.serverTimestamp(),
-        });
-      console.log('Referral data saved to Firebase');
-      } else {
-          console.log('Referral already exists. Skipping save.');
-      }
-    } catch (error) {
-      console.error('Failed to get or save referrer:', error);
-    }
+static async saveReferralData() {
+  if (Platform.OS !== 'android') {
+    return;
   }
+  try {
+    const referrer = await InstallReferrer.getReferrer();
+    const params = this.parseReferrerString(referrer);
+    const influencerCode =  params['utm_source'] || 'Organic';
+    const deviceId = await DeviceInfo.getUniqueId();
 
-  static async addAdImpression(courseId: string, chapterId: string): Promise<void> {
+    const docRef = firestore().collection('UserReferrals').doc(deviceId);
+    const docSnapshot = await docRef.get();
+
+    if (!docSnapshot.exists) {
+      await docRef.set({
+        influencerCode,
+        deviceId,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+      });
+      console.log('Referral data saved to Firebase');
+    } else {
+      console.log('Referral already exists. Skipping save.');
+    }
+  } catch (error) {
+    console.error('Failed to get or save referrer:', error);
+  }
+}
+
+
+
+ static async addAdImpression(courseId, chapterId) {
   try {
     const deviceId = await DeviceInfo.getUniqueId();
     const docRef = firestore().collection('AdsImpression').doc(deviceId);
 
     const newEntry = {
-      timestamp: firestore.Timestamp.now(), // avoid using serverTimestamp() for local processing
+      timestamp: firestore.Timestamp.now(),
       courseId,
       chapterId,
     };
@@ -68,9 +69,8 @@ export default class UserReferrerAPI {
     if (docSnapshot.exists) {
       const data = docSnapshot.data();
       const currentList = Array.isArray(data?.InterstitialList) ? data.InterstitialList : [];
-      //console.log('Current InterstitialList:', currentList);
       updatedList = [...currentList, newEntry];
-      //console.log('currentList type:', typeof currentList, Array.isArray(currentList), currentList);
+      console.log('Impression Added')
     } else {
       updatedList = [newEntry];
     }
@@ -82,9 +82,9 @@ export default class UserReferrerAPI {
       { merge: true }
     );
 
-   // console.log('Ad impression updated successfully:', newEntry);
   } catch (error) {
     console.error('Failed to log ad impression:', error);
   }
 }
+  
 }

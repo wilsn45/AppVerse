@@ -134,16 +134,8 @@ const ChapterScreen = () => {
 
       setChapterDataLoaded(true);
 
-      const shouldShowAd =  false // await AdMobDBManager.showInterstitialAds();
+      const shouldShowAd =  await AdMobDBManager.showInterstitialAds();
      
-
-       UserReferrerAPI.saveReferralData()
-            .then(() => {
-            })
-            .catch(error => {
-              console.error('Error logging ad impression:', error);
-            });
-
       if (shouldShowAd) {
          console.log('Show Ads');
       try {

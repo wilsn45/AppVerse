@@ -72,7 +72,12 @@ const App = () => {
   const [isOnboarded, setIsOnboarded] = useState<boolean>(false);
 
   useEffect(() => {
-    UserReferrerAPI.saveReferralData();
+   const updateReferrer = async () => {
+       await UserReferrerAPI.saveReferralData();
+    };
+    
+    updateReferrer();
+
   }, []);
 
   useEffect(() => {
