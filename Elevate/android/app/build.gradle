@@ -123,6 +123,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-analytics")
      implementation("com.google.firebase:firebase-crashlytics")
+    implementation 'com.android.installreferrer:installreferrer:2.2'
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

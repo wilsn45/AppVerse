@@ -12,10 +12,10 @@ import ChapterScreen from './views/Chapter/ChapterScreen.tsx';
 import MyCourseScreen from './views/MyCourseScreen.tsx';
 import LetsStartScreen from './views/GetStarted/LetsStartScreen.tsx'; 
 import SplashScreen from './views/GetStarted/SplashScreen.tsx'; 
-import ProfileDBHandler from './DBHandler/ProfileDBHandler.tsx'; 
+import UserReferrerAPI from './APIClients/UserReferrerAPI.tsx'; 
 import theme from './Theme/Theme';
 import mobileAds from 'react-native-google-mobile-ads';
-import { AppState } from 'react-native';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -70,6 +70,10 @@ const TabNavigator = () => {
 
 const App = () => {
   const [isOnboarded, setIsOnboarded] = useState<boolean>(false);
+
+  useEffect(() => {
+    UserReferrerAPI.saveReferralData();
+  }, []);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {

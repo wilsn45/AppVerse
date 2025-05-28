@@ -17,7 +17,7 @@ export class OngoingCourseDBHandler {
         courses[courseId].push(chapterId);
       }
 
-      console.log("Ongoing Course:", courses[courseId])
+      //console.log("Ongoing Course:", courses[courseId])
 
       await AsyncStorage.setItem(this.STORAGE_KEY_CHAPTERS, JSON.stringify(courses));
     } catch (error) {

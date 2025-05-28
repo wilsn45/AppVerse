@@ -12,6 +12,7 @@ import theme from '../../Theme/Theme';
 import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
+import UserReferrerAPI  from '../../APIClients/UserReferrerAPI.tsx';
 import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.tsx';
 import { AdMobDBManager } from '../../DBHandler/AdMobDBManager.tsx';
 import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
@@ -54,24 +55,38 @@ const ChapterScreen = () => {
 
       // if (!shouldShowAd) return resolve();
 
-      const unsubscribeLoaded = interstitial.addAdEventListener(
+      let unsubscribeLoaded: () => void;
+      let unsubscribeClosed: () => void;
+      let unsubscribeError: () => void;
+
+      unsubscribeLoaded = interstitial.addAdEventListener(
         AdEventType.LOADED,
         () => {
           interstitial.show();
         }
       );
 
-      const unsubscribeClosed = interstitial.addAdEventListener(
+      unsubscribeClosed = interstitial.addAdEventListener(
         AdEventType.CLOSED,
         () => {
-          unsubscribeLoaded();
-          unsubscribeClosed();
-          unsubscribeError();
-          resolve();
+          // Safely unsubscribe
+          unsubscribeLoaded && unsubscribeLoaded();
+          unsubscribeClosed && unsubscribeClosed();
+          unsubscribeError && unsubscribeError();
+
+          // Log ad impression
+          UserReferrerAPI.addAdImpression(course.id, currentChapter.id)
+            .then(() => {
+              resolve();
+            })
+            .catch(error => {
+              console.error('Error logging ad impression:', error);
+              reject(error);
+            });
         }
       );
 
-      const unsubscribeError = interstitial.addAdEventListener(
+       unsubscribeError = interstitial.addAdEventListener(
         AdEventType.ERROR,
         (error) => {
           unsubscribeLoaded();
@@ -119,12 +134,22 @@ const ChapterScreen = () => {
 
       setChapterDataLoaded(true);
 
-      const shouldShowAd =  await AdMobDBManager.showInterstitialAds();
+      const shouldShowAd =  false // await AdMobDBManager.showInterstitialAds();
+     
+
+       UserReferrerAPI.saveReferralData()
+            .then(() => {
+            })
+            .catch(error => {
+              console.error('Error logging ad impression:', error);
+            });
+
       if (shouldShowAd) {
          console.log('Show Ads');
       try {
              await showInterstitialAd();
-              console.log('Ad closed, continue app flow');
+             console.log('Ad closed, continue app flow');
+            
          } catch {
            console.log('Ad failed or was not shown:', error);
          }
