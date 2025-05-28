@@ -271,7 +271,7 @@ const MyCourseScreen = () => {
         style={styles.deleteButton}
         onPress={() => handleRightAction(item.id)}
       >
-        <Ionicons name= {selectedTab === 'In Progress' ? "exit-outline": 'trash'} size={30} color={theme.colors.white} />
+        <Ionicons name= {selectedTab === 'In Progress' ? "exit-outline": 'trash'} size={36} color={theme.colors.white} />
       </TouchableOpacity>
     </View>
   )}
@@ -324,11 +324,11 @@ const styles = StyleSheet.create({
   deleteButton: {
   backgroundColor: theme.colors.red2,
   justifyContent: 'center',
-  alignItems: 'center',
-  width: 75,
+  alignItems: 'flex-end',
+  paddingRight: 20,
+  width: '100%',
   height: '100%',
-  borderTopRightRadius: 10,
-  borderBottomRightRadius: 10,
+  borderRadius: 10,
 },
   leftCardView: {
     flex: 1,
