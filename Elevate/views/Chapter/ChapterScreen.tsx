@@ -18,6 +18,7 @@ import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.t
 import { AdMobDBHandler } from '../../DBHandler/AdMobDBHandler.tsx';
 import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AudioPlayer from './AudioPlayer'; 
 
 
 
@@ -26,6 +27,7 @@ const ChapterScreen = () => {
   const navigation = useNavigation();
   const { course,chapterList, index } = route.params;
   const [htmlContent, setHtmlContent] = useState('');
+  const [audioURL, setAudioURL] = useState('');
   const [markedRead, setMarkedRead] = useState(false);
   const [nextChapter, setNextChapter] = useState(null);
   const [prevChapter, setPrevChapter] = useState(null);
@@ -45,7 +47,7 @@ const ChapterScreen = () => {
   const onModeChange = (mode) => {
     if (selectedMode !== mode) {
       setSelectedMode(mode);
-      console.log('Mode changed to:', mode);
+     // console.log('Mode changed to:', mode);
       // Call your callback function here
       // handleModeChange(mode);
     }
@@ -105,9 +107,10 @@ const ChapterScreen = () => {
       setChapterDataLoaded(false);
       const doc = await ContentAPIClient.fetchChapter(currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
+      setAudioURL(doc?.audioURL || '');
       analytics.sendChapterDataAppearedSuccessEvent(currentChapter.id)
       
-      console.log("current chapter", currentChapter)
+      //console.log("current chapter", currentChapter)
 
       const index = chapterList.findIndex(ch => ch.id === currentChapter.id);
       
@@ -124,7 +127,7 @@ const ChapterScreen = () => {
       const shouldShowAd =  await AdMobDBHandler.showInterstitialAds();
      
      if (shouldShowAd) {
-        console.log('Show Ads');
+       // console.log('Show Ads');
 
      try {
         //  await AdMobAPIClient.showInterstitialAd();
@@ -150,15 +153,15 @@ const ChapterScreen = () => {
 
   const setPrevAndNextChapters = (index) => {
      //console.log("chapterList", chapterList)
-    console.log("index", index)
+   // console.log("index", index)
     const prevChapter = index > 0 ? chapterList[index - 1] : null;
     const nextChapter = index < chapterList.length - 1 ? chapterList[index + 1] : null;
     setNextChapter(nextChapter);
     setPrevChapter(prevChapter);
     setCurrentIndex(index);
 
-    console.log("next chapter", nextChapter)
-    console.log("prev chapter", prevChapter)
+   // console.log("next chapter", nextChapter)
+    //console.log("prev chapter", prevChapter)
   };
 
   const injectedJS = `
@@ -228,19 +231,29 @@ const ChapterScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.mainContent}>
-        {htmlContent ? (
-          <WebView
-            originWhitelist={['*']}
-            source={{ html: htmlContent }}
-            style={styles.webView}
-            injectedJavaScript={injectedJS}
-            onMessage={handleWebViewMessage}
-          />
-        ) : (
-          <View style={styles.emptyDataView}>
-            <Text style={styles.emptyDataLabel}>Loading...</Text>
-          </View>
-        )}
+        {selectedMode === 'read' ? (
+        htmlContent ? (
+    <WebView
+      originWhitelist={['*']}
+      source={{ html: htmlContent }}
+      style={styles.webView}
+      injectedJavaScript={injectedJS}
+      onMessage={handleWebViewMessage}
+    />
+      ) : (
+       <View style={styles.emptyDataView}>
+         <Text style={styles.emptyDataLabel}>Loading...</Text>
+        </View>
+      )
+      ) : (
+           <AudioPlayer
+            chapterList={chapterList}
+            currentIndex={currentIndex}
+            courseId= {course.id}
+             thumbnailUrl={course.thumbnail}
+           
+            />
+    )}
       </View>
 
       {/* Footer Section */}

@@ -66,5 +66,23 @@ export class ChapterAnalytics {
      );
   }
 
+  async sendClickOnNextChaptereAudioEvent(chapterId) {
+    await AnalyticsHelper.sendEvent(
+        'Play_Next_Audio',
+        'Chapter',
+        ActionType.NAVIGATION,
+        { 'chapterId': chapterId}
+     );
+  }
+
+   async sendClickOnPrevChaptereAudioEvent(chapterId) {
+    await AnalyticsHelper.sendEvent(
+        'Play_Prev_Audio',
+        'Chapter',
+        ActionType.NAVIGATION,
+        { 'chapterId': chapterId}
+     );
+  }
+
   
 }

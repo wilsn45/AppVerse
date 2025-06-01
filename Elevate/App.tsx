@@ -18,6 +18,7 @@ import mobileAds from 'react-native-google-mobile-ads';
 import {AdMobDBHandler} from './DBHandler/AdMobDBHandler.tsx'; 
 
 
+
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -83,7 +84,6 @@ const App = () => {
     };
     
     updateReferrer();
-
   }, []);
 
   useEffect(() => {
