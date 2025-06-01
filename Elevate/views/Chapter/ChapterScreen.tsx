@@ -13,23 +13,25 @@ import { WebView } from 'react-native-webview';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
 import UserReferrerAPI  from '../../APIClients/UserReferrerAPI.tsx';
+import AdMobAPIClient  from '../../APIClients/AdMobAPIClient.tsx';
 import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.tsx';
 import { AdMobDBHandler } from '../../DBHandler/AdMobDBHandler.tsx';
 import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
 
 
 const ChapterScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { course,chapter } = route.params;
+  const { course,chapterList, index } = route.params;
   const [htmlContent, setHtmlContent] = useState('');
   const [markedRead, setMarkedRead] = useState(false);
   const [nextChapter, setNextChapter] = useState(null);
   const [prevChapter, setPrevChapter] = useState(null);
-  const [currentChapter, setCurrentChapter] = useState(chapter);
+  const [currentChapter, setCurrentChapter] = useState(chapterList[index]);
+  const [currentIndex, setCurrentIndex] = useState(index);
+ 
 
   const analytics = new ChapterAnalytics();
   const insets = useSafeAreaInsets();
@@ -38,70 +40,8 @@ const ChapterScreen = () => {
   const [isOngoingCourse, setIsOngoingCourse] = useState(false);
   const [isCourseCompleted, setisCourseCompleted] = useState(false);
 
-  const interstitialAdUnitId = Platform.select({
-  ios: AdMobDBHandler.IOS_INTERSTITIAL_AD_ID,
-  android: AdMobDBHandler.ANDROID_INTERSTITIAL_AD_ID,
-  default: TestIds.INTERSTITIAL, // fallback to test ID if none found
-});
-
-  const interstitial = InterstitialAd.createForAdRequest(interstitialAdUnitId, {
-  requestNonPersonalizedAdsOnly: true,
-})
-
-  async function showInterstitialAd() {
-  return new Promise((resolve, reject) => {
-    try {
- 
-      let unsubscribeLoaded: () => void;
-      let unsubscribeClosed: () => void;
-      let unsubscribeError: () => void;
-
-      unsubscribeLoaded = interstitial.addAdEventListener(
-        AdEventType.LOADED,
-        () => {
-          interstitial.show();
-        }
-      );
-
-      unsubscribeClosed = interstitial.addAdEventListener(
-        AdEventType.CLOSED,
-        () => {
-          // Safely unsubscribe
-          unsubscribeLoaded && unsubscribeLoaded();
-          unsubscribeClosed && unsubscribeClosed();
-          unsubscribeError && unsubscribeError();
-
-          // Log ad impression
-          UserReferrerAPI.addAdImpression(course.id, currentChapter.id)
-            .then(() => {
-              resolve();
-            })
-            .catch(error => {
-              console.error('Error logging ad impression:', error);
-              reject(error);
-            });
-        }
-      );
-
-       unsubscribeError = interstitial.addAdEventListener(
-        AdEventType.ERROR,
-        (error) => {
-          unsubscribeLoaded();
-          unsubscribeClosed();
-          unsubscribeError();
-          console.log('Interstitial Ad Error:', error);
-          reject(error);
-        }
-      );
-
-      interstitial.load();
-    } catch (error) {
-      console.log('Ad load exception:', error);
-      reject(error);
-    }
-  });
-}
   
+
 
   useEffect(() => {
     try {
@@ -113,15 +53,13 @@ const ChapterScreen = () => {
       const doc = await ContentAPIClient.fetchChapter(currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
       analytics.sendChapterDataAppearedSuccessEvent(currentChapter.id)
-      //console.log("current chapter", currentChapter)
+      
+      console.log("current chapter", currentChapter)
 
-      const nextChapter = await ContentAPIClient.fetchNextChapter(course.id, currentChapter.id)
-      setNextChapter(nextChapter)
-      //console.log("next chapter", nextChapter)
+      const index = chapterList.findIndex(ch => ch.id === currentChapter.id);
+      
+      setPrevAndNextChapters(index)
 
-      const prevChapter = await ContentAPIClient.fetchPrevChapter(course.id, currentChapter.id)
-      setPrevChapter(prevChapter)
-      //console.log("Prev chapter", prevChapter)
 
       let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id)
       setIsOngoingCourse(isCourseOngoing)
@@ -130,19 +68,19 @@ const ChapterScreen = () => {
       setisCourseCompleted(isCourseCompleted)
 
       setChapterDataLoaded(true);
-
       const shouldShowAd =  await AdMobDBHandler.showInterstitialAds();
      
-      if (shouldShowAd) {
-         console.log('Show Ads');
-      try {
-             await showInterstitialAd();
-             console.log('Ad closed, continue app flow');
-            
-         } catch {
-           console.log('Ad failed or was not shown:', error);
-         }
-    }
+     if (shouldShowAd) {
+        console.log('Show Ads');
+
+     try {
+        //  await AdMobAPIClient.showInterstitialAd();
+        //   await UserReferrerAPI.addAdImpression(course.id, currentChapter.id);
+        console.log('Ad closed, continue app flow');
+     } catch (error) {
+           console.error('Ad failed or was not shown:', error);
+     }
+  }
 
     };
 
@@ -155,6 +93,20 @@ const ChapterScreen = () => {
         
     }
   }, [currentChapter]);
+
+
+  const setPrevAndNextChapters = (index) => {
+     //console.log("chapterList", chapterList)
+    console.log("index", index)
+    const prevChapter = index > 0 ? chapterList[index - 1] : null;
+    const nextChapter = index < chapterList.length - 1 ? chapterList[index + 1] : null;
+    setNextChapter(nextChapter);
+    setPrevChapter(prevChapter);
+    setCurrentIndex(index);
+
+    console.log("next chapter", nextChapter)
+    console.log("prev chapter", prevChapter)
+  };
 
   const injectedJS = `
     window.onscroll = function() {
@@ -193,9 +145,10 @@ const ChapterScreen = () => {
   };
   
   const onNext = () => {
-    if (nextChapter) {
+     if (nextChapter) {
       analytics.sendClickOnNextChaptereEvent(nextChapter.id)
       OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id)
+      console.log("next clicked")
       setCurrentChapter(nextChapter); // Trigger re-render with new data
     }
   };
@@ -203,6 +156,7 @@ const ChapterScreen = () => {
   const onPrev = () => {
     if (prevChapter) {
       analytics.sendClickOnPrevChaptereEvent(prevChapter.id)
+        console.log("prev clicked")
       setCurrentChapter(prevChapter);
     }
   };
@@ -240,7 +194,7 @@ const ChapterScreen = () => {
     <View style={styles.buttonContainer}>
 
       {/* LEFT CTA */}
-      {currentChapter.isFirstChapter ? (
+      {currentIndex === 0 ? (
         !isOngoingCourse  && chapterDataLoaded ? (
           <TouchableOpacity
             style={[styles.button, styles.startCourseButton]}
@@ -261,7 +215,7 @@ const ChapterScreen = () => {
       )}
 
       {/* RIGHT CTA */}
-      {currentChapter.isLastChapter ? (
+      {currentIndex === chapterList.length - 1? (
         !(isCourseCompleted || course.isLiveCourse) ? (
           <TouchableOpacity
             style={[styles.button, styles.completeCourseButton]}

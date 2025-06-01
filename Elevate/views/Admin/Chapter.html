@@ -29,14 +29,9 @@
       const data = {
         title: document.getElementById("title").value.trim(),
         description: document.getElementById("description").value.trim(),
-        thumbnail: document.getElementById("thumbnail").value.trim(),
-        duration: document.getElementById("duration").value.trim(),
+         duration: document.getElementById("duration").value.trim(),
         index: Number(document.getElementById("index").value.trim()),
-        isLive: document.getElementById("isLive").checked,
-        isLastChapter: document.getElementById("isLastChapter").checked,
-        isFirstChapter: document.getElementById("isFirstChapter").checked,
-        nextChapterId: document.getElementById("nextChapterId").value.trim(),
-        prevChapterId: document.getElementById("prevChapterId").value.trim()
+        isLive: document.getElementById("isLive").checked
       };
 
       // Basic validation
@@ -142,8 +137,6 @@
     <label>Description</label>
     <input type="text" id="description" />
 
-    <label>Thumbnail URL</label>
-    <input type="text" id="thumbnail" />
 
     <label>Duration</label>
     <input type="text" id="duration" />
@@ -152,14 +145,6 @@
     <input type="number" id="index" />
 
     <label><input type="checkbox" id="isLive" checked /> Is Live</label>
-    <label><input type="checkbox" id="isLastChapter" /> Is Last Chapter</label>
-    <label><input type="checkbox" id="isFirstChapter" /> Is First Chapter</label>
-
-    <label>Next Chapter ID</label>
-    <input type="text" id="nextChapterId" />
-
-    <label>Previous Chapter ID</label>
-    <input type="text" id="prevChapterId" />
 
     <button onclick="addChapter()">Add Chapter</button>
     <div id="successMessage" style="margin-top: 20px; color: green; font-weight: bold;"></div>

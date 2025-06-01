@@ -26,7 +26,7 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
   }
 
   export class ChapterData {
-    constructor(id, title, description, thumbnail, duration,index,isLive, isLastChapter, isFirstChapter, nextChapterId, prevChapterId) {
+    constructor(id, title, description, thumbnail, duration,index,isLive) {
       this.id = id;
       this.title = title;
       this.description = description;
@@ -34,10 +34,6 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
       this.thumbnail = thumbnail
       this.duration = duration
       this.isLive = isLive
-      this.isLastChapter = isLastChapter
-      this.isFirstChapter = isFirstChapter
-      this.nextChapterId = nextChapterId
-      this.prevChapterId = prevChapterId
     }
   }
 

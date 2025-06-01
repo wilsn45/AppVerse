@@ -29,7 +29,7 @@ const CourseScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { course } = route.params;
-  const [chaptereList, setChapterList] = useState([]);
+  const [chapterList, setChapterList] = useState([]);
   const [isCourseSaved, setIsCourseSaved] = useState(false);
   const [isOngoingCourse, setIsOngoingCourse] = useState(null);
   const [isCourseCompleted, setIsCourseCompleted] = useState(null);
@@ -92,7 +92,7 @@ const changeCourseEnroll = async () => {
     analytics.sendStartCourseEvent()
     await CompletedCourseDBHandler.removeCompletedCourse(course.id)
     await OngoingCourseDBHandler.saveOngoingCourse(course)
-    let firstChapter = chaptereList[0]
+    let firstChapter = chapterList[0]
     await onChapterPress(firstChapter)
   }
   setIsOngoingCourse(!isOngoingCourse)
@@ -102,8 +102,11 @@ const changeCourseEnroll = async () => {
 
 const onChapterPress = async (content) => {
    analytics.sendClickOnChapterEvent(content.id)
-  console.log('chapterId', content);
-  navigation.navigate('ChapterScreen', { course: course, chapter: content });
+ // console.log('chapterId', content);
+  const index = chapterList.findIndex(chapter => chapter.id === content.id);
+   console.log('index', index);
+   // console.log('chapterList', chapterList);
+  navigation.navigate('ChapterScreen', { course: course, chapterList: chapterList, index: index });
 };
 
 const onToggleSave = async () => {
@@ -159,7 +162,7 @@ return (
           { color: course.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold' },
         ]}
       >
-        {course.isLiveCourse ? 'LIVE' : `${chaptereList.length} Chapters`}
+        {course.isLiveCourse ? 'LIVE' : `${chapterList.length} Chapters`}
       </Text>
       <View style={{ flex: 1 }} />
       <TouchableOpacity onPress={onToggleSave}>
@@ -179,7 +182,7 @@ return (
 
     {/* Chapter List */}
     <FlatList
-        data={chaptereList}
+        data={chapterList}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
