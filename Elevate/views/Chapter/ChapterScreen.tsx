@@ -297,8 +297,7 @@ const ChapterScreen = () => {
     )
   ) : selectedMode === 'listen' ? (
     // Show Start Course in listen mode on first chapter if conditions satisfy
-    chapterDataLoaded ? (
-      
+    
         <TouchableOpacity
           style={[styles.button, { backgroundColor: theme.colors.secondaryTheme }]}
           onPress={onStartCourse}
@@ -306,9 +305,7 @@ const ChapterScreen = () => {
           <Text style={styles.buttonText}>Start Course</Text>
         </TouchableOpacity>
     
-    ) : (
-      <View style={{ width: 0 }} />
-    )
+    
   ) : (
     <View style={{ width: 0 }} />
   )}
