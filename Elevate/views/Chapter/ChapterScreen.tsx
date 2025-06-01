@@ -27,7 +27,6 @@ const ChapterScreen = () => {
   const navigation = useNavigation();
   const { course,chapterList, index } = route.params;
   const [htmlContent, setHtmlContent] = useState('');
-  const [audioURL, setAudioURL] = useState('');
   const [markedRead, setMarkedRead] = useState(false);
   const [nextChapter, setNextChapter] = useState(null);
   const [prevChapter, setPrevChapter] = useState(null);
@@ -107,7 +106,6 @@ const ChapterScreen = () => {
       setChapterDataLoaded(false);
       const doc = await ContentAPIClient.fetchChapter(currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
-      setAudioURL(doc?.audioURL || '');
       analytics.sendChapterDataAppearedSuccessEvent(currentChapter.id)
       
       //console.log("current chapter", currentChapter)
@@ -204,17 +202,23 @@ const ChapterScreen = () => {
   
   const onNext = () => {
      if (nextChapter) {
-      analytics.sendClickOnNextChaptereEvent(nextChapter.id)
+      if (selectedMode === 'read'){
+         analytics.sendClickOnNextChaptereEvent(nextChapter.id)
+      } else if (selectedMode === 'listen') {
+          analytics.sendClickOnNextChaptereAudioEvent(nextChapter.id)
+      }
       OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id)
-      console.log("next clicked")
       setCurrentChapter(nextChapter); // Trigger re-render with new data
     }
   };
   
   const onPrev = () => {
     if (prevChapter) {
-      analytics.sendClickOnPrevChaptereEvent(prevChapter.id)
-        console.log("prev clicked")
+      if  ( selectedMode === 'read') {
+         analytics.sendClickOnPrevChaptereEvent(prevChapter.id)
+      } else if (selectedMode === 'listen') {
+          analytics.sendClickOnPrevChaptereAudioEvent(prevChapter.id)
+      }
       setCurrentChapter(prevChapter);
     }
   };
@@ -247,12 +251,11 @@ const ChapterScreen = () => {
       )
       ) : (
            <AudioPlayer
-            chapterList={chapterList}
-            currentIndex={currentIndex}
-            courseId= {course.id}
-             thumbnailUrl={course.thumbnail}
-           
-            />
+           audioUrl={currentChapter.audioUrl}
+           thumbnailUrl={course.thumbnail}
+           title={currentChapter.title}
+            onNext={onNext}
+          onPrev={onPrev} />
     )}
       </View>
 

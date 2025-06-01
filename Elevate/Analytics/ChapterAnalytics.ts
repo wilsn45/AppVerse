@@ -84,5 +84,23 @@ export class ChapterAnalytics {
      );
   }
 
+   async sendClickOnNextChaptereVideoEvent(chapterId) {
+    await AnalyticsHelper.sendEvent(
+        'Play_Next_Video',
+        'Chapter',
+        ActionType.NAVIGATION,
+        { 'chapterId': chapterId}
+     );
+  }
+
+   async sendClickOnPrevChaptereVideoEvent(chapterId) {
+    await AnalyticsHelper.sendEvent(
+        'Play_Prev_Video',
+        'Chapter',
+        ActionType.NAVIGATION,
+        { 'chapterId': chapterId}
+     );
+  }
+
   
 }
