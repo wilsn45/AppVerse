@@ -263,7 +263,11 @@ const ChapterScreen = () => {
       </View>
 
       {/* Footer Section */}
-      {currentChapter  && (
+      {currentChapter && !(
+  selectedMode === 'listen' &&
+  isOngoingCourse &&
+  currentIndex !== chapterList.length - 1
+) && (
   <View style={[styles.footer, { height: footerHeight }]}>
     <View style={styles.ctaContainer}>
 
@@ -293,8 +297,7 @@ const ChapterScreen = () => {
     chapterDataLoaded ? (
       
         <TouchableOpacity
-          disabled={!isOngoingCourse}
-          style={[styles.button, { backgroundColor: isOngoingCourse ? theme.colors.secondaryThemeDisabled : theme.colors.secondaryTheme }]}
+          style={[styles.button, { backgroundColor: theme.colors.secondaryTheme }]}
           onPress={onStartCourse}
         >
           <Text style={styles.buttonText}>Start Course</Text>
