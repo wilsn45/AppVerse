@@ -16,6 +16,7 @@ import UserReferrerAPI from './APIClients/UserReferrerAPI.tsx';
 import theme from './Theme/Theme';
 import mobileAds from 'react-native-google-mobile-ads';
 import {AdMobDBHandler} from './DBHandler/AdMobDBHandler.tsx'; 
+import {setupPlayer} from './services/TrackPlayerSetup.ts';
 
 
 
@@ -77,13 +78,14 @@ const App = () => {
    const updateReferrer = async () => {
     const alreadyReferred = await AdMobDBHandler.getReferState();
         if (alreadyReferred) {
-          console.log("Alread Referred, Returning")
+          console.log("Already Referred, Returning")
            return;
        }
        await UserReferrerAPI.saveReferralData();
     };
     
     updateReferrer();
+    setupPlayer();
   }, []);
 
   useEffect(() => {

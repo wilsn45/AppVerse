@@ -14,6 +14,8 @@ import TrackPlayer, {
 } from 'react-native-track-player';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import theme from '../../Theme/Theme';
+import { Event, useTrackPlayerEvents } from 'react-native-track-player';
+
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -22,6 +24,7 @@ interface AudioPlayerProps {
   onNext: () => void;
   onPrev: () => void;
 }
+
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({
   audioUrl,
@@ -35,6 +38,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const progress = useProgress();
 
   // Initialize and play audio when audioUrl changes
+
+  useTrackPlayerEvents([Event.PlaybackQueueEnded], (event) => {
+  if (event.type === Event.PlaybackQueueEnded && event.position > 0) {
+    onNext();
+  }
+});
+
   useEffect(() => {
     const setupAndPlay = async () => {
       if (!audioUrl) return;
@@ -175,15 +185,17 @@ const styles = StyleSheet.create({
   },
   speedText: {
     color: theme.colors.greyDark2,
+    fontFamily: 'Roboto-Medium',
     fontSize: 18,
   },
   titleText: {
     color: theme.colors.black,
+    fontFamily: 'Roboto-Medium',
     fontSize: 24,
-    fontWeight: '500',
-    marginBottom: 20,
+    fontWeight: '400',
+    marginBottom: 18,
     textAlign: 'center',
-    maxWidth: '50%',
+    maxWidth: '70%',
   },
 });
 
