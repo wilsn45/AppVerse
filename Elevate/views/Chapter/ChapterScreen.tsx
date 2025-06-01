@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -40,9 +40,62 @@ const ChapterScreen = () => {
   const [isOngoingCourse, setIsOngoingCourse] = useState(false);
   const [isCourseCompleted, setisCourseCompleted] = useState(false);
 
+  const [selectedMode, setSelectedMode] = useState('read'); // 'read' or 'listen'
+
+  const onModeChange = (mode) => {
+    if (selectedMode !== mode) {
+      setSelectedMode(mode);
+      console.log('Mode changed to:', mode);
+      // Call your callback function here
+      // handleModeChange(mode);
+    }
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <View style={styles.toggleContainer}>
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              selectedMode === 'read' && styles.selectedToggleButton,
+            ]}
+            onPress={() => onModeChange('read')}
+          >
+            <Text
+              style={[
+                styles.toggleText,
+                selectedMode === 'read' && styles.selectedToggleText,
+              ]}
+            >
+              Read
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              selectedMode === 'listen' && styles.selectedToggleButton,
+            ]}
+            onPress={() => onModeChange('listen')}
+            accessibilityLabel="Toggle Audio Mode"
+          >
+            <Ionicons
+              name="headset-outline"
+              size={20}
+              color={
+                selectedMode === 'listen'
+                  ? theme.colors.white
+                  : theme.colors.greyDark
+              }
+            />
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, [navigation, selectedMode]);
+
   
-
-
   useEffect(() => {
     try {
     analytics.sendChapterImpressionEvent(currentChapter.id);
@@ -135,6 +188,8 @@ const ChapterScreen = () => {
      
     // }
   };
+
+
 
   const onStartCourse = async() => {
     //console.log('Start Course pressed');
@@ -248,6 +303,33 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 1,
+  },
+  speakerButton: {
+    paddingRight: 16
+  },
+   toggleContainer: {
+    flexDirection: 'row',
+    borderColor: theme.colors.greyLight2,
+    borderRadius: 20,
+    borderWidth: 2,
+    padding: 2,
+  },
+  toggleButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  selectedToggleButton: {
+    backgroundColor: theme.colors.greyDark2, // change to your dark theme color
+  },
+  toggleText: {
+    fontSize: 14,
+    color: theme.colors.greyDark,
+  },
+  selectedToggleText: {
+    color: theme.colors.white,
   },
   webView: {
     flex: 1,
