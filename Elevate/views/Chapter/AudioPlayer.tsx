@@ -9,7 +9,6 @@ import {
 import Slider from '@react-native-community/slider';
 import TrackPlayer, {
   useProgress,
-  Capability,
   State,
   usePlaybackState,
 } from 'react-native-track-player';
@@ -31,41 +30,19 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onNext,
   onPrev,
 }) => {
-  const [isPlayerReady, setIsPlayerReady] = useState(false);
   const [speed, setSpeed] = useState(1.0);
   const playbackState = usePlaybackState();
   const progress = useProgress();
 
+  // Initialize and play audio when audioUrl changes
   useEffect(() => {
-  const setupAndPlay = async () => {
-    console.log('Setting up TrackPlayer with URL:', audioUrl);
-    await TrackPlayer.reset();
-    await TrackPlayer.add({
-      id: '',
-      url: audioUrl,
-      title: title,
-      artist: 'Upward',
-    });
-    await TrackPlayer.play(); // <-- 🎯 Auto-plays here when component mounts
-  };
-
-  setupAndPlay();
-
-  return () => {
-    TrackPlayer.pause(); // <-- 🛑 Auto-pauses here when component unmounts
-  };
-}, [audioUrl]);
-
-  useEffect(() => {
-    const loadTrack = async () => {
-        console.log('Loading track:', audioUrl);
-      if (!audioUrl || !isPlayerReady) return;
-
+    const setupAndPlay = async () => {
+      if (!audioUrl) return;
       await TrackPlayer.reset();
       await TrackPlayer.add({
         id: 'trackId',
         url: audioUrl,
-        title: title,
+        title,
         artist: 'Upward',
         artwork: thumbnailUrl,
       });
@@ -73,25 +50,47 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       await TrackPlayer.play();
     };
 
-    loadTrack();
-  }, [audioUrl, isPlayerReady]);
+    setupAndPlay();
+
+    return () => {
+      TrackPlayer.pause();
+    };
+  }, [audioUrl]);
+
+  // Update playback speed when speed changes
+  useEffect(() => {
+    const updateSpeed = async () => {
+      await TrackPlayer.setRate(speed);
+    };
+    updateSpeed();
+  }, [speed]);
 
   const togglePlayback = async () => {
-    if (playbackState === State.Playing) {
-      await TrackPlayer.pause();
-    } else {
-      await TrackPlayer.play();
-    }
-  };
+  console.log('Toggle pressed, playbackState:', playbackState);
+
+  if (playbackState.state === 'playing' || playbackState.state === 'buffering') {
+    console.log('Pausing playback');
+    await TrackPlayer.pause();
+  } else if (
+    playbackState.state === 'paused' ||
+    playbackState.state === 'ready' ||
+    playbackState.state === 'stopped'
+  ) {
+    console.log('Resuming playback');
+    await TrackPlayer.play();
+  } else {
+    // fallback
+    console.log('Unknown state, playing anyway');
+    await TrackPlayer.play();
+  }
+};
 
   const changeSpeed = async () => {
-  const speeds = [0.5, 1.0, 1.5, 2.0];
-  const currentIndex = speeds.indexOf(speed);
-  const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
-
-  setSpeed(nextSpeed);
-  await TrackPlayer.setRate(nextSpeed);
-};
+    const speeds = [0.5, 1.0, 1.5, 2.0];
+    const currentIndex = speeds.indexOf(speed);
+    const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
+    setSpeed(nextSpeed);
+  };
 
   const seekTo = async (value: number) => {
     await TrackPlayer.seekTo(value);
@@ -104,9 +103,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       imageStyle={{ opacity: 0.3 }}
     >
       <View style={styles.container}>
-
         <Text style={styles.titleText}>{title}</Text>
-
 
         <Slider
           style={{ width: '80%', marginBottom: 20 }}
@@ -126,7 +123,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
 
           <TouchableOpacity onPress={togglePlayback} style={styles.iconButton}>
             <Ionicons
-              name={playbackState === State.Playing ? 'pause' : 'play'}
+              name={
+                playbackState.state === 'playing' ||
+                playbackState.state === 'buffering'
+                  ? 'pause'
+                  : 'play'
+              }
               size={40}
               color="white"
             />
@@ -173,15 +175,15 @@ const styles = StyleSheet.create({
   },
   speedText: {
     color: theme.colors.greyDark2,
-    fontSize: 24,
+    fontSize: 18,
   },
   titleText: {
     color: theme.colors.black,
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: '500',
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: 'center',
-    maxWidth: '80%',
+    maxWidth: '50%',
   },
 });
 
