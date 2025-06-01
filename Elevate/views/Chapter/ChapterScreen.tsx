@@ -265,49 +265,87 @@ const ChapterScreen = () => {
       {/* Footer Section */}
       {currentChapter  && (
   <View style={[styles.footer, { height: footerHeight }]}>
-    <View style={styles.buttonContainer}>
+    <View style={styles.ctaContainer}>
 
       {/* LEFT CTA */}
-      {currentIndex === 0 ? (
-        !isOngoingCourse  && chapterDataLoaded ? (
-          <TouchableOpacity
-            style={[styles.button, styles.startCourseButton]}
-            onPress={onStartCourse}
-          >
-            <Text style={styles.buttonText}>Start Course</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} />
-        )
-      ) : prevChapter ? (
-        <TouchableOpacity style={styles.iconButton} onPress={onPrev}>
-          <Ionicons name="chevron-back-outline" size={28} color={theme.colors.greyDark} />
-          <Text style={styles.iconButtonText}>PREV</Text>
+  {selectedMode === 'read' ? (
+    currentIndex === 0 ? (
+      !isOngoingCourse && chapterDataLoaded ? (
+        <TouchableOpacity
+          style={[styles.button, styles.startCourseButton]}
+          onPress={onStartCourse}
+        >
+          <Text style={styles.buttonText}>Start Course</Text>
         </TouchableOpacity>
       ) : (
-        <View style={[styles.iconButton, { width: 48, opacity: 0 }]} />
-      )}
+        <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} />
+      )
+    ) : prevChapter ? (
+      <TouchableOpacity style={styles.iconButton} onPress={onPrev}>
+        <Ionicons name="chevron-back-outline" size={28} color={theme.colors.greyDark} />
+        <Text style={styles.iconButtonText}>PREV</Text>
+      </TouchableOpacity>
+    ) : (
+      <View style={[styles.iconButton, { width: 0, opacity: 0 }]} />
+    )
+  ) : selectedMode === 'listen' ? (
+    // Show Start Course in listen mode on first chapter if conditions satisfy
+    chapterDataLoaded ? (
+      
+        <TouchableOpacity
+          disabled={!isOngoingCourse}
+          style={[styles.button, { backgroundColor: isOngoingCourse ? theme.colors.secondaryThemeDisabled : theme.colors.secondaryTheme }]}
+          onPress={onStartCourse}
+        >
+          <Text style={styles.buttonText}>Start Course</Text>
+        </TouchableOpacity>
+    
+    ) : (
+      <View style={{ width: 0 }} />
+    )
+  ) : (
+    <View style={{ width: 0 }} />
+  )}
 
-      {/* RIGHT CTA */}
-      {currentIndex === chapterList.length - 1? (
-        !(isCourseCompleted || course.isLiveCourse) ? (
-          <TouchableOpacity
-            style={[styles.button, styles.completeCourseButton]}
-            onPress={onComplete}
-          >
-            <Text style={styles.buttonText}>Completed</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} />
-        )
-      ) : nextChapter ? (
-        <TouchableOpacity style={styles.iconButton} onPress={onNext}>
-           <Text style={styles.iconButtonText}>NEXT</Text>
-          <Ionicons name="chevron-forward-outline" size={28} color={theme.colors.greyDark} />
+  {/* RIGHT CTA */}
+  {selectedMode === 'read' ? (
+    currentIndex === chapterList.length - 1 ? (
+      !(isCourseCompleted || course.isLiveCourse) ? (
+        <TouchableOpacity
+          style={[styles.button, styles.completeCourseButton]}
+          onPress={onComplete}
+        >
+          <Text style={styles.buttonText}>Completed</Text>
         </TouchableOpacity>
       ) : (
-        <View style={[styles.iconButton, { width: 48, opacity: 0 }]} />
-      )}
+        <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} />
+      )
+    ) : nextChapter ? (
+      <TouchableOpacity style={styles.iconButton} onPress={onNext}>
+        <Text style={styles.iconButtonText}>NEXT</Text>
+        <Ionicons name="chevron-forward-outline" size={28} color={theme.colors.greyDark} />
+      </TouchableOpacity>
+    ) : (
+      <View style={[styles.iconButton, { width: 0, opacity: 0 }]} />
+    )
+  ) : selectedMode === 'listen' ? (
+    // Show Complete button in listen mode on last chapter if conditions satisfy
+    currentIndex === chapterList.length - 1 &&
+    !(isCourseCompleted || course.isLiveCourse) ? (
+      <View style={styles.centeredButtonWrapper}>
+        <TouchableOpacity
+          style={[styles.button, styles.completeCourseButton]}
+          onPress={onComplete}
+        >
+          <Text style={styles.buttonText}>Completed</Text>
+        </TouchableOpacity>
+      </View>
+    ) : (
+      <View style={{ width: 0 }} />
+    )
+  ) : (
+    <View style={{ width: 0 }} />
+  )}
     </View>
   </View>
 )}
@@ -322,6 +360,18 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     flex: 1,
+  },
+  ctaContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginVertical: 20,
+  },
+
+  centeredButtonWrapper: {
+    flex: 1,
+    alignItems: 'center',
   },
   speakerButton: {
     paddingRight: 16
@@ -395,6 +445,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 6,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   startCourseButton: {
     backgroundColor: theme.colors.secondaryTheme,
