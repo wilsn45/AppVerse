@@ -37,25 +37,28 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const progress = useProgress();
 
   useEffect(() => {
-    const setupPlayer = async () => {
-      await TrackPlayer.setupPlayer();
-      await TrackPlayer.updateOptions({
-        capabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-          Capability.SeekTo,
-        ],
-      });
-      setIsPlayerReady(true);
-    };
+  const setupAndPlay = async () => {
+    console.log('Setting up TrackPlayer with URL:', audioUrl);
+    await TrackPlayer.reset();
+    await TrackPlayer.add({
+      id: '',
+      url: audioUrl,
+      title: title,
+      artist: 'Upward',
+    });
+    await TrackPlayer.play(); // <-- 🎯 Auto-plays here when component mounts
+  };
 
-    setupPlayer();
-  }, []);
+  setupAndPlay();
+
+  return () => {
+    TrackPlayer.pause(); // <-- 🛑 Auto-pauses here when component unmounts
+  };
+}, [audioUrl]);
 
   useEffect(() => {
     const loadTrack = async () => {
+        console.log('Loading track:', audioUrl);
       if (!audioUrl || !isPlayerReady) return;
 
       await TrackPlayer.reset();
@@ -82,10 +85,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   };
 
   const changeSpeed = async () => {
-    const newSpeed = speed === 1.0 ? 1.5 : speed === 1.5 ? 2.0 : 1.0;
-    setSpeed(newSpeed);
-    await TrackPlayer.setRate(newSpeed);
-  };
+  const speeds = [0.5, 1.0, 1.5, 2.0];
+  const currentIndex = speeds.indexOf(speed);
+  const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
+
+  setSpeed(nextSpeed);
+  await TrackPlayer.setRate(nextSpeed);
+};
 
   const seekTo = async (value: number) => {
     await TrackPlayer.seekTo(value);

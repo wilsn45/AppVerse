@@ -27,6 +27,7 @@ const ChapterScreen = () => {
   const navigation = useNavigation();
   const { course,chapterList, index } = route.params;
   const [htmlContent, setHtmlContent] = useState('');
+  const [audioUrl, setAudioUrl] = useState('');
   const [markedRead, setMarkedRead] = useState(false);
   const [nextChapter, setNextChapter] = useState(null);
   const [prevChapter, setPrevChapter] = useState(null);
@@ -106,6 +107,8 @@ const ChapterScreen = () => {
       setChapterDataLoaded(false);
       const doc = await ContentAPIClient.fetchChapter(currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
+      setAudioUrl(doc?.audioUrl || '');
+      console.log("audioUrl", doc?.audioUrl)
       analytics.sendChapterDataAppearedSuccessEvent(currentChapter.id)
       
       //console.log("current chapter", currentChapter)
@@ -251,7 +254,7 @@ const ChapterScreen = () => {
       )
       ) : (
            <AudioPlayer
-           audioUrl={currentChapter.audioUrl}
+           audioUrl={audioUrl}
            thumbnailUrl={course.thumbnail}
            title={currentChapter.title}
             onNext={onNext}
