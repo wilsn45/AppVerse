@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-     fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Medium',
     textAlign: 'left', // Align text to the left
   },
   input: {
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontSize: 30,
     fontWeight: 'semibold',
-     fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Medium',
   },
 });
 

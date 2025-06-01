@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,15 +7,9 @@ import {
   Text
 } from 'react-native';
 import Slider from '@react-native-community/slider';
-import TrackPlayer, {
-  useProgress,
-  State,
-  usePlaybackState,
-} from 'react-native-track-player';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Video from 'react-native-video';
 import theme from '../../Theme/Theme';
-import { Event, useTrackPlayerEvents } from 'react-native-track-player';
-
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -25,7 +19,6 @@ interface AudioPlayerProps {
   onPrev: () => void;
 }
 
-
 const AudioPlayer: React.FC<AudioPlayerProps> = ({
   audioUrl,
   thumbnailUrl,
@@ -33,77 +26,41 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   onNext,
   onPrev,
 }) => {
+  const playerRef = useRef<Video>(null);
+  const [paused, setPaused] = useState(false);
   const [speed, setSpeed] = useState(1.0);
-  const playbackState = usePlaybackState();
-  const progress = useProgress();
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
 
-  // Initialize and play audio when audioUrl changes
+  const togglePlayback = () => {
+    setPaused(prev => !prev);
+  };
 
-  useTrackPlayerEvents([Event.PlaybackQueueEnded], (event) => {
-  if (event.type === Event.PlaybackQueueEnded && event.position > 0) {
-    onNext();
-  }
-});
-
-  useEffect(() => {
-    const setupAndPlay = async () => {
-      if (!audioUrl) return;
-      await TrackPlayer.reset();
-      await TrackPlayer.add({
-        id: 'trackId',
-        url: audioUrl,
-        title,
-        artist: 'Upward',
-        artwork: thumbnailUrl,
-      });
-      await TrackPlayer.setRate(speed);
-      await TrackPlayer.play();
-    };
-
-    setupAndPlay();
-
-    return () => {
-      TrackPlayer.pause();
-    };
-  }, [audioUrl]);
-
-  // Update playback speed when speed changes
-  useEffect(() => {
-    const updateSpeed = async () => {
-      await TrackPlayer.setRate(speed);
-    };
-    updateSpeed();
-  }, [speed]);
-
-  const togglePlayback = async () => {
-  console.log('Toggle pressed, playbackState:', playbackState);
-
-  if (playbackState.state === 'playing' || playbackState.state === 'buffering') {
-    console.log('Pausing playback');
-    await TrackPlayer.pause();
-  } else if (
-    playbackState.state === 'paused' ||
-    playbackState.state === 'ready' ||
-    playbackState.state === 'stopped'
-  ) {
-    console.log('Resuming playback');
-    await TrackPlayer.play();
-  } else {
-    // fallback
-    console.log('Unknown state, playing anyway');
-    await TrackPlayer.play();
-  }
-};
-
-  const changeSpeed = async () => {
+  const changeSpeed = () => {
     const speeds = [0.5, 1.0, 1.5, 2.0];
     const currentIndex = speeds.indexOf(speed);
     const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
     setSpeed(nextSpeed);
   };
 
-  const seekTo = async (value: number) => {
-    await TrackPlayer.seekTo(value);
+  const handleOnNext = () => {
+    setPaused(true); // Pause before moving to next
+    onNext();
+  }
+
+  const handleOnPrev = () => {
+    setPaused(true); // Pause before moving to previous
+    onPrev();
+  };
+
+  const handleLoad = ({ duration }: { duration: number }) => {
+  setDuration(duration);
+  setPaused(false);
+  // You can call any other function or add additional logic here
+};
+
+  const seekTo = (value: number) => {
+    playerRef.current?.seek(value);
   };
 
   return (
@@ -118,8 +75,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         <Slider
           style={{ width: '80%', marginBottom: 20 }}
           minimumValue={0}
-          maximumValue={progress.duration}
-          value={progress.position}
+          maximumValue={duration}
+          value={currentTime}
           onSlidingComplete={seekTo}
           minimumTrackTintColor="#fff"
           maximumTrackTintColor="#888"
@@ -127,24 +84,19 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         />
 
         <View style={styles.controls}>
-          <TouchableOpacity onPress={onPrev} style={styles.iconButton}>
+          <TouchableOpacity onPress={handleOnPrev} style={styles.iconButton}>
             <Ionicons name="play-skip-back" size={32} color="white" />
           </TouchableOpacity>
 
           <TouchableOpacity onPress={togglePlayback} style={styles.iconButton}>
             <Ionicons
-              name={
-                playbackState.state === 'playing' ||
-                playbackState.state === 'buffering'
-                  ? 'pause'
-                  : 'play'
-              }
+              name={paused ? 'play' : 'pause'}
               size={40}
               color="white"
             />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={onNext} style={styles.iconButton}>
+          <TouchableOpacity onPress={handleOnNext} style={styles.iconButton}>
             <Ionicons name="play-skip-forward" size={32} color="white" />
           </TouchableOpacity>
         </View>
@@ -152,6 +104,22 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         <TouchableOpacity onPress={changeSpeed} style={styles.speedButton}>
           <Text style={styles.speedText}>{speed}x</Text>
         </TouchableOpacity>
+
+        {/* Hidden Video player for audio-only */}
+        <Video
+          ref={playerRef}
+          source={{ uri: audioUrl }}
+          paused={paused}
+          rate={speed}
+          audioOnly
+          playInBackground
+          ignoreSilentSwitch="ignore"
+          onProgress={({ currentTime }) => setCurrentTime(currentTime)}
+           onLoad={handleLoad}
+          onEnd={onNext}
+          onError={(e) => console.log('Video error', e)}
+          style={{ width: 0, height: 0 }} // hidden
+        />
       </View>
     </ImageBackground>
   );

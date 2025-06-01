@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from './views/HomeScreen';
 import CourseListScreen from './views/Courses/CourseListScreen.tsx'; 
 import TopicsScreen from './views/Courses/TopicsScreen.tsx'; 
@@ -16,7 +15,6 @@ import UserReferrerAPI from './APIClients/UserReferrerAPI.tsx';
 import theme from './Theme/Theme';
 import mobileAds from 'react-native-google-mobile-ads';
 import {AdMobDBHandler} from './DBHandler/AdMobDBHandler.tsx'; 
-import {setupPlayer} from './services/TrackPlayerSetup.ts';
 
 
 
@@ -85,7 +83,6 @@ const App = () => {
     };
     
     updateReferrer();
-    setupPlayer();
   }, []);
 
   useEffect(() => {

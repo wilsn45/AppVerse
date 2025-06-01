@@ -55,7 +55,9 @@ const ChapterScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTitleAlign: 'center',
       headerTitle: () => (
+       
         <View style={styles.toggleContainer}>
           <TouchableOpacity
             style={[
@@ -370,7 +372,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginVertical: 20,
   },
 
   centeredButtonWrapper: {
