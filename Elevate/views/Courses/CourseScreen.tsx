@@ -159,7 +159,7 @@ return (
       <Text
         style={[
           styles.metaText,
-          { color: course.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold' },
+          { color: course.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold',  fontFamily: 'Roboto-Medium', },
         ]}
       >
         {course.isLiveCourse ? 'LIVE' : `${chapterList.length} Chapters`}
@@ -273,6 +273,7 @@ const styles = StyleSheet.create({
   tagText: {
    fontSize: 12,
     color: theme.colors.greyDark,
+     fontFamily: 'Roboto-Medium',
   },
   
   courseInfoLeft: {
@@ -300,6 +301,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: theme.colors.black,
+    fontFamily: 'Roboto-Medium',
     width: '70%'
   },
   courseDescription: {
@@ -309,6 +311,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     lineHeight: 20,
     fontWeight: '400',
+    fontFamily: 'Roboto-Medium',
   },
   courseMetaRow: {
     flexDirection: 'row',
@@ -318,6 +321,7 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: 13,
     color: theme.colors.greyDark1,
+    fontFamily: 'Roboto-Medium',
   },
   chapterList: {
     paddingBottom: 100,
@@ -339,13 +343,16 @@ const styles = StyleSheet.create({
     color: theme.colors.black,
     marginBottom: 12,
     marginTop: 4,
+    fontFamily: 'Roboto-Medium',
   },
   chapterDescription: {
     fontSize: 14,
     color: theme.colors.greyDark2,
     marginBottom: 8,
     fontWeight: '400',
-    lineHeight: 18
+    lineHeight: 18,
+    fontFamily: 'Roboto-Medium',
+
    // fontFamily: 'Courier'
     
   },
@@ -353,7 +360,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: theme.colors.greyDark1,
     marginTop: 4,
-    marginBottom: 4
+    marginBottom: 4,
+     fontFamily: 'Roboto-Medium',
   },
   chapterThumbnail: {
     width: 100,
@@ -398,6 +406,7 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontWeight: 'bold',
     fontSize: 18,
+     fontFamily: 'Roboto-Medium',
   },
 });
 

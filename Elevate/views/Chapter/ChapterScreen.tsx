@@ -120,6 +120,7 @@ const ChapterScreen = () => {
 
       let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id)
       setIsOngoingCourse(isCourseOngoing)
+      console.log("isOngoingCourse", isCourseOngoing)
 
       let isCourseCompleted  = await CompletedCourseDBHandler.isCourseCompleted(course.id)
       setisCourseCompleted(isCourseCompleted)
@@ -399,6 +400,7 @@ const styles = StyleSheet.create({
   toggleText: {
     fontSize: 14,
     color: theme.colors.greyDark,
+    fontFamily: 'Roboto-Medium',
   },
   selectedToggleText: {
     color: theme.colors.white,
@@ -417,6 +419,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
     color: theme.colors.greyLight3,
+    fontFamily: 'Roboto-Medium',
   },
   title: {
     fontSize: 26,
@@ -424,11 +427,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    fontFamily: 'Roboto-Medium',
   },
   contentText: {
     fontSize: 18,
     color: theme.colors.greyDark1,
     textAlign: 'justify',
+    fontFamily: 'Roboto-Medium',
   },
 
   footer: {
@@ -463,11 +468,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: theme.colors.white,
+    fontFamily: 'Roboto-Medium',
     fontWeight: '500',
     fontSize: 20
   },
   iconButtonText: {
     color: theme.colors.greyDark,
+    fontFamily: 'Roboto-Medium',
     fontWeight: 'bold',
     fontSize: 16
   },

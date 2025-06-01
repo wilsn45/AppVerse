@@ -108,7 +108,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
      color: theme.colors.black,
-     fontWeight: '500'
+     fontWeight: '500',
+      fontFamily: 'Roboto-Medium',
   },
   separator: {
     height: 12,
