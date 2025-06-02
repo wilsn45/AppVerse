@@ -107,7 +107,7 @@ const ChapterScreen = () => {
     const fetchContent = async () => {
       
       setChapterDataLoaded(false);
-      const doc = await ContentAPIClient.fetchChapter(currentChapter.id);
+      const doc = await ContentAPIClient.fetchChapter(course.id, currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
       setAudioUrl(doc?.audioUrl || '');
       console.log("audioUrl", doc?.audioUrl)
@@ -318,7 +318,7 @@ const ChapterScreen = () => {
           style={[styles.button, styles.completeCourseButton]}
           onPress={onComplete}
         >
-          <Text style={styles.buttonText}>Completed</Text>
+          <Text style={styles.buttonText}>Complete</Text>
         </TouchableOpacity>
       ) : (
         <View style={[styles.button, styles.startCourseButton, { opacity: 0 }]} />
@@ -340,7 +340,7 @@ const ChapterScreen = () => {
           style={[styles.button, styles.completeCourseButton]}
           onPress={onComplete}
         >
-          <Text style={styles.buttonText}>Completed</Text>
+          <Text style={styles.buttonText}>Complete</Text>
         </TouchableOpacity>
       </View>
     ) : (
@@ -368,7 +368,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
   },
 
   centeredButtonWrapper: {
@@ -384,6 +384,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     padding: 2,
+    width: 160,
   },
   toggleButton: {
     paddingVertical: 6,
@@ -391,9 +392,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    width: '50%',
   },
   selectedToggleButton: {
-    backgroundColor: theme.colors.secondaryTheme, // change to your dark theme color
+    backgroundColor: theme.colors.secondaryTheme,
   },
   toggleText: {
     fontSize: 14,
@@ -407,6 +410,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 0,
     borderRadius: 2,
+    marginTop: 8
   },
   emptyDataView: {
     flex: 1,
@@ -474,7 +478,7 @@ const styles = StyleSheet.create({
     color: theme.colors.greyDark,
     fontFamily: 'Roboto-Medium',
     fontWeight: 'bold',
-    fontSize: 16
+    fontSize: 16,
   },
   iconButton: {
     flexDirection: 'row',

@@ -173,13 +173,17 @@ export class ContentAPIClient {
     }
   }
 
-static async fetchChapter(chapterId) {
+static async fetchChapter(courseId, chapterId) {
   try {
       // Fetch category list from Home collection
      
       const chapterDocSnapshot = await firestore()
+      .collection('Courses')
+      .doc(courseId)
       .collection('Chapters')
       .doc(chapterId)
+      .collection('Content')
+      .doc('Value')
       .get();
 
       //console.log("Fetched Content data", contetnDocSnapshot.data())
