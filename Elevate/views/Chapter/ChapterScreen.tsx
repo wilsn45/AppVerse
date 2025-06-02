@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedToggleButton: {
-    backgroundColor: theme.colors.greyDark2, // change to your dark theme color
+    backgroundColor: theme.colors.secondaryTheme, // change to your dark theme color
   },
   toggleText: {
     fontSize: 14,
