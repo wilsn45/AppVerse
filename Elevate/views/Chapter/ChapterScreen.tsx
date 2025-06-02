@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Platform
+  Platform,
+  ActivityIndicator // Import ActivityIndicator for a spinner
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ChapterAnalytics } from '../../Analytics/ChapterAnalytics';
@@ -18,8 +19,7 @@ import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.t
 import { AdMobDBHandler } from '../../DBHandler/AdMobDBHandler.tsx';
 import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import AudioPlayer from './AudioPlayer'; 
-
+import AudioPlayer from './AudioPlayer';
 
 
 const ChapterScreen = () => {
@@ -33,7 +33,7 @@ const ChapterScreen = () => {
   const [prevChapter, setPrevChapter] = useState(null);
   const [currentChapter, setCurrentChapter] = useState(chapterList[index]);
   const [currentIndex, setCurrentIndex] = useState(index);
- 
+
 
   const analytics = new ChapterAnalytics();
   const insets = useSafeAreaInsets();
@@ -57,7 +57,7 @@ const ChapterScreen = () => {
     navigation.setOptions({
       headerTitleAlign: 'center',
       headerTitle: () => (
-       
+
         <View style={styles.toggleContainer}>
           <TouchableOpacity
             style={[
@@ -99,37 +99,37 @@ const ChapterScreen = () => {
     });
   }, [navigation, selectedMode]);
 
-  
+
   useEffect(() => {
     try {
     analytics.sendChapterImpressionEvent(currentChapter.id);
 
     const fetchContent = async () => {
-      
-      setChapterDataLoaded(false);
+
+      setChapterDataLoaded(false); // Set to false at the start of fetch
       const doc = await ContentAPIClient.fetchChapter(course.id, currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
       setAudioUrl(doc?.audioUrl || '');
       console.log("audioUrl", doc?.audioUrl)
       analytics.sendChapterDataAppearedSuccessEvent(currentChapter.id)
-      
+
       //console.log("current chapter", currentChapter)
 
       const index = chapterList.findIndex(ch => ch.id === currentChapter.id);
-      
+
       setPrevAndNextChapters(index)
 
 
       let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id)
       setIsOngoingCourse(isCourseOngoing)
-      console.log("isOngoingCourse", isCourseOngoing)
+      console.log("isOngoingCourse", isOngoingCourse)
 
       let isCourseCompleted  = await CompletedCourseDBHandler.isCourseCompleted(course.id)
       setisCourseCompleted(isCourseCompleted)
 
-      setChapterDataLoaded(true);
+      setChapterDataLoaded(true); // Set to true after data is loaded
       const shouldShowAd =  await AdMobDBHandler.showInterstitialAds();
-     
+
      if (shouldShowAd) {
        // console.log('Show Ads');
 
@@ -150,7 +150,9 @@ const ChapterScreen = () => {
         analytics.sendChapterDataAppearedFailedEvent(currentChapter.id)
         console.error('Error fetching Chapter:', error);
     } finally {
-        
+        // Ensure chapterDataLoaded is set to true even if there's an error,
+        // or handle error state display separately if needed.
+        // For now, we'll keep it as is, assuming fetchContent handles errors.
     }
   }, [currentChapter]);
 
@@ -179,7 +181,7 @@ const ChapterScreen = () => {
 
   const handleWebViewMessage = (event) => {
     // if (event.nativeEvent.data === 'scrollEnd' && !markedRead) {
-    //  // analytics.markChapterAsRead?.();      
+    //  // analytics.markChapterAsRead?.();
     //   setMarkedRead(true);
     //   console.log("course", course)
     //   console.log("chapter", chapter)
@@ -192,7 +194,7 @@ const ChapterScreen = () => {
     //     console.log("Save Course Progress")
     //     OngoingCourseDBHandler.saveChapter(course.id,chapter.id)
     //   }
-     
+
     // }
   };
 
@@ -205,7 +207,7 @@ const ChapterScreen = () => {
     await CompletedCourseDBHandler.removeCompletedCourse(course.id)
     setIsOngoingCourse(true)
   };
-  
+
   const onNext = () => {
      if (nextChapter) {
       if (selectedMode === 'read'){
@@ -217,7 +219,7 @@ const ChapterScreen = () => {
       setCurrentChapter(nextChapter); // Trigger re-render with new data
     }
   };
-  
+
   const onPrev = () => {
     if (prevChapter) {
       if  ( selectedMode === 'read') {
@@ -228,7 +230,7 @@ const ChapterScreen = () => {
       setCurrentChapter(prevChapter);
     }
   };
-  
+
   const onComplete = () => {
     //console.log('Completed pressed');
     analytics.sendCompleteCourseEvent(course.id)
@@ -251,6 +253,8 @@ const ChapterScreen = () => {
       onMessage={handleWebViewMessage}
     />
       ) : (
+       // Original loading view, now only shown if chapterDataLoaded is false and no htmlContent
+       // This will be covered by the new overlay if chapterDataLoaded is false
        <View style={styles.emptyDataView}>
          <Text style={styles.emptyDataLabel}>Loading...</Text>
         </View>
@@ -264,6 +268,14 @@ const ChapterScreen = () => {
           onPrev={onPrev} />
     )}
       </View>
+
+      {/* Loading Overlay */}
+      {!chapterDataLoaded && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color={theme.colors.secondaryTheme} />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      )}
 
       {/* Footer Section */}
       {currentChapter && !(
@@ -297,15 +309,15 @@ const ChapterScreen = () => {
     )
   ) : selectedMode === 'listen' ? (
     // Show Start Course in listen mode on first chapter if conditions satisfy
-    
+
         <TouchableOpacity
           style={[styles.button, { backgroundColor: theme.colors.secondaryTheme }]}
           onPress={onStartCourse}
         >
           <Text style={styles.buttonText}>Start Course</Text>
         </TouchableOpacity>
-    
-    
+
+
   ) : (
     <View style={{ width: 0 }} />
   )}
@@ -489,6 +501,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginHorizontal: 8,
+  },
+  // New styles for the loading overlay
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject, // Covers the entire screen
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white background
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10, // Ensure it's above other content
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: theme.colors.greyDark,
+    fontFamily: 'Roboto-Medium',
   },
 });
 
