@@ -51,6 +51,7 @@ const theme = {
 
       //White
       white: '#ffffff',
+      whiteTransparent1: '#FFFFFF80',  //Border
 
 
       //red

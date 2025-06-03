@@ -311,12 +311,13 @@ const styles = StyleSheet.create({
     marginTop: 12,
     lineHeight: 20,
     fontWeight: '400',
-    fontFamily: 'Roboto-Medium',
+    fontFamily: 'Roboto-Regular',
   },
   courseMetaRow: {
     flexDirection: 'row',
     gap: 14,
     alignItems: 'center',
+    paddingRight: 8,
   },
   metaText: {
     fontSize: 13,
@@ -349,12 +350,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.greyDark2,
     marginBottom: 8,
-    fontWeight: '400',
     lineHeight: 18,
-    fontFamily: 'Roboto-Medium',
-
-   // fontFamily: 'Courier'
-    
+    fontFamily: 'Roboto-Regular',
   },
   chapterDuration: {
     fontSize: 12,

@@ -4,7 +4,8 @@ import {
   StyleSheet,
   ImageBackground,
   TouchableOpacity,
-  Text
+  Text,
+  Dimensions
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -44,20 +45,20 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
   };
 
   const handleOnNext = () => {
-    setPaused(true); // Pause before moving to next
+    setPaused(true);
     onNext();
-  }
+  };
 
   const handleOnPrev = () => {
-    setPaused(true); // Pause before moving to previous
+    setPaused(true);
     onPrev();
   };
 
   const handleLoad = ({ duration }: { duration: number }) => {
-  setDuration(duration);
-  setPaused(false);
-  // You can call any other function or add additional logic here
-};
+    setDuration(duration);
+    setPaused(false);
+    console.log('thumbnailUrl', thumbnailUrl);
+  };
 
   const seekTo = (value: number) => {
     playerRef.current?.seek(value);
@@ -70,56 +71,63 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
       imageStyle={{ opacity: 0.3 }}
     >
       <View style={styles.container}>
-        <Text style={styles.titleText}>{title}</Text>
+        <View style={styles.controllerView}>
+          <Text style={styles.titleText}>{title}</Text>
 
-        <Slider
-          style={{ width: '80%', marginBottom: 20 }}
-          minimumValue={0}
-          maximumValue={duration}
-          value={currentTime}
-          onSlidingComplete={seekTo}
-          minimumTrackTintColor="#fff"
-          maximumTrackTintColor="#888"
-          thumbTintColor="#fff"
-        />
-
-        <View style={styles.controls}>
-          <TouchableOpacity onPress={handleOnPrev} style={styles.iconButton}>
-            <Ionicons name="play-skip-back" size={32} color="white" />
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={togglePlayback} style={styles.iconButton}>
-            <Ionicons
-              name={paused ? 'play' : 'pause'}
-              size={40}
-              color="white"
+          <View style={styles.sliderContainer}>
+            <Slider
+              style={{ width: '100%' }}
+              minimumValue={0}
+              maximumValue={duration}
+              value={currentTime}
+              onSlidingComplete={seekTo}
+              minimumTrackTintColor="#fff"
+              maximumTrackTintColor="#888"
+              thumbTintColor="#fff"
             />
-          </TouchableOpacity>
+          </View>
 
-          <TouchableOpacity onPress={handleOnNext} style={styles.iconButton}>
-            <Ionicons name="play-skip-forward" size={32} color="white" />
-          </TouchableOpacity>
+          <View style={styles.controls}>
+            <TouchableOpacity onPress={handleOnPrev} style={styles.iconButton}>
+              <Ionicons name="play-skip-back" size={32} color="white" />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={togglePlayback} style={styles.iconButton}>
+              <Ionicons
+                name={paused ? 'play' : 'pause'}
+                size={40}
+                color="white"
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleOnNext} style={styles.iconButton}>
+              <Ionicons name="play-skip-forward" size={32} color="white" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.speedControllerView}>
+              <TouchableOpacity onPress={changeSpeed} style={styles.speedButton}>
+                  <Text style={styles.speedText}>{speed}x</Text>
+              </TouchableOpacity>
+          </View>
+
+         
+
+          {/* Hidden Video player for audio-only */}
+          <Video
+            ref={playerRef}
+            source={{ uri: audioUrl }}
+            paused={paused}
+            rate={speed}
+            audioOnly
+            playInBackground
+            ignoreSilentSwitch="ignore"
+            onProgress={({ currentTime }) => setCurrentTime(currentTime)}
+            onLoad={handleLoad}
+            onEnd={onNext}
+            onError={(e) => console.log('Video error', e)}
+            style={{ width: 0, height: 0 }} // hidden
+          />
         </View>
-
-        <TouchableOpacity onPress={changeSpeed} style={styles.speedButton}>
-          <Text style={styles.speedText}>{speed}x</Text>
-        </TouchableOpacity>
-
-        {/* Hidden Video player for audio-only */}
-        <Video
-          ref={playerRef}
-          source={{ uri: audioUrl }}
-          paused={paused}
-          rate={speed}
-          audioOnly
-          playInBackground
-          ignoreSilentSwitch="ignore"
-          onProgress={({ currentTime }) => setCurrentTime(currentTime)}
-           onLoad={handleLoad}
-          onEnd={onNext}
-          onError={(e) => console.log('Video error', e)}
-          style={{ width: 0, height: 0 }} // hidden
-        />
       </View>
     </ImageBackground>
   );
@@ -129,33 +137,53 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: 'center',
-    marginTop: 8
   },
   container: {
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
+  },
+  controllerView: {
+    backgroundColor: theme.colors.whiteTransparent1,
+    padding: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '100%',
+  },
+  sliderContainer: {
+    width: '100%',
+    paddingHorizontal: 10,
+    marginBottom: 20,
   },
   controls: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    width: '70%',
-    marginVertical: 20,
+    width: '100%',
+  },
+  speedControllerView: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 10,
   },
   iconButton: {
     marginHorizontal: 20,
   },
   speedButton: {
     backgroundColor: theme.colors.white,
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    opacity: 0.8,
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   speedText: {
     color: theme.colors.greyDark2,
     fontFamily: 'Roboto-Medium',
     fontSize: 18,
+    textAlign: 'center',
   },
   titleText: {
     color: theme.colors.black,

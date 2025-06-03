@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 10,
     marginBottom: 5, // Space between image and button
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   ratingText: {
     fontSize: 12,

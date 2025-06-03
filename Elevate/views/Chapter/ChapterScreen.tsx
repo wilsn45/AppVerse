@@ -422,7 +422,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 0,
     borderRadius: 2,
-    marginTop: 8
   },
   emptyDataView: {
     flex: 1,
