@@ -224,7 +224,7 @@ const HomeScreen = () => {
           source={{ uri: item.thumbnail }} 
           style={styles.categoryTileImage} 
         />
-      <Text style={styles.tileText}>{item.name}</Text>
+      <Text style={styles.tileText}  numberOfLines={1} > {item.name} </Text>
     </TouchableOpacity>
   );
 
@@ -479,7 +479,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     textAlign: 'center',
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
+    paddingHorizontal: 8,
   },
   categoryTileImage: {
     borderTopLeftRadius: 10,

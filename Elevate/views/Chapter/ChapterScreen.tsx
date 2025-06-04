@@ -134,8 +134,8 @@ const ChapterScreen = () => {
        // console.log('Show Ads');
 
      try {
-        //  await AdMobAPIClient.showInterstitialAd();
-        //   await UserReferrerAPI.addAdImpression(course.id, currentChapter.id);
+         await AdMobAPIClient.showInterstitialAd();
+          await UserReferrerAPI.addAdImpression(course.id, currentChapter.id);
         console.log('Ad closed, continue app flow');
      } catch (error) {
            console.error('Ad failed or was not shown:', error);
