@@ -134,6 +134,7 @@ const ChapterScreen = () => {
        // console.log('Show Ads');
 
      try {
+         console.log('Show Ads');
          await AdMobAPIClient.showInterstitialAd();
           await UserReferrerAPI.addAdImpression(course.id, currentChapter.id);
         console.log('Ad closed, continue app flow');
@@ -307,7 +308,7 @@ const ChapterScreen = () => {
     ) : (
       <View style={[styles.iconButton, { width: 0, opacity: 0 }]} />
     )
-  ) : selectedMode === 'listen' ? (
+  ) : selectedMode === 'listen' && currentIndex !== chapterList.length - 1 ? (  
     // Show Start Course in listen mode on first chapter if conditions satisfy
 
         <TouchableOpacity
@@ -347,14 +348,12 @@ const ChapterScreen = () => {
     // Show Complete button in listen mode on last chapter if conditions satisfy
     currentIndex === chapterList.length - 1 &&
     !(isCourseCompleted || course.isLiveCourse) ? (
-      <View style={styles.centeredButtonWrapper}>
-        <TouchableOpacity
+      <TouchableOpacity
           style={[styles.button, styles.completeCourseButton]}
           onPress={onComplete}
         >
           <Text style={styles.buttonText}>Complete</Text>
         </TouchableOpacity>
-      </View>
     ) : (
       <View style={{ width: 0 }} />
     )
