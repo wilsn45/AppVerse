@@ -32,7 +32,7 @@ const MyCourseScreen = () => {
       const savedCourses = await SaveDBHandler.getSavedCourses();
       const ongoingCourses = await OngoingCourseDBHandler.getOngoingingCourses()
       const completedCourses = await CompletedCourseDBHandler.getCompletedCourses()
-      const notifyCourseData = await NotificationDBHandler.getNotificationCourse();
+      const notifyCourseData = await NotificationDBHandler.getFilteredNotificationCourse();
       // console.log("Notify Course", notifyCourseData)
 
           const filteredNotifyCourses = notifyCourseData
@@ -354,6 +354,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: theme.colors.greyDark,
      fontFamily: 'Roboto-Medium',
+     marginRight: 8
   },
   tag: {
     backgroundColor: theme.colors.greyLight2,

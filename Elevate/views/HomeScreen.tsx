@@ -1,15 +1,16 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { HomeAPIClient } from '../APIClients/HomeAPIClient'; 
+import { NotificationAPIClient } from '../APIClients/NotificationAPIClient'; 
 import ProfileDBHandler from '../DBHandler/ProfileDBHandler';
 import { OngoingCourseDBHandler } from '../DBHandler/OngoingCourseDBHandler';
 import { HomeAnalytics } from '../Analytics/HomeAnalytics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SaveDBHandler } from '../DBHandler/SaveDBHandler';
-import { BackHandler } from 'react-native';
+import { BackHandler, AppState, AppStateStatus  } from 'react-native';
 
 import theme from '../Theme/Theme';
 
@@ -26,10 +27,35 @@ const HomeScreen = () => {
   const spacing = 10; // Space between tiles
   const analytics = new HomeAnalytics();
 
+   const appState = useRef<AppStateStatus>(AppState.currentState);
+
+  const onAppForeground = () => {
+    console.log('App is back in foreground while on HomeScreen');
+    
+    NotificationAPIClient.fetchNewNotifications()
+  };
+
   // Example dynamic data for the horizontal FlatLists
   const categoryData = [];
   const homeCards = [];
   let homeData = null
+
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        onAppForeground();
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

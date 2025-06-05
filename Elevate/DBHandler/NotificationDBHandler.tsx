@@ -16,6 +16,22 @@ export class NotificationDBHandler {
       return [];
     }
   }
+
+  static async getFilteredNotificationCourse(): Promise<NotificationData[]> {
+  try {
+    const notifications = await AsyncStorage.getItem(this.STORAGE_KEY);
+    const allNotifications = notifications
+      ? (JSON.parse(notifications) as NotificationData[])
+      : [];
+
+   const filteredList = allNotifications.filter(n => (n.viewCounter ?? 0) <= 2);
+
+    return filteredList;
+  } catch (error) {
+    console.error('Error retrieving filtered notification course data:', error);
+    return [];
+  }
+}
   
 
   // Save array of NotificationData
@@ -28,11 +44,9 @@ export class NotificationDBHandler {
     const newNotifications = newItems.filter(item => !existingNotificationIds.has(item.id));
 
     const updatedList = [...existing, ...newNotifications];
+    console.log('Saving new notification courses:', updatedList);
    
-    // Remove any items with viewCounter > 2
-    const filteredList = updatedList.filter(n => n.viewCounter <= 2);
-
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredList));
+    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedList));
   } catch (error) {
     console.error('Error saving new notification course data:', error);
   }
