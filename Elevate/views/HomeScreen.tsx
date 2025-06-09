@@ -223,9 +223,6 @@ const HomeScreen = () => {
 
   const handleSave = async (item) => {
 
-     navigateToLogin()
-      return;
-
     if (ProfileDBHandler.isUserLoggedIn() === false) {
        navigateToLogin()
       return;
