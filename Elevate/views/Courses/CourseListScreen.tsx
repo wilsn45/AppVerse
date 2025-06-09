@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState,  } from 'react';
+import React, { useEffect, useCallback, useState  } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   Dimensions,
   FlatList,
   TouchableOpacity,
-  Image
+  Image,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -15,7 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { SaveDBHandler } from '../../DBHandler/SaveDBHandler.tsx';
 import { CourseListAnalytics } from '../../Analytics/CourseListAnalytics.ts';
 import theme from '../../Theme/Theme.js';
-import { useFocusEffect } from '@react-navigation/native'; 
+import { useFocusEffect } from '@react-navigation/native';
 import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
 
 
@@ -27,19 +27,19 @@ const CourseListScreen = () => {
   const { topic, showTopRated, showRecommended} = route.params;
   const [courseList, setCourseList] = useState([]);
   const [savedCourses, setSavedCourses] = useState<Map<string, boolean>>(new Map());
-  
 
-  const analytics = new CourseListAnalytics()
+
+  const analytics = new CourseListAnalytics();
 
   useEffect(() => {
-     analytics.sendCourseListImpressionEvent(topic)
-    fetchContentList()
+     analytics.sendCourseListImpressionEvent(topic);
+    fetchContentList();
   }, [ navigation, topic]);
 
 
   const fetchContentList = async () => {
     try {
-        
+
         // Map the fetched documents to include doc.id and category name
         let coursesList = [];
         if (showTopRated) {
@@ -49,16 +49,16 @@ const CourseListScreen = () => {
          } else {
              coursesList = await ContentAPIClient.fetchCourseByTopic(topic);
          }
-         
+
 
        // console.log("Fetched ContentList:", coursesList)
-        setCourseList(coursesList)
-       analytics.sendCourseListDataAppearedSuccessEvent(topic)
+        setCourseList(coursesList);
+       analytics.sendCourseListDataAppearedSuccessEvent(topic);
     } catch (error) {
-      analytics.sendCourseListDataAppearedFailedEvent(topic)
+      analytics.sendCourseListDataAppearedFailedEvent(topic);
       console.error('Error fetching LiveCategory:', error);
     } finally {
-        
+
     }
 };
 
@@ -81,7 +81,7 @@ const loadCourseSaveStatus = async () => {
     updatedSavedCourses.set(id, isSaved);
   });
   setSavedCourses(updatedSavedCourses);
-  
+
 };
 
 const handleSave = async (course) => {
@@ -93,10 +93,10 @@ const handleSave = async (course) => {
 
   // Perform save/remove action
   if (isSaved) {
-    analytics.sendRemoveSavedCourseEvent(course.id)
+    analytics.sendRemoveSavedCourseEvent(course.id);
     await SaveDBHandler.removeCourse(course.id);
   } else {
-    analytics.sendSaveCourseEvent(course.id)
+    analytics.sendSaveCourseEvent(course.id);
     await SaveDBHandler.saveCourse(course);
   }
 
@@ -141,23 +141,23 @@ useFocusEffect(
     navigation.setOptions({
       title: screenTitle,
     });
-    fetchContentList()
+    fetchContentList();
   }, [ navigation, topic])
 );
 
 
 const handleCardPress = (course) => {
-  analytics.sendClickOnCourseEvent(course.id)
+  analytics.sendClickOnCourseEvent(course.id);
   navigation.navigate('CourseScreen', { course: course });
 };
-  
+
 
 
 
 // useEffect(() => {
 //   console.log('Saved courses updated (from useEffect):', savedCourses);
 // }, [savedCourses]);
-  
+
 
   return (
     <View style={styles.container}>
@@ -196,7 +196,7 @@ const handleCardPress = (course) => {
           <Text
         style={[
           styles.metaText,
-          { color: item.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold',fontFamily: 'Roboto-Medium', },
+          { color: item.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold',fontFamily: 'Roboto-Medium' },
         ]}
       >
         {item.isLiveCourse ? 'LIVE' : `${item.duration}`}
@@ -209,13 +209,13 @@ const handleCardPress = (course) => {
                 />
           <Text style={styles.ratingText}> {item.rating ?? '4.5'}</Text>
         </View>
-    
+
         </View>
 
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() => handleSave(item)}
-          accessibilityLabel={savedCourses.get(item.id) ? `Unsave Card` : 'Save Card'}
+          accessibilityLabel={savedCourses.get(item.id) ? 'Unsave Card' : 'Save Card'}
         >
           <Ionicons
             name={savedCourses.get(item.id) ? 'bookmark' : 'bookmark-outline'}
@@ -247,16 +247,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     overflow: 'hidden', // ensures rounded corners work with full-width image
   },
-  
+
   topImage: {
     width: '100%',
     height: 200,
   },
-  
+
   cardContent: {
     padding: 12,
   },
-  
+
   contentText: {
     fontSize: 22,
     fontWeight: '500',
@@ -264,48 +264,48 @@ const styles = StyleSheet.create({
     marginBottom: 12,
      fontFamily: 'Roboto-Medium',
   },
-  
+
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  
+
   infoGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },
-  
+
   tag: {
     backgroundColor: theme.colors.greyLight2,
     borderRadius: 4,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  
+
   tagText: {
     fontSize: 12,
     color: theme.colors.greyDark,
      fontFamily: 'Roboto-Medium',
   },
-  
+
   durationText: {
     fontSize: 12,
     color: '#666',
     fontFamily: 'Roboto-Medium',
   },
-  
+
   ratingText: {
     fontSize: 12,
     color: '#777',
     fontFamily: 'Roboto-Medium',
   },
-  
+
   iconButton: {
     padding: 4,
   },
-  
+
   separatorLine: {
     height: 1,
     backgroundColor: '#e0e0e0',
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   },
   topLeft: {
     flexShrink: 1,
-    gap: 10
+    gap: 10,
   },
   contentDescription: {
     fontSize: 14,

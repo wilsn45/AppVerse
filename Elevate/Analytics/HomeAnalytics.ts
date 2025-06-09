@@ -35,7 +35,7 @@ export class HomeAnalytics {
         'Open_Topic',
         'Home',
         ActionType.NAVIGATION,
-        { "topic": topic }
+        { 'topic': topic }
       );
   }
 
@@ -44,7 +44,7 @@ export class HomeAnalytics {
         'Open_Course',
         'Home',
         ActionType.NAVIGATION,
-        { "courseId" :  courseId }
+        { 'courseId' :  courseId }
       );
   }
 
@@ -53,7 +53,7 @@ export class HomeAnalytics {
         'Save_Course',
         'Home',
         ActionType.CLICK,
-        { "courseId" :  courseId }
+        { 'courseId' :  courseId }
       );
   }
 
@@ -62,7 +62,7 @@ export class HomeAnalytics {
         'Remove_Saved_Course',
         'Home',
         ActionType.CLICK,
-        { "courseId" :  courseId }
+        { 'courseId' :  courseId }
       );
   }
 

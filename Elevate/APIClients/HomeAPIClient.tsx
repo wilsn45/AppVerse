@@ -39,11 +39,11 @@ export class HomeAPIClient {
              // console.log("snapshot -->", snapshot)
 
               if (collectionName === 'LiveCategories') {
-                Home["Categories"] = snapshot.docs.map(doc => 
+                Home.Categories = snapshot.docs.map(doc =>
                   new CategoryData(doc.id, doc.data().index, doc.data().name, doc.data().thumbnail)
               );
               } else {
-                Home[category.name] = snapshot.docs.map(doc => 
+                Home[category.name] = snapshot.docs.map(doc =>
                         new CourseData(
                           doc.data().courseId,
                           doc.data().title,
@@ -64,14 +64,14 @@ export class HomeAPIClient {
          // sendCategoryFetchEvent();
 
           // Save LiveCategories using CategoryHandler
-          await this.setHomeData(Home)
-          await CategoryDBHandler.setLiveCategory(Home["Categories"])
-          await NotificationAPIClient.fetchNewNotifications()
-          return true 
+          await this.setHomeData(Home);
+          await CategoryDBHandler.setLiveCategory(Home.Categories);
+          await NotificationAPIClient.fetchNewNotifications();
+          return true;
       } catch (error) {
           console.error('Error fetching data:', error);
-          return false
-      } 
+          return false;
+      }
   }
 
 
@@ -94,7 +94,7 @@ export class HomeAPIClient {
   static async setHomeData(home) {
     try {
       await AsyncStorage.setItem(this.LIVE_HOME_STORAGE_KEY, JSON.stringify(home));
-      
+
     } catch (error) {
       console.error('Error saving home data:', error.message);
     }

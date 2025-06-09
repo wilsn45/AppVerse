@@ -6,9 +6,9 @@ export class CourseAnalytics {
 
     // Constructor to accept and save the argument
     constructor(courseId) {
-      this.courseId = courseId
+      this.courseId = courseId;
     }
-  
+
 
  async sendCourseImpressionEvent() {
     await AnalyticsHelper.sendEvent(

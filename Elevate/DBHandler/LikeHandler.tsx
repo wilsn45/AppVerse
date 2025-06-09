@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export class LikeHandler {
   // Helper function to get the current saved items from AsyncStorage
 
-  static STORAGE_KEY = 'LIKED_CARD'; 
+  static STORAGE_KEY = 'LIKED_CARD';
 
   static async getLikes() {
     try {
@@ -37,13 +37,13 @@ export class LikeHandler {
 
   static async getLikedCardByCategory(categoryId) {
     const likedItems = await this.getLikes();
-    return likedItems[categoryId]
+    return likedItems[categoryId];
   }
 
   // Add save
   static async addLike(categoryId, id, contentTitle) {
     const likedItems = await this.getLikes();
-    if (!likedItems[categoryId]) likedItems[categoryId] = [];
+    if (!likedItems[categoryId]) {likedItems[categoryId] = [];}
     likedItems[categoryId].push({ id, contentTitle }); // Save both contentId and contentTitle
     await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(likedItems));
   }

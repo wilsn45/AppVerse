@@ -4,17 +4,17 @@ import { createStackNavigator, TransitionPresets } from '@react-navigation/stack
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './views/HomeScreen';
-import CourseListScreen from './views/Courses/CourseListScreen.tsx'; 
-import TopicsScreen from './views/Courses/TopicsScreen.tsx'; 
+import CourseListScreen from './views/Courses/CourseListScreen.tsx';
+import TopicsScreen from './views/Courses/TopicsScreen.tsx';
 import CourseScreen from './views/Courses/CourseScreen.tsx';
 import ChapterScreen from './views/Chapter/ChapterScreen.tsx';
 import MyCourseScreen from './views/MyCourseScreen.tsx';
-import LetsStartScreen from './views/GetStarted/LetsStartScreen.tsx'; 
-import SplashScreen from './views/GetStarted/SplashScreen.tsx'; 
-import UserReferrerAPI from './APIClients/UserReferrerAPI.tsx'; 
+import LetsStartScreen from './views/GetStarted/LetsStartScreen.tsx';
+import SplashScreen from './views/GetStarted/SplashScreen.tsx';
+import UserReferrerAPI from './APIClients/UserReferrerAPI.tsx';
 import theme from './Theme/Theme';
 import mobileAds from 'react-native-google-mobile-ads';
-import {AdMobDBHandler} from './DBHandler/AdMobDBHandler.tsx'; 
+import {AdMobDBHandler} from './DBHandler/AdMobDBHandler.tsx';
 
 
 
@@ -33,15 +33,15 @@ const TabNavigator = () => {
             //return <MaterialCommunityIcons name={iconName} size={24} color={color} />;
           } else if (route.name === 'My Course') {
             iconName = focused ? 'bookmark' : 'bookmark-outline';
-          } 
-          return <Ionicons  name={iconName} size={size}  color={color}  />
+          }
+          return <Ionicons  name={iconName} size={size}  color={color}  />;
 
         },
         tabBarActiveTintColor: theme.colors.black,
         tabBarInactiveTintColor: theme.colors.black,
         tabBarStyle: {
         //  backgroundColor: theme.colors.backgroundGrey2,
-        }
+        },
       })}
     >
       <Tab.Screen
@@ -76,12 +76,12 @@ const App = () => {
    const updateReferrer = async () => {
     const alreadyReferred = await AdMobDBHandler.getReferState();
         if (alreadyReferred) {
-          console.log("Already Referred, Returning")
+          console.log('Already Referred, Returning');
            return;
        }
        await UserReferrerAPI.saveReferralData();
     };
-    
+
     updateReferrer();
   }, []);
 
@@ -90,7 +90,7 @@ const App = () => {
       const onboardedStatus = await ProfileHandler.getIsOnboarded();
       setIsOnboarded(onboardedStatus);
     };
-    
+
     checkOnboardingStatus();
   }, []);
 
@@ -106,7 +106,7 @@ const App = () => {
       });
   }, []);
 
- 
+
   return (
     <NavigationContainer>
       <Stack.Navigator  screenOptions={{
@@ -117,7 +117,7 @@ const App = () => {
         shadowColor: 'transparent',
       },
     }}>
-        
+
         <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}
@@ -127,19 +127,19 @@ const App = () => {
         <Stack.Screen
             name="LetsStartScreen"
             component={LetsStartScreen}
-            options={{ 
+            options={{
              headerShown: false }}
         />
 
          <Stack.Screen
           name="HomeTabNavigator" // HomeTabNavigator will always be available
           component={TabNavigator}
-          options={{ 
+          options={{
              ...TransitionPresets.ModalSlideFromBottomIOS,
             headerShown: false }}
         />
 
-      
+
         {/* Other screens */}
         <Stack.Screen
           name="CourseListScreen"
@@ -164,7 +164,7 @@ const App = () => {
           }}
         />
 
-        
+
         <Stack.Screen
           name="CourseScreen"
           component={CourseScreen}
@@ -185,8 +185,8 @@ const App = () => {
             headerTintColor: theme.colors.black,
             title: '',
           }}
-        />  
-        
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState,  } from 'react';
+import React, { useEffect, useCallback, useState  } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   Dimensions,
   FlatList,
   TouchableOpacity,
-  Image
+  Image,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 
@@ -14,7 +14,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { TopicAnalytics } from '../../Analytics/TopicAnalytics.ts';
 import theme from '../../Theme/Theme.js';
-import { useFocusEffect } from '@react-navigation/native'; 
+import { useFocusEffect } from '@react-navigation/native';
 import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
 
 
@@ -23,33 +23,33 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 const TopicsScreen = () => {
   const navigation = useNavigation();
   const [topicList, setTopicList] = useState([]);
-  
-  const analytics = new TopicAnalytics()
+
+  const analytics = new TopicAnalytics();
 
   useEffect(() => {
-     analytics.sendTopicListImpressionEvent()
-    fetchContentList()
+     analytics.sendTopicListImpressionEvent();
+    fetchContentList();
   }, [ navigation]);
 
 
   const fetchContentList = async () => {
     try {
-        
+
         // Map the fetched documents to include doc.id and category name
         const topicList  = await ContentAPIClient.fetchTopics();
 
         //console.log("Fetched topicList:", topicList)
-        setTopicList(topicList)
-       analytics.sendTopicDataAppearedSuccessEvent()
+        setTopicList(topicList);
+       analytics.sendTopicDataAppearedSuccessEvent();
     } catch (error) {
-      analytics.sendTopicDataAppearedFailedEvent()
+      analytics.sendTopicDataAppearedFailedEvent();
         console.error('Error fetching LiveCategory:', error);
-    } 
+    }
 };
 
 
  const handleTilePress = (item) => {
-   analytics.sendTopicClickEvent(item.title)
+   analytics.sendTopicClickEvent(item.title);
     navigation.navigate('CourseListScreen', { topic: item.title });
  };
 
@@ -70,7 +70,7 @@ const TopicsScreen = () => {
              <View style={styles.itemContainer}>
                 <Text style={styles.title}>{item.title}</Text>
                 <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
-                
+
             </View>
          </TouchableOpacity>
         )}
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.white,
-    paddingTop: 24
+    paddingTop: 24,
   },
    itemContainer: {
     flexDirection: 'row',
@@ -96,14 +96,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 2,
     borderColor: theme.colors.greyLight2,
-    marginBottom: 12
+    marginBottom: 12,
   },
   thumbnail: {
     width: 80,
     height: 80,
     borderRadius: 8,
     marginVertical: 8,
-    marginRight: 8
+    marginRight: 8,
   },
   title: {
     fontSize: 18,
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 12,
   },
-  
+
 
 });
 

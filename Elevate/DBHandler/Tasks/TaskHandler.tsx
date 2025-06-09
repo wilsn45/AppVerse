@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { TaskData, ContentData, TaskContentData } from '../../Data/DataModel';
 
 export class TaskHandler {
-  static STORAGE_KEY = 'tasks'; 
+  static STORAGE_KEY = 'tasks';
 
   static async getTasks() {
     try {
@@ -19,9 +19,9 @@ export class TaskHandler {
     try {
       const tasks = await this.getTasks();
       const id = new Date().getTime().toString();
-      const dataAdded = new Date().toISOString()
+      const dataAdded = new Date().toISOString();
 
-      const newTaskContent = new TaskContentData(content.id, content.title, content.categoryId, content.categoryTitle)
+      const newTaskContent = new TaskContentData(content.id, content.title, content.categoryId, content.categoryTitle);
       const taskData = new TaskData(id, taskName, taskType,subTaskType, newTaskContent, dataAdded);
 
       if (!tasks[newTaskContent.categoryId]) {
@@ -43,7 +43,7 @@ export class TaskHandler {
       if (tasks[categoryId]) {
         // Filter out the task with the given taskId
         tasks[categoryId] = tasks[categoryId].filter((task) => task.id !== taskId);
-  
+
         // Save the updated tasks object back to AsyncStorage
         await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(tasks));
         console.log(`Task with ID: ${taskId} removed from category: ${categoryId}`);
@@ -59,19 +59,19 @@ export class TaskHandler {
     try {
       // Retrieve all tasks from AsyncStorage
       const tasks = await this.getTasks(); // Assume this method gets the tasks object
-  
+
       // Check if the category exists
       if (tasks[categoryId]) {
         // Find the task within the category
         const taskIndex = tasks[categoryId].findIndex((task) => task.id === taskId);
-  
+
         if (taskIndex !== -1) {
           // Update the 'isDone' property to true
           tasks[categoryId][taskIndex].isDone = state;
-  
+
           // Save the updated tasks object back to AsyncStorage
           await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(tasks));
-  
+
           console.log(`Task with ID: ${taskId} marked as done in category: ${categoryId}`);
         } else {
           console.log(`Task with ID: ${taskId} not found in category: ${categoryId}`);
@@ -83,5 +83,5 @@ export class TaskHandler {
       console.error('Error updating task:', error);
     }
   }
-  
+
 }

@@ -3,14 +3,14 @@ import { AnalyticsHelper, ActionType } from './AnalyticsHelper';
 export class TaskDetailAnalytics {
 
   task;
- idPrefix = 7
- taskType = "Routine_Task"
+ idPrefix = 7;
+ taskType = 'Routine_Task';
 
   // Constructor to accept and save the argument
   constructor(task, isRoutineTask) {
     this.task = task;
-    this.idPrefix = isRoutineTask ? 6 : 7; 
-    this.taskType = isRoutineTask ? "Routine_Task" : "Goal_Task"; 
+    this.idPrefix = isRoutineTask ? 6 : 7;
+    this.taskType = isRoutineTask ? 'Routine_Task' : 'Goal_Task';
   }
 
  async sendTaskDetailImpressionEvent() {

@@ -33,8 +33,8 @@ const GoalTaskScreen = () => {
   const [isSaveEnable, setIsSaveEnable] = useState(false);
 
   const [showProgressLimitError, setShowProgressLimitError] = useState(false);
-  
-  const anlaytics = new TaskDetailAnalytics(task, false)
+
+  const anlaytics = new TaskDetailAnalytics(task, false);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -62,12 +62,12 @@ const GoalTaskScreen = () => {
     try {
       const records = await GoalTaskHandler.getAllRecordsForTask(task.id);
       const totalProgress = records.reduce((sum, record) => sum + (parseInt(record.progress, 10) || 0), 0);
-      
-      setTotalProgress(totalProgress)
+
+      setTotalProgress(totalProgress);
       setTaskRecords(records);
-      console.log("task records", records)
-      setIsTaskCompleted(task.isDone)
-      anlaytics.sendRecordListPresentedEvent()
+      console.log('task records', records);
+      setIsTaskCompleted(task.isDone);
+      anlaytics.sendRecordListPresentedEvent();
     } catch (error) {
       console.error('Error fetching task records:', error);
     }
@@ -75,44 +75,44 @@ const GoalTaskScreen = () => {
 
   // Load records on component mount and when a new record is added
   useEffect(() => {
-    anlaytics.sendTaskDetailImpressionEvent()
+    anlaytics.sendTaskDetailImpressionEvent();
     fetchTaskRecords();
   }, []);
 
   // Handle navigation to CourseScreen
   const navigateToContentDetail = () => {
-    anlaytics.sendContentClickeddEvent()
+    anlaytics.sendContentClickeddEvent();
     navigation.navigate('CourseScreen', { content: task.content });
   };
 
   // Handle opening the modal
   const openModal = () => {
     setIsModalVisible(true);
-    anlaytics.sendAddRecordPresentedEvent()
+    anlaytics.sendAddRecordPresentedEvent();
   };
 
   const openCompleteTaskModal = () => {
-    anlaytics.sendChangeTaskStatusPresentedEvent()
+    anlaytics.sendChangeTaskStatusPresentedEvent();
     setIsCompleteTaskModalVisible(true);
   };
 
   const openDeleteTaskModal = () => {
-    anlaytics.sendDeleteViewPresentedEvent()
+    anlaytics.sendDeleteViewPresentedEvent();
     setIsDeleteTaskModalVisible(true);
   };
 
   const openDeleteTaskConfirmView = () => {
      setIsDeleteTaskModalVisible(false);
-     setIsDeleteTaskConfirmTaskVisible(true)
-  }
+     setIsDeleteTaskConfirmTaskVisible(true);
+  };
 
   const deleteTask = async () => {
     try {
-       anlaytics.sendDeleteTaskClickdEvent()
+       anlaytics.sendDeleteTaskClickdEvent();
        setIsDeleteTaskModalVisible(false);
-       setIsDeleteTaskConfirmTaskVisible(false)
+       setIsDeleteTaskConfirmTaskVisible(false);
         await RoutineTaskHandler.removeAllRecordsForTask(task.id);
-        await TaskHandler.removeTask(task.categoryId,task.id)
+        await TaskHandler.removeTask(task.categoryId,task.id);
         navigation.navigate('HomeTabNavigator', { screen: 'Tasks' });
       } catch (error) {
         console.error('Error saving record:', error);
@@ -121,24 +121,24 @@ const GoalTaskScreen = () => {
 
   const onProgressInputValueChanged = (value) => {
     setProgressValue(parseInt(value));
-    const newProgess =  totalProgressValue + parseInt(value)
-    const isEnable =  (newProgess < 101)
-    setIsSaveEnable(isEnable)
-    setShowProgressLimitError(!isEnable)
+    const newProgess =  totalProgressValue + parseInt(value);
+    const isEnable =  (newProgess < 101);
+    setIsSaveEnable(isEnable);
+    setShowProgressLimitError(!isEnable);
   };
 
   // Handle saving a new record
   const handleSave = async () => {
     if (inputValue.trim()) {
       try {
-        const recordId =  new Date().getTime().toString()
-        const date = new Date().toISOString() 
-        const newProgress = new TaskProgress(recordId,task.id,inputValue, progressValue, date)
+        const recordId =  new Date().getTime().toString();
+        const date = new Date().toISOString();
+        const newProgress = new TaskProgress(recordId,task.id,inputValue, progressValue, date);
         await GoalTaskHandler.addRecord(newProgress);
 
 
         fetchTaskRecords(); // Refresh the records after saving
-        anlaytics.sendAddRecordEvent(recordId)
+        anlaytics.sendAddRecordEvent(recordId);
       } catch (error) {
         console.error('Error saving record:', error);
       }
@@ -147,42 +147,42 @@ const GoalTaskScreen = () => {
     }
     setIsModalVisible(false); // Close the modal
     setInputValue(''); // Clear the input field
-    setIsSaveEnable(false)
-    setProgressValue(0)
+    setIsSaveEnable(false);
+    setProgressValue(0);
   };
 
   // Handle closing the modal
   const closeModal = () => {
     setIsModalVisible(false);
-    anlaytics.sendCancelAddRecordEvent()
-    setShowProgressLimitError(false)
+    anlaytics.sendCancelAddRecordEvent();
+    setShowProgressLimitError(false);
   };
 
   const closeCompleteTaskModal = () => {
-    anlaytics.sendCancelChangeTaskStatusEvent()
+    anlaytics.sendCancelChangeTaskStatusEvent();
     setIsCompleteTaskModalVisible(false);
   };
 
   const closeDeleteTaskModal = () => {
-    anlaytics.sendCancelDeleteClickdEvent()
+    anlaytics.sendCancelDeleteClickdEvent();
     setIsDeleteTaskModalVisible(false);
   };
 
   const enableDeleteRecord = async () => {
-    anlaytics.sendDeleteRecordClickdEvent()
-    setIsDeleteRecordEnable(true)
-    setIsDeleteTaskModalVisible(false)
-  }; 
+    anlaytics.sendDeleteRecordClickdEvent();
+    setIsDeleteRecordEnable(true);
+    setIsDeleteTaskModalVisible(false);
+  };
 
   const handleDeleteDone = async () => {
-    anlaytics.sendDeleteRecordDoneEvent()
-    setIsDeleteRecordEnable(false)
+    anlaytics.sendDeleteRecordDoneEvent();
+    setIsDeleteRecordEnable(false);
   };
 
   const handleDeleteRecord = async (recordId) => {
-    await GoalTaskHandler.removeRecord(recordId)
-    anlaytics.sendDeleteRecordEvent(recordId)
-    fetchTaskRecords()
+    await GoalTaskHandler.removeRecord(recordId);
+    anlaytics.sendDeleteRecordEvent(recordId);
+    fetchTaskRecords();
   };
 
   const closeDeleteTaskConfirm = () => {
@@ -191,10 +191,10 @@ const GoalTaskScreen = () => {
   };
 
   const handleTaskOperation = async () => {
-    await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted)
-    anlaytics.sendChangeTaskStatusEvent(!isTaskCompleted)
-    setIsTaskCompleted(!isTaskCompleted)
-    setIsCompleteTaskModalVisible(false); 
+    await TaskHandler.updateTaskState(task.categoryId,task.id, !isTaskCompleted);
+    anlaytics.sendChangeTaskStatusEvent(!isTaskCompleted);
+    setIsTaskCompleted(!isTaskCompleted);
+    setIsCompleteTaskModalVisible(false);
   };
 
   // Render a single record in the FlatList
@@ -202,7 +202,7 @@ const GoalTaskScreen = () => {
     <View style={styles.mainCellView}>
       <View style={styles.leftCellView}>
         <View style={styles.lineSuperView}>
-          <View style={styles.lineView}></View>
+          <View style={styles.lineView} />
           <View style={styles.circleView}>
             <Text style={styles.circleText}>{item.progress}%</Text>
           </View>
@@ -212,7 +212,7 @@ const GoalTaskScreen = () => {
         <Text style={styles.recordText}>{item.message}</Text>
         <Text style={styles.recordDate}>{new Date(item.time).toLocaleString()}</Text>
       </View>
-  
+
       {isDeleteRecordEnable && (
         <TouchableOpacity
           onPress={() => handleDeleteRecord(item.id)}  // Replace with your delete logic
@@ -235,7 +235,7 @@ const GoalTaskScreen = () => {
         <Ionicons name="chevron-forward" size={24} color={theme.colors.grey1} />
       </TouchableOpacity>
       </View>
-      
+
       {/* FlatList to display task records */}
       <FlatList
         data={taskRecords}
@@ -253,15 +253,15 @@ const GoalTaskScreen = () => {
 
       {/* Bottom View with buttons */}
       <View style={styles.bottomContainer}>
-        <TouchableOpacity onPress={openModal} 
+        <TouchableOpacity onPress={openModal}
              style={styles.iconButton}
-             disabled={isTaskCompleted || isDeleteRecordEnable} 
+             disabled={isTaskCompleted || isDeleteRecordEnable}
              accessibilityLabel={'Add new progress'}>
           <Ionicons name="add-outline" size={30} color={(isTaskCompleted || isDeleteRecordEnable) ? theme.colors.greyLight3 : theme.colors.grey} />
           <Text style={[styles.iconButtonText, (isTaskCompleted || isDeleteRecordEnable) && styles.iconButtonTextDisabled]}>Add Record</Text>
         </TouchableOpacity>
-       
-        <TouchableOpacity onPress={openDeleteTaskModal} 
+
+        <TouchableOpacity onPress={openDeleteTaskModal}
             style={styles.iconButton}
             disabled={isDeleteRecordEnable}
             accessibilityLabel={'Delete Record Or Task'}>
@@ -331,7 +331,7 @@ const GoalTaskScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-          
+
           <View style={styles.modalTitleHeader}>
             <Text style={styles.modalTitle}>{!isTaskCompleted ? 'Mark Task Done' : 'Mark Task Undone'}</Text>
            </View>
@@ -344,7 +344,7 @@ const GoalTaskScreen = () => {
               <Text style={styles.saveButtonText}>No</Text>
             </TouchableOpacity>
            </View>
-           
+
           </View>
         </View>
       </Modal>
@@ -359,14 +359,14 @@ const GoalTaskScreen = () => {
         <View style={styles.modalContainer}
          accessibilityLabel={'Delete Task'}>
           <View style={styles.modalContent}>
-          
+
           <View style={styles.modalTitleHeader}>
             <Text style={styles.modalTitle}>Confirm Delete Task</Text>
            </View>
 
            <View style={styles.completeTaskOptions}>
            <TouchableOpacity onPress={deleteTask} style={styles.noButton}
-            accessibilityLabel={`Confirm Delete Task'}`}>
+            accessibilityLabel={'Confirm Delete Task\'}'}>
               <Text style={styles.saveButtonText}>Yes</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={closeDeleteTaskConfirm} style={styles.yesButton}
@@ -374,7 +374,7 @@ const GoalTaskScreen = () => {
               <Text style={styles.saveButtonText}>No</Text>
             </TouchableOpacity>
            </View>
-           
+
           </View>
         </View>
       </Modal>
@@ -388,7 +388,7 @@ const GoalTaskScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-          
+
           <View style={styles.modalTopHeader}>
            <TouchableOpacity onPress={closeDeleteTaskModal}
            accessibilityLabel={'Cancel Delete'}>
@@ -400,8 +400,8 @@ const GoalTaskScreen = () => {
            <TouchableOpacity
               onPress={enableDeleteRecord}
               style={[
-                 styles.deleteRecordButton, 
-                    taskRecords.length === 0 && styles.deleteRecordButtonDisable
+                 styles.deleteRecordButton,
+                    taskRecords.length === 0 && styles.deleteRecordButtonDisable,
                 ]}
                  disabled={taskRecords.length === 0}
                 >
@@ -411,7 +411,7 @@ const GoalTaskScreen = () => {
               <Text style={styles.deleteButtonText}>Delete Task</Text>
             </TouchableOpacity>
            </View>
-           
+
           </View>
         </View>
       </Modal>
@@ -510,7 +510,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     color:   theme.colors.primaryTheme,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
     //backgroundColor: theme.colors.primaryTheme,
   },
   iconButtonText: {
@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 8,
     width: '80%',
-    paddingBottom: 15
+    paddingBottom: 15,
   },
   modalTopHeader: {
     height: 24,
@@ -549,7 +549,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10
+    marginBottom: 10,
   },
   modalTitle: {
     color: theme.colors.black,
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
     fontWeight: '500',
-    marginTop: 10
+    marginTop: 10,
   },
   progressInput: {
     backgroundColor: theme.colors.greyLight1,
@@ -603,14 +603,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-    width: 70
+    width: 70,
   },
   noButton: {
     backgroundColor: theme.colors.red,
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-    width: 70
+    width: 70,
   },
   deleteRecordButton:  {
     backgroundColor: theme.colors.primary,
@@ -632,13 +632,13 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: theme.colors.white,
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   completeTaskOptions: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 20
+    gap: 20,
   },
   headerRightText: {
     color: 'grey',
@@ -646,7 +646,7 @@ const styles = StyleSheet.create({
     marginRight: 15,
   },
   mainCellView: { flexDirection: 'row', gap: 15, alignItems: 'center' },
-  leftCellView: { width: 50, alignItems: 'center', justifyContent: 'center',  },
+  leftCellView: { width: 50, alignItems: 'center', justifyContent: 'center'  },
   lineSuperView: {
     flex: 1,
     flexDirection: 'column',
@@ -671,16 +671,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   circleText: {
-    color: theme.colors.greyDark, 
-    fontSize: 15, 
-    fontWeight: 'bold', 
+    color: theme.colors.greyDark,
+    fontSize: 15,
+    fontWeight: 'bold',
   },
   deleteDoneButton: {
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
   },
-  
+
 });
 
 export default GoalTaskScreen;

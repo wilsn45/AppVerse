@@ -41,7 +41,7 @@ const ProfileDBHandler = {
     } catch (error) {
       console.error('Error clearing profile:', error);
     }
-  }
+  },
 };
 
 export default ProfileDBHandler;

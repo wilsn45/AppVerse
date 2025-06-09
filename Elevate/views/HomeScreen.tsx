@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { HomeAPIClient } from '../APIClients/HomeAPIClient'; 
-import { NotificationAPIClient } from '../APIClients/NotificationAPIClient'; 
+import { HomeAPIClient } from '../APIClients/HomeAPIClient';
+import { NotificationAPIClient } from '../APIClients/NotificationAPIClient';
 import ProfileDBHandler from '../DBHandler/ProfileDBHandler';
 import { OngoingCourseDBHandler } from '../DBHandler/OngoingCourseDBHandler';
 import { HomeAnalytics } from '../Analytics/HomeAnalytics';
@@ -31,14 +31,14 @@ const HomeScreen = () => {
 
   const onAppForeground = () => {
     console.log('App is back in foreground while on HomeScreen');
-    
-    NotificationAPIClient.fetchNewNotifications()
+
+    NotificationAPIClient.fetchNewNotifications();
   };
 
   // Example dynamic data for the horizontal FlatLists
   const categoryData = [];
   const homeCards = [];
-  let homeData = null
+  let homeData = null;
 
 
   useEffect(() => {
@@ -62,9 +62,9 @@ const HomeScreen = () => {
       const onBackPress = () => {
         return true; // Prevent default back action
       };
-  
+
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
-  
+
       return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
     }, [])
   );
@@ -72,18 +72,18 @@ const HomeScreen = () => {
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
-        analytics.sendHomeImpressionEvent()
+        analytics.sendHomeImpressionEvent();
         homeData = await HomeAPIClient.getHome();
-        
-        const liveCategories = homeData['Categories']
+
+        const liveCategories = homeData.Categories;
 
         if (!liveCategories || liveCategories.length === 0) {
          // console.log("liveCategories is empty. Exiting function.");
-          return; 
+          return;
         }
 
         const sortedLiveCategories = liveCategories.sort((a, b) => a.index - b.index);
-        
+
         setCategories(sortedLiveCategories);
         //console.log("Categories", liveCategories)
 
@@ -93,37 +93,37 @@ const HomeScreen = () => {
 
        //console.log("Load All Home Sections", newSectionDataArray)
 
-       analytics.sendHomeDataAppearedSuccessEvent()
+       analytics.sendHomeDataAppearedSuccessEvent();
       } catch (error) {
-        analytics.sendHomeDataAppearedFailedEvent()
-        console.error("Error fetching categories:", error);
+        analytics.sendHomeDataAppearedFailedEvent();
+        console.error('Error fetching categories:', error);
       }
     };
-   
+
     const fetchUserName = async () => {
       try {
         const userName = await ProfileDBHandler.getUserName();
         setUserName(userName);
       } catch (error) {
-        console.error("Error fetching user name:", error);
+        console.error('Error fetching user name:', error);
       }
     };
 
     const fetchLatestHomeData = async() => {
-      let isSuccess = await HomeAPIClient.fetchLatestHomeData()
+      let isSuccess = await HomeAPIClient.fetchLatestHomeData();
       //console.log("Latest Home data resp", isSuccess)
       if (isSuccess == true) {
-        fetchHomeData()
-        updateSavedCard()
+        fetchHomeData();
+        updateSavedCard();
       }
-    }
+    };
 
     fetchHomeData();
-    fetchLatestHomeData()
+    fetchLatestHomeData();
   }, [navigation]);
 
   useEffect(() => {
-    
+
   }, [savedCards]);
 
   const reloadSectionData = async () => {
@@ -138,11 +138,11 @@ const HomeScreen = () => {
 
 
       if (lastFive.length > 0) {
-          homeData["Recently Saved"] = lastFive;
+          homeData['Recently Saved'] = lastFive;
        }
 
        if (lastFiveOnGoingCourses.length > 0) {
-        homeData["Continue Where you left"] = lastFiveOnGoingCourses;
+        homeData['Continue Where you left'] = lastFiveOnGoingCourses;
      }
 
     // Loop over each section in homeData to organize and check saved courses
@@ -157,7 +157,7 @@ const HomeScreen = () => {
         // Check for saved courses in the section
         for (const item of data) {
           const isSaved = await SaveDBHandler.isCourseSaved(item.id);
-          newSavedCards.set(item.id, isSaved); 
+          newSavedCards.set(item.id, isSaved);
         }
       }
     }
@@ -176,26 +176,26 @@ const HomeScreen = () => {
 
   const updateSavedCard = async () => {
     try {
-      
+
       //console.log("Get All Home cards", homeCards)
       const newSavedCards = new Map();
       //console.log("sectionDataModel", sectionDataModel);
       if (!homeCards || homeCards.length === 0) {
         //console.log("sectionDataModel is empty. Exiting function.");
-        return; 
+        return;
       }
-  
+
       for (const card of homeCards) {
         const isSaved = await SaveDBHandler.isCourseSaved( card.id);
          newSavedCards.set(card.id, isSaved);
       }
-  
+
       setSavedCards(newSavedCards);
     } catch (error) {
-      console.error("Error fetching saved cards:", error);
+      console.error('Error fetching saved cards:', error);
     }
   };
-  
+
   useFocusEffect(
     React.useCallback(() => {
       updateSavedCard();
@@ -224,10 +224,10 @@ const HomeScreen = () => {
   const handleSave = async (item) => {
     const isSaved = savedCards.get(item.id);
     if (isSaved) {
-      analytics.sendRemoveSavedCourseEvent(item.id)
+      analytics.sendRemoveSavedCourseEvent(item.id);
       await SaveDBHandler.removeCourse(item.id);
     } else {
-      analytics.sendSaveCourseEvent(item.id)
+      analytics.sendSaveCourseEvent(item.id);
       await SaveDBHandler.saveCourse(item);
     }
     // Update only the savedCards state here
@@ -246,9 +246,9 @@ const HomeScreen = () => {
       accessibilityHint="Tap to view the content in this category"
       accessibilityRole="button"
     >
-        <Image 
-          source={{ uri: item.thumbnail }} 
-          style={styles.categoryTileImage} 
+        <Image
+          source={{ uri: item.thumbnail }}
+          style={styles.categoryTileImage}
         />
       <Text style={styles.tileText}  numberOfLines={1} > {item.name} </Text>
     </TouchableOpacity>
@@ -262,10 +262,10 @@ const HomeScreen = () => {
       {/* Left Section: Title */}
       <View style={styles.leftSection}>
         <Text style={styles.titleText}
-        numberOfLines={3} 
-        ellipsizeMode="tail" 
+        numberOfLines={3}
+        ellipsizeMode="tail"
         >{item.title}</Text>
-        
+
         <View>
         <View style={styles.courseInfo}>
         <View style={styles.tag}>
@@ -286,30 +286,30 @@ const HomeScreen = () => {
                 />
           <Text style={styles.ratingText}> {item.rating ?? '4.5'}</Text>
         </View>
-         
+
         </View>
-        
+
         </View>
-        
+
       </View>
-  
+
       {/* Right Section: Image and Button */}
       <View style={styles.rightSection}>
-        <Image 
-          source={{ uri: item.thumbnail }} 
-          style={styles.tileImage} 
+        <Image
+          source={{ uri: item.thumbnail }}
+          style={styles.tileImage}
         />
-        
+
 
         <TouchableOpacity style={styles.tileSaveButton} onPress={() => handleSave(item)}
-                accessibilityLabel={savedCards.get(item.id) ?`Unsave Card`: 'Save Card'}>
+                accessibilityLabel={savedCards.get(item.id) ? 'Unsave Card' : 'Save Card'}>
                 <Ionicons
                   name={ savedCards.get(item.id) ? 'bookmark' : 'bookmark-outline'}
                   size={18}
                   color={savedCards.get(item.id) ? theme.colors.secondaryTheme : theme.colors.primaryTheme}
                 />
-                <Text>{savedCards.get(item.id) ? 'Saved': 'Save'}</Text>
-          </TouchableOpacity> 
+                <Text>{savedCards.get(item.id) ? 'Saved' : 'Save'}</Text>
+          </TouchableOpacity>
       </View>
     </View>
     </TouchableOpacity>
@@ -322,23 +322,23 @@ const HomeScreen = () => {
   };
 
    const handleViewAllTopics = () => {
-    analytics.sendViewAllTopicsEvent()
+    analytics.sendViewAllTopicsEvent();
     navigation.navigate('TopicsScreen');
   };
 
 
   const handleViewAllCourse = (category) => {
-    if (category == "Recommended") {
-      analytics.sendViewAllRecommendedCourseEvent()
+    if (category == 'Recommended') {
+      analytics.sendViewAllRecommendedCourseEvent();
       navigation.navigate('CourseListScreen', { topic: '', showTopRated: false, showRecommended: true });
-    } else if (category == "Top Rated") {
-      analytics.sendViewAllTopRatedCourseEvent()
+    } else if (category == 'Top Rated') {
+      analytics.sendViewAllTopRatedCourseEvent();
        navigation.navigate('CourseListScreen', { topic: '', showTopRated: true, showRecommended: false  });
-    }  else  if (category == "Recently Saved") {
-      analytics.sendViewAllRecentlySavedCourseEvent()
+    }  else  if (category == 'Recently Saved') {
+      analytics.sendViewAllRecentlySavedCourseEvent();
       navigation.navigate('My Course', {targetTab: 'saved'});
     } else {
-      analytics.sendViewAllOngoingCourseCvent()
+      analytics.sendViewAllOngoingCourseCvent();
       navigation.navigate('My Course', {targetTab: 'in_progress'});
     }
   };
@@ -362,7 +362,7 @@ const HomeScreen = () => {
                  color={theme.colors.secondaryTheme}/>
           </TouchableOpacity>
       </View>
-        
+
         <FlatList
           data={groupCategories()}
           renderItem={({ item }) => (
@@ -380,7 +380,7 @@ const HomeScreen = () => {
           )}
           keyExtractor={(item) => item[0].id}
           contentContainerStyle={styles.contentContainer}
-          scrollEnabled={false} 
+          scrollEnabled={false}
         />
 
         {sectionDataModel.map((section, index) => (
@@ -398,8 +398,8 @@ const HomeScreen = () => {
                    />
                  </TouchableOpacity>
         </View>
-           
-            
+
+
             <FlatList
               data={section.data}
               renderItem={renderHorizontalScrollList}
@@ -411,7 +411,7 @@ const HomeScreen = () => {
           </View>
         ))}
       </ScrollView> )}
-    </SafeAreaView> 
+    </SafeAreaView>
   );
 };
 
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
     fontFamily: 'Roboto-Medium',
-    color: theme.colors.greyLight3
+    color: theme.colors.greyLight3,
   },
   container: {
     flex: 1,
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingLeft: 20,
     textAlign: 'left',
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
   },
   userNameLabel: {
     fontSize: 20,
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingVertical: 15,
     textAlign: 'left',
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
   },
   ViewAll: {
     flexDirection: 'row',
@@ -465,20 +465,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: theme.colors.secondaryTheme,
     fontWeight: '500',
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
   },
   seeAllView: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 2
+    gap: 2,
   },
   categoryLabel: {
     fontSize: 20,
     marginVertical: 10,
     fontWeight: '800',
     color: theme.colors.blackLight1,
-    paddingLeft: 20, 
-    fontFamily: 'Roboto-Medium'
+    paddingLeft: 20,
+    fontFamily: 'Roboto-Medium',
   },
   contentContainer: {
     flexGrow: 1,
@@ -487,7 +487,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   tile: {
     backgroundColor: theme.colors.white,
@@ -497,7 +497,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderColor: theme.colors.greyLight2,
     height: 170,
-    elevation: 8, 
+    elevation: 8,
     gap: 10,
   },
   tileText: {
@@ -519,14 +519,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginVertical: 10,
     fontWeight: '800',
-    color: theme.colors.blackLight1, 
-    fontFamily: 'Roboto-Medium'
+    color: theme.colors.blackLight1,
+    fontFamily: 'Roboto-Medium',
     //fontFamily: 'Roboto-MediumItalic'
   },
   horizontalListContainer: {
     paddingBottom: 30,
   },
-  
+
   horizontalTile: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -550,20 +550,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     height: 80,
-    textAlign: 'left', 
+    textAlign: 'left',
     maxWidth: '100%',
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
   },
   categoryText: {
     color: theme.colors.greyDark1,
     fontWeight: '400',
     fontSize: 12,
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
   },
   readTimeText: {
     color: theme.colors.greyDark2,
     fontSize: 11,
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
   },
   rightSection: {
    //backgroundColor: 'grey',
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: 12,
     color: '#777',
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
   },
   courseInfo: {
     flexDirection: 'row',
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
   tagText: {
     fontSize: 12,
     color: '#333',
-    fontFamily: 'Roboto-Medium'
+    fontFamily: 'Roboto-Medium',
   },
 });
 

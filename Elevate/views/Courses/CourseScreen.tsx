@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState,  } from 'react';
+import React, { useEffect, useCallback, useState  } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   TextInput,
   Alert,
   Image,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,7 +20,7 @@ import { SaveDBHandler } from '../../DBHandler/SaveDBHandler.tsx';
 import { OngoingCourseDBHandler } from '../../DBHandler/OngoingCourseDBHandler.tsx';
 import { CourseAnalytics } from '../../Analytics/CourseAnalytics.ts';
 import theme from '../../Theme/Theme.js';
-import { useFocusEffect } from '@react-navigation/native'; 
+import { useFocusEffect } from '@react-navigation/native';
 import { ContentAPIClient } from '../../APIClients/ContentAPIClient.tsx';
 import { CompletedCourseDBHandler } from '../../DBHandler/CompletedCourseDBHandler.tsx';
 
@@ -35,73 +35,73 @@ const CourseScreen = () => {
   const [isCourseCompleted, setIsCourseCompleted] = useState(null);
   const insets = useSafeAreaInsets();
   const footerHeight = 70 + insets.bottom;
-  
-  const analytics = new CourseAnalytics(course.id)
+
+  const analytics = new CourseAnalytics(course.id);
 
   useEffect(() => {
-     analytics.sendCourseImpressionEvent()
+     analytics.sendCourseImpressionEvent();
 
-     fetchChapterList()
+     fetchChapterList();
   }, [ navigation, course]);
 
 
   const fetchChapterList = async () => {
     try {
-        
+
         // Map the fetched documents to include doc.id and category name
         const chapterList  = await ContentAPIClient.fetchChapters(course.id);
        // console.log("Chapter List", chapterList)
-       
+
         let isSaved = await SaveDBHandler.isCourseSaved(course.id);
-        setIsCourseSaved(isSaved)
-        let compltedChapters = await OngoingCourseDBHandler.getCompletedChapters(course.id)
-        let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id)
-        let isCourseCompleted = await CompletedCourseDBHandler.isCourseCompleted(course.id)
-        setIsCourseCompleted(isCourseCompleted)
-        setIsOngoingCourse(isCourseOngoing)
-        
+        setIsCourseSaved(isSaved);
+        let compltedChapters = await OngoingCourseDBHandler.getCompletedChapters(course.id);
+        let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id);
+        let isCourseCompleted = await CompletedCourseDBHandler.isCourseCompleted(course.id);
+        setIsCourseCompleted(isCourseCompleted);
+        setIsOngoingCourse(isCourseOngoing);
+
         const updatedChapters = chapterList.map((chapter) => ({
           ...chapter,
           completed: compltedChapters.includes(chapter.id),
         }));
 
-        setChapterList(updatedChapters)
+        setChapterList(updatedChapters);
 
 
-        analytics.sendCourseDataAppearedSuccessEvent()
+        analytics.sendCourseDataAppearedSuccessEvent();
     } catch (error) {
-        analytics.sendCourseDataAppearedFailedEvent()
+        analytics.sendCourseDataAppearedFailedEvent();
         console.error('Error fetching LiveCategory:', error);
     } finally {
-        
+
     }
 };
 
 
 useFocusEffect(
   useCallback(() => {
-    fetchChapterList()
+    fetchChapterList();
   }, [ navigation, course])
 );
 
-const changeCourseEnroll = async () => { 
+const changeCourseEnroll = async () => {
   if (isOngoingCourse) {
-    analytics.sendLeaveCourseEvent()
-    await OngoingCourseDBHandler.removeOngoingCourse(course.id)
+    analytics.sendLeaveCourseEvent();
+    await OngoingCourseDBHandler.removeOngoingCourse(course.id);
   } else {
-    analytics.sendStartCourseEvent()
-    await CompletedCourseDBHandler.removeCompletedCourse(course.id)
-    await OngoingCourseDBHandler.saveOngoingCourse(course)
-    let firstChapter = chapterList[0]
-    await onChapterPress(firstChapter)
+    analytics.sendStartCourseEvent();
+    await CompletedCourseDBHandler.removeCompletedCourse(course.id);
+    await OngoingCourseDBHandler.saveOngoingCourse(course);
+    let firstChapter = chapterList[0];
+    await onChapterPress(firstChapter);
   }
-  setIsOngoingCourse(!isOngoingCourse)
-  
+  setIsOngoingCourse(!isOngoingCourse);
+
 };
 
 
 const onChapterPress = async (content) => {
-   analytics.sendClickOnChapterEvent(content.id)
+   analytics.sendClickOnChapterEvent(content.id);
  // console.log('chapterId', content);
   const index = chapterList.findIndex(chapter => chapter.id === content.id);
    console.log('index', index);
@@ -111,18 +111,18 @@ const onChapterPress = async (content) => {
 
 const onToggleSave = async () => {
     const isSaved = isCourseSaved;
-    
+
     if (isSaved) {
-      analytics.sendRemoveSavedCourseEvent()
+      analytics.sendRemoveSavedCourseEvent();
       await SaveDBHandler.removeCourse(course.id);
     } else {
-      analytics.sendSaveCourseEvent()
+      analytics.sendSaveCourseEvent();
       await SaveDBHandler.saveCourse(course);
     }
     // Update only the savedCards state here
-    setIsCourseSaved(!isCourseSaved)
+    setIsCourseSaved(!isCourseSaved);
   };
-  
+
 
 return (
   <View style={styles.container}>
@@ -141,7 +141,7 @@ return (
     resizeMode="cover"
   />
     </View>
-   
+
     <Text style={styles.courseDescription}>{course.description}</Text>
     <View style={styles.courseMetaRow}>
       <View style={{ flexDirection: 'row', gap: 2, alignItems: 'center'}}>
@@ -159,7 +159,7 @@ return (
       <Text
         style={[
           styles.metaText,
-          { color: course.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold',  fontFamily: 'Roboto-Medium', },
+          { color: course.isLiveCourse ? theme.colors.red2 : theme.colors.greyDark1, fontWeight: 'bold',  fontFamily: 'Roboto-Medium' },
         ]}
       >
         {course.isLiveCourse ? 'LIVE' : `${chapterList.length} Chapters`}
@@ -176,7 +176,7 @@ return (
   </View>
 
   {/* Right side (thumbnail) fixed size */}
-  
+
 </View>
 </View>
 
@@ -190,11 +190,11 @@ return (
     onPress={() => onChapterPress(item)}
   >
 
-     
+
         <Text style={styles.chapterTitle}>{item.title}</Text>
        <Text style={styles.chapterDescription}>{item.description}</Text>
-     
-     
+
+
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
          {item.completed  && (
           <Ionicons name="checkmark-done-outline" size={16} color={theme.colors.secondaryTheme} />
@@ -223,7 +223,7 @@ return (
         styles.ctaButton,
         {
           backgroundColor: isCourseCompleted
-            ? theme.colors.secondaryThemeDisabled 
+            ? theme.colors.secondaryThemeDisabled
             : isOngoingCourse
             ? theme.colors.primaryTheme
             : theme.colors.secondaryTheme,
@@ -240,7 +240,7 @@ return (
     </TouchableOpacity>
   </View>
 )}
-    
+
   </View>
 );
 };
@@ -269,13 +269,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  
+
   tagText: {
    fontSize: 12,
     color: theme.colors.greyDark,
      fontFamily: 'Roboto-Medium',
   },
-  
+
   courseInfoLeft: {
     flex: 1, // This makes the text section take all available width except for the image
     paddingRight: 8, // To give space between text and image
@@ -284,9 +284,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
-    gap: 16
+    gap: 16,
   },
-  
+
   courseThumbnail: {
     width: 100,
     height: 100,
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.black,
     fontFamily: 'Roboto-Medium',
-    width: '70%'
+    width: '70%',
   },
   courseDescription: {
     fontSize: 16,
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
   },
   chapterList: {
     paddingBottom: 100,
-    paddingTop: 16
+    paddingTop: 16,
   },
   chapterItem: {
     backgroundColor:  theme.colors.white,
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.greyLight2,
     paddingVertical: 8,
   },
-  
+
   ctaButton: {
     width: '100%',
     height: 45,
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
   },
-  
+
   ctaText: {
     color: theme.colors.white,
     fontWeight: 'bold',

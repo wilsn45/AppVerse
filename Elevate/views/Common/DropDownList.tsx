@@ -19,7 +19,7 @@ const DropDownList = ({ source, data, defaultId, onSelection }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalFocusRef, setModalFocusRef] = useState(null);
 
-  const defaultTitle = data.find((item) => item.id === selectedId)?.title || "";
+  const defaultTitle = data.find((item) => item.id === selectedId)?.title || '';
 
   const showDropDown = () => {
     setModalVisible(true);
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.secondaryThemeLight, 
+    backgroundColor: theme.colors.secondaryThemeLight,
     borderRadius: 15,
   },
   box: {

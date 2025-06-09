@@ -21,7 +21,7 @@ class RoutineTaskHandler {
     try {
       const allRecords = await AsyncStorage.getItem(this.STORAGE_KEY);
 
-      if (!allRecords) return []; // Return an empty array if no records exist
+      if (!allRecords) {return [];} // Return an empty array if no records exist
 
       const parsedRecords = JSON.parse(allRecords);
 
@@ -39,7 +39,7 @@ class RoutineTaskHandler {
     try {
       const allRecords = await AsyncStorage.getItem(this.STORAGE_KEY);
 
-      if (!allRecords) return []; // Return an empty array if no records exist
+      if (!allRecords) {return [];} // Return an empty array if no records exist
 
       const parsedRecords = JSON.parse(allRecords);
 

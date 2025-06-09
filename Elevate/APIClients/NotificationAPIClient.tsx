@@ -1,35 +1,19 @@
-import firestore from '@react-native-firebase/firestore';
+// NotificationAPIClient.ts
+import { APIClient } from './Network/APIClient';
 import { NotificationDBHandler } from '../DBHandler/NotificationDBHandler';
 import { NotificationData } from '../Data/DataModel';
 
 export class NotificationAPIClient {
-  // Define the key for storing live categories in AsyncStorage
-  
-  // Helper function to get the current saved categories from AsyncStorage
-
-
   static async fetchNewNotifications() {
-    try {
+    const result = await APIClient.get<{ success: boolean; notifications: any[] }>('/notifications');
 
-      const snapshot = await firestore()
-        .collection('Notification')
-        .get();
+    if (!result || !result.success) return;
 
-        const notificationList = snapshot.docs.map(doc => 
-                new NotificationData(
-                  doc.id,
-                  doc.data().courseId,
-                  doc.data().timestamp,
-                )
-        );
-  
-      await NotificationDBHandler.saveNewNotificationCourses(notificationList)
-  
-    } catch (error) {
-      console.error('Error fetching topics:', error);
-      return null;
-    }
+    const notificationList = result.notifications.map((doc: any) =>
+      new NotificationData(doc.id, doc.courseId, doc.timestamp)
+    );
+
+    console.log('Fetched notifications:', notificationList);
+    await NotificationDBHandler.saveNewNotificationCourses(notificationList);
   }
-  
-
 }

@@ -1,6 +1,6 @@
 export const taskType: TaskType[] = [
     { id: 1, title: 'Routine' },
-    { id: 2, title: 'Goal' }
+    { id: 2, title: 'Goal' },
   ];
 
  export const ANDROID_AD_UNIT_ID = 'ca-app-pub-android-unit-id';
@@ -11,7 +11,7 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
       this.id = id;
       this.courseId = courseId;
       this.timestamp = timestamp;
-      this.viewCounter = viewCounter; 
+      this.viewCounter = viewCounter;
     }
   }
 
@@ -20,8 +20,8 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
       this.id = id;
       this.title = title;
       this.index = index;
-      this.thumbnail = thumbnail
-      this.isLive = isLive
+      this.thumbnail = thumbnail;
+      this.isLive = isLive;
     }
   }
 
@@ -31,9 +31,9 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
       this.title = title;
       this.description = description;
       this.index = index;
-      this.thumbnail = thumbnail
-      this.duration = duration
-      this.isLive = isLive
+      this.thumbnail = thumbnail;
+      this.duration = duration;
+      this.isLive = isLive;
     }
   }
 
@@ -42,13 +42,13 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
       this.id = id;
       this.title = title;
       this.description = description;
-      this.thumbnail = thumbnail
-      this.isLive = isLive
-      this.rating = rating
-      this.duration = duration
-      this.topic = topic
-      this.isLiveCourse = isLiveCourse
-      this.chaptetCount = chaptetCount
+      this.thumbnail = thumbnail;
+      this.isLive = isLive;
+      this.rating = rating;
+      this.duration = duration;
+      this.topic = topic;
+      this.isLiveCourse = isLiveCourse;
+      this.chaptetCount = chaptetCount;
     }
   }
 
@@ -61,10 +61,10 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
       this.categoryTitle = categoryTitle;
       this.index = index;
       this.likeCount = likeCount;
-      this.imageUrl = imageUrl
-      this.thumbnail = thumbnail
-      this.readMin = readMin
-      this.isLive = isLive
+      this.imageUrl = imageUrl;
+      this.thumbnail = thumbnail;
+      this.readMin = readMin;
+      this.isLive = isLive;
     }
   }
 
@@ -75,8 +75,8 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
       this.title = title;
       this.categoryId = categoryId;
       this.categoryTitle = categoryTitle;
-      this.thumbnail = thumbnail
-      this.readMin = readMin
+      this.thumbnail = thumbnail;
+      this.readMin = readMin;
     }
   }
 
@@ -107,8 +107,8 @@ export const IOS_AD_UNIT_ID = 'ca-app-pub-ios-unit-id';
       this.type = type;
       this.subType = subType;
       this.content = content;
-      this.dataAdded = dataAdded
-      this.isDone = false
+      this.dataAdded = dataAdded;
+      this.isDone = false;
     }
   }
 

@@ -16,7 +16,7 @@ const TaskScreen = () => {
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
-  const analytics = new TaskAnalytics()
+  const analytics = new TaskAnalytics();
 
   const fetchTasks = async () => {
     try {
@@ -36,7 +36,7 @@ const TaskScreen = () => {
       try {
         const liveCategories = await CategoryHandler.getLiveCategory();
         setCategories(liveCategories);
-        console.log("Live Categories", liveCategories)
+        console.log('Live Categories', liveCategories);
         analytics.sendCategoryDisplayedEvent(selectedCategory, selectedTaskType);
       } catch (error) {
         console.error('Error fetching categories', error);
@@ -72,7 +72,7 @@ const TaskScreen = () => {
         onPress={() => handleTaskPress(item)}
         accessibilityLabel={`Task Button: ${item.name}`}
       >
-       
+
         <Text style={styles.taskName}>{item.name}</Text>
 
         <View style={styles.taskDetailView}>
@@ -81,7 +81,7 @@ const TaskScreen = () => {
           {taskType.find((t) => t.id === item.type)?.title || 'Unknown'}
         </Text>
         </View>
-        
+
       </TouchableOpacity>
     </View>
   );
@@ -144,7 +144,7 @@ const TaskScreen = () => {
           {/* Category Dropdown */}
           <View
             style={styles.dropdownContainer}
-           
+
           >
             <DropDownList
               source={'Task_Category'}
@@ -179,7 +179,7 @@ const TaskScreen = () => {
                   color={theme.colors.greyLight3}
                 /> */}
           </View>
-          
+
         }
       />
     </SafeAreaView>
@@ -222,13 +222,13 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 22,
     fontWeight: '600',
-    color: theme.colors.greyLight3
+    color: theme.colors.greyLight3,
   },
   taskControlContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 10
+    gap: 10,
 
   },
   buttonGroup: {
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: 5,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
 
   categoryText: {

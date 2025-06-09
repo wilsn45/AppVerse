@@ -30,7 +30,7 @@ static async saveReferralData() {
   try {
     const referrer = await InstallReferrer.getReferrer();
     const params = this.parseReferrerString(referrer);
-    const influencerCode =  params['utm_source'] || 'Organic';
+    const influencerCode =  params.utm_source || 'Organic';
     const deviceId = await DeviceInfo.getUniqueId();
 
     const docRef = firestore().collection('UserReferrals').doc(deviceId);
@@ -42,10 +42,10 @@ static async saveReferralData() {
         deviceId,
         createdAt: firestore.FieldValue.serverTimestamp(),
       });
-      AdMobDBHandler.setReferStateDone()
+      AdMobDBHandler.setReferStateDone();
       //console.log('Referral data saved to Firebase');
     } else {
-      AdMobDBHandler.setReferStateDone()
+      AdMobDBHandler.setReferStateDone();
       //console.log('Referral already exists. Skipping save.');
     }
   } catch (error) {
@@ -74,7 +74,7 @@ static async saveReferralData() {
       const data = docSnapshot.data();
       const currentList = Array.isArray(data?.InterstitialList) ? data.InterstitialList : [];
       updatedList = [...currentList, newEntry];
-      console.log('Impression Added')
+      console.log('Impression Added');
     } else {
       updatedList = [newEntry];
     }
@@ -90,5 +90,5 @@ static async saveReferralData() {
     console.error('Failed to log ad impression:', error);
   }
 }
-  
+
 }

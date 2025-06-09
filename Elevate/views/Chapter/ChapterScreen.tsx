@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  ActivityIndicator // Import ActivityIndicator for a spinner
+  ActivityIndicator, // Import ActivityIndicator for a spinner
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ChapterAnalytics } from '../../Analytics/ChapterAnalytics';
@@ -110,22 +110,22 @@ const ChapterScreen = () => {
       const doc = await ContentAPIClient.fetchChapter(course.id, currentChapter.id);
       setHtmlContent(doc?.htmlContent || '');
       setAudioUrl(doc?.audioUrl || '');
-      console.log("audioUrl", doc?.audioUrl)
-      analytics.sendChapterDataAppearedSuccessEvent(currentChapter.id)
+      console.log('audioUrl', doc?.audioUrl);
+      analytics.sendChapterDataAppearedSuccessEvent(currentChapter.id);
 
       //console.log("current chapter", currentChapter)
 
       const index = chapterList.findIndex(ch => ch.id === currentChapter.id);
 
-      setPrevAndNextChapters(index)
+      setPrevAndNextChapters(index);
 
 
-      let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id)
-      setIsOngoingCourse(isCourseOngoing)
-      console.log("isOngoingCourse", isOngoingCourse)
+      let isCourseOngoing  = await OngoingCourseDBHandler.isCourseOngoing(course.id);
+      setIsOngoingCourse(isCourseOngoing);
+      console.log('isOngoingCourse', isOngoingCourse);
 
-      let isCourseCompleted  = await CompletedCourseDBHandler.isCourseCompleted(course.id)
-      setisCourseCompleted(isCourseCompleted)
+      let isCourseCompleted  = await CompletedCourseDBHandler.isCourseCompleted(course.id);
+      setisCourseCompleted(isCourseCompleted);
 
       setChapterDataLoaded(true); // Set to true after data is loaded
       const shouldShowAd =  await AdMobDBHandler.showInterstitialAds();
@@ -148,7 +148,7 @@ const ChapterScreen = () => {
     fetchContent();
 
      } catch (error) {
-        analytics.sendChapterDataAppearedFailedEvent(currentChapter.id)
+        analytics.sendChapterDataAppearedFailedEvent(currentChapter.id);
         console.error('Error fetching Chapter:', error);
     } finally {
         // Ensure chapterDataLoaded is set to true even if there's an error,
@@ -203,20 +203,20 @@ const ChapterScreen = () => {
 
   const onStartCourse = async() => {
     //console.log('Start Course pressed');
-    analytics.sendStartCourseEvent(course.id)
-    await OngoingCourseDBHandler.saveOngoingCourse(course)
-    await CompletedCourseDBHandler.removeCompletedCourse(course.id)
-    setIsOngoingCourse(true)
+    analytics.sendStartCourseEvent(course.id);
+    await OngoingCourseDBHandler.saveOngoingCourse(course);
+    await CompletedCourseDBHandler.removeCompletedCourse(course.id);
+    setIsOngoingCourse(true);
   };
 
   const onNext = () => {
      if (nextChapter) {
       if (selectedMode === 'read'){
-         analytics.sendClickOnNextChaptereEvent(nextChapter.id)
+         analytics.sendClickOnNextChaptereEvent(nextChapter.id);
       } else if (selectedMode === 'listen') {
-          analytics.sendClickOnNextChaptereAudioEvent(nextChapter.id)
+          analytics.sendClickOnNextChaptereAudioEvent(nextChapter.id);
       }
-      OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id)
+      OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id);
       setCurrentChapter(nextChapter); // Trigger re-render with new data
     }
   };
@@ -224,9 +224,9 @@ const ChapterScreen = () => {
   const onPrev = () => {
     if (prevChapter) {
       if  ( selectedMode === 'read') {
-         analytics.sendClickOnPrevChaptereEvent(prevChapter.id)
+         analytics.sendClickOnPrevChaptereEvent(prevChapter.id);
       } else if (selectedMode === 'listen') {
-          analytics.sendClickOnPrevChaptereAudioEvent(prevChapter.id)
+          analytics.sendClickOnPrevChaptereAudioEvent(prevChapter.id);
       }
       setCurrentChapter(prevChapter);
     }
@@ -234,10 +234,10 @@ const ChapterScreen = () => {
 
   const onComplete = () => {
     //console.log('Completed pressed');
-    analytics.sendCompleteCourseEvent(course.id)
-    OngoingCourseDBHandler.removeOngoingCourse(course.id)
-    CompletedCourseDBHandler.completeCourse(course)
-    OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id)
+    analytics.sendCompleteCourseEvent(course.id);
+    OngoingCourseDBHandler.removeOngoingCourse(course.id);
+    CompletedCourseDBHandler.completeCourse(course);
+    OngoingCourseDBHandler.saveChapter(course.id,currentChapter.id);
     navigation.goBack();
   };
 
@@ -308,7 +308,7 @@ const ChapterScreen = () => {
     ) : (
       <View style={[styles.iconButton, { width: 0, opacity: 0 }]} />
     )
-  ) : selectedMode === 'listen' && currentIndex !== chapterList.length - 1 ? (  
+  ) : selectedMode === 'listen' && currentIndex !== chapterList.length - 1 ? (
     // Show Start Course in listen mode on first chapter if conditions satisfy
 
         <TouchableOpacity
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   speakerButton: {
-    paddingRight: 16
+    paddingRight: 16,
   },
    toggleContainer: {
     flexDirection: 'row',
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 16
+    gap: 16,
   },
   button: {
     flex: 1,
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontFamily: 'Roboto-Medium',
     fontWeight: '500',
-    fontSize: 20
+    fontSize: 20,
   },
   iconButtonText: {
     color: theme.colors.greyDark,

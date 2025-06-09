@@ -20,7 +20,7 @@ const MyCourseScreen = () => {
   const [searchedCards, setSearchedCards] = useState([]);
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
-  const analytics = new MyCourseAnalytics()
+  const analytics = new MyCourseAnalytics();
   const [selectedTab, setSelectedTab] = useState('Saved');
 
   const route = useRoute();
@@ -28,10 +28,10 @@ const MyCourseScreen = () => {
 
   const fetchSavedCourses = async () => {
     try {
-      analytics.sendMyCourseImpressionEvent()
+      analytics.sendMyCourseImpressionEvent();
       const savedCourses = await SaveDBHandler.getSavedCourses();
-      const ongoingCourses = await OngoingCourseDBHandler.getOngoingingCourses()
-      const completedCourses = await CompletedCourseDBHandler.getCompletedCourses()
+      const ongoingCourses = await OngoingCourseDBHandler.getOngoingingCourses();
+      const completedCourses = await CompletedCourseDBHandler.getCompletedCourses();
       const notifyCourseData = await NotificationDBHandler.getFilteredNotificationCourse();
       // console.log("Notify Course", notifyCourseData)
 
@@ -42,9 +42,9 @@ const MyCourseScreen = () => {
            );
 
         setNotificationCourse(filteredNotifyCourses);
-     
-     
-      console.log("filtered Notify Course", filteredNotifyCourses)
+
+
+      console.log('filtered Notify Course', filteredNotifyCourses);
 
       const appendProgressToCourses = async (courses) => {
         const updatedCourses = await Promise.all(courses.map(async (course) => {
@@ -57,13 +57,13 @@ const MyCourseScreen = () => {
         }));
         return updatedCourses;
       };
-  
+
       const updatedOngoingCourses = await appendProgressToCourses(ongoingCourses);
       const updatedCompletedCourses = await appendProgressToCourses(completedCourses);
-      setAllSavedCourses(savedCourses)
+      setAllSavedCourses(savedCourses);
       setOngoingCourses(updatedOngoingCourses);
       setCompletedCourses(updatedCompletedCourses);
-      await NotificationDBHandler.incrementViewCounters()
+      await NotificationDBHandler.incrementViewCounters();
 
       // console.log('Fetched Saved Card', savedCourses)
       // console.log('Fetched ongoingCourses Card', updatedOngoingCourses)
@@ -77,7 +77,7 @@ const MyCourseScreen = () => {
     useCallback(() => {
       if (route.params?.targetTab) {
         if (route.params.targetTab === 'saved') {
-         setSelectedTab('Saved')
+         setSelectedTab('Saved');
         } else if (route.params.targetTab === 'in_progress') {
           setSelectedTab('In Progress');
         }
@@ -95,13 +95,13 @@ const MyCourseScreen = () => {
   const handleRightAction = async (id) => {
     try {
       if (selectedTab === 'Saved') {
-        analytics.sendRemoveFromSavedCourseEvent(id)
+        analytics.sendRemoveFromSavedCourseEvent(id);
         await SaveDBHandler.removeCourse(id);
       } else if (selectedTab === 'In Progress') {
-          analytics.sendRemoveFromInProgressCourseEvent(id)
+          analytics.sendRemoveFromInProgressCourseEvent(id);
           await OngoingCourseDBHandler.removeOngoingCourse(id);
       }  else {
-        analytics.sendRemoveFromCompletedCourseEvent(id)
+        analytics.sendRemoveFromCompletedCourseEvent(id);
         await CompletedCourseDBHandler.removeCompletedCourse(id);
      }
       fetchSavedCourses();
@@ -132,19 +132,19 @@ const MyCourseScreen = () => {
 
   const getCardsForSelectedTab = () => {
     let cards = [];
-    if (selectedTab === 'Saved') 
-      { 
-        analytics.sendViewSavedCourseImpressionEvent()
+    if (selectedTab === 'Saved')
+      {
+        analytics.sendViewSavedCourseImpressionEvent();
         cards = allSavedCourses;
       }
-    else if (selectedTab === 'In Progress')  
-      { 
-        analytics.sendViewInProgressCourseImpressionEvent()
-        cards = ongoingCourses; 
+    else if (selectedTab === 'In Progress')
+      {
+        analytics.sendViewInProgressCourseImpressionEvent();
+        cards = ongoingCourses;
       }
     else if (selectedTab === 'Completed') {
-      analytics.sendViewCompletedCourseImpressionEvent()
-      cards = completedCourses; 
+      analytics.sendViewCompletedCourseImpressionEvent();
+      cards = completedCourses;
     }
 
     return cards.filter((item) =>
@@ -242,7 +242,7 @@ const MyCourseScreen = () => {
           <View style={styles.redDotSmall} />
       )}
         </View>
-       
+
 
         <View style={styles.leftBottomView}>
           <View style={styles.tag}>
@@ -271,7 +271,7 @@ const MyCourseScreen = () => {
         style={styles.deleteButton}
         onPress={() => handleRightAction(item.id)}
       >
-        <Ionicons name= {selectedTab === 'In Progress' ? "exit-outline": 'trash'} size={36} color={theme.colors.white} />
+        <Ionicons name= {selectedTab === 'In Progress' ? 'exit-outline' : 'trash'} size={36} color={theme.colors.white} />
       </TouchableOpacity>
     </View>
   )}
@@ -336,25 +336,25 @@ const styles = StyleSheet.create({
     gap: 8,
     justifyContent: 'space-between',
   },
-  
+
   rightCardView: {
     width: 80,
     height: '100%',
   },
-  
+
   tileImage: {
     width: '100%',
     height: '100%',
     borderRadius: 8,
     resizeMode: 'cover',
   },
-  
+
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: theme.colors.greyDark,
      fontFamily: 'Roboto-Medium',
-     marginRight: 8
+     marginRight: 8,
   },
   tag: {
     backgroundColor: theme.colors.greyLight2,
@@ -362,20 +362,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
-  
+
   tagText: {
     fontSize: 12,
     color: theme.colors.greyDark,
      fontFamily: 'Roboto-Medium',
   },
-  
+
   cardMetaText: {
     fontSize: 12,
     color: '#888',
     marginTop: 4,
      fontFamily: 'Roboto-Medium',
   },
-  
+
   liveText: {
     fontSize: 12,
     color: theme.colors.red2,
@@ -403,7 +403,7 @@ redDotSmall: {
   backgroundColor: 'red',
   zIndex: 1,
 },
-  
+
   tabItem: {
     flex: 1, // This divides all items equally
     alignItems: 'center',
@@ -411,18 +411,18 @@ redDotSmall: {
     paddingVertical: 10,
     position: 'relative',
   },
-  
+
   tabItemText: {
     fontSize: 14,
     fontWeight: '600',
     color: theme.colors.greyDark1,
     fontFamily: 'Roboto-Medium',
   },
-  
+
   tabItemTextSelected: {
     color: theme.colors.secondaryTheme || theme.colors.primary,
   },
-  
+
   tabIndicator: {
     position: 'absolute',
     bottom: 0,
@@ -491,7 +491,7 @@ redDotSmall: {
     backgroundColor: theme.colors.greyLight2,
     marginHorizontal: 10, // Optional: match your card padding
   },
-  
+
 });
 
 export default MyCourseScreen;

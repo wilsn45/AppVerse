@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NotificationData } from '../Data/DataModel'; 
+import { NotificationData } from '../Data/DataModel';
 
 export class NotificationDBHandler {
   static STORAGE_KEY = 'NEW_NOTIFICATION';
@@ -32,7 +32,7 @@ export class NotificationDBHandler {
     return [];
   }
 }
-  
+
 
   // Save array of NotificationData
   static async saveNewNotificationCourses(newItems: NotificationData[]): Promise<void> {
@@ -45,7 +45,7 @@ export class NotificationDBHandler {
 
     const updatedList = [...existing, ...newNotifications];
     console.log('Saving new notification courses:', updatedList);
-   
+
     await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updatedList));
   } catch (error) {
     console.error('Error saving new notification course data:', error);
@@ -67,6 +67,6 @@ export class NotificationDBHandler {
     }
   }
 
-  
+
 
 }

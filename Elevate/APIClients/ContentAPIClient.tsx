@@ -14,8 +14,8 @@ export class ContentAPIClient {
         .where('isLive', '==', true)
         .orderBy('index', 'asc')
         .get();
-  
-      const topicList = snapshot.docs.map(doc => 
+
+      const topicList = snapshot.docs.map(doc =>
         new TopicData(
           doc.id,
           doc.data().title,
@@ -24,9 +24,9 @@ export class ContentAPIClient {
           doc.data().isLive,
         )
       );
-  
+
       return topicList;
-  
+
     } catch (error) {
       console.error('Error fetching topics:', error);
       return null;
@@ -42,8 +42,8 @@ export class ContentAPIClient {
         .orderBy('rating', 'desc')
         .orderBy('lastUpdatedTimestamp', 'desc')
         .get();
-  
-      const coursesList = snapshot.docs.map(doc => 
+
+      const coursesList = snapshot.docs.map(doc =>
         new CourseData(
           doc.id,
           doc.data().title,
@@ -57,9 +57,9 @@ export class ContentAPIClient {
           doc.data().chapterCount
         )
       );
-  
+
       return coursesList;
-  
+
     } catch (error) {
       console.error('Error fetching top rated courses:', error);
       return null;
@@ -75,8 +75,8 @@ export class ContentAPIClient {
         .orderBy('rating', 'desc')
         .orderBy('lastUpdatedTimestamp', 'desc')
         .get();
-  
-      const coursesList = snapshot.docs.map(doc => 
+
+      const coursesList = snapshot.docs.map(doc =>
         new CourseData(
           doc.id,
           doc.data().title,
@@ -90,9 +90,9 @@ export class ContentAPIClient {
           doc.data().chapterCount
         )
       );
-  
+
       return coursesList;
-  
+
     } catch (error) {
       console.error('Error fetching top rated courses:', error);
       return null;
@@ -110,8 +110,8 @@ export class ContentAPIClient {
         .orderBy('rating', 'desc')
         .orderBy('lastUpdatedTimestamp', 'desc')
         .get();
-  
-      const coursesList = snapshot.docs.map(doc => 
+
+      const coursesList = snapshot.docs.map(doc =>
         new CourseData(
           doc.id,
           doc.data().title,
@@ -125,9 +125,9 @@ export class ContentAPIClient {
           doc.data().chapterCount
         )
       );
-  
+
       return coursesList;
-  
+
     } catch (error) {
       console.error('Error fetching courses by topic:', error);
       return null;
@@ -136,7 +136,7 @@ export class ContentAPIClient {
 
   static async fetchChapters(courseId) {
     try {
-     
+
       const chapterDocs = await firestore()
         .collection('Courses')
         .doc(courseId)
@@ -144,12 +144,12 @@ export class ContentAPIClient {
         .where('isLive', '==', true)
         .orderBy('index', 'asc')
         .get();
-  
+
       if (chapterDocs.empty) {
         console.warn(`No chapters found for courseId: ${courseId}`);
         return [];
       }
-  
+
       const chapters = chapterDocs.docs.map(doc => {
         const item = doc.data();
         // console.log("Chapter: ", item)
@@ -164,9 +164,9 @@ export class ContentAPIClient {
           item.isLive,
         );
       });
-  
+
       return chapters;
-  
+
     } catch (error) {
       console.error('Error fetching chapters:', error);
       return [];
@@ -176,7 +176,7 @@ export class ContentAPIClient {
 static async fetchChapter(courseId, chapterId) {
   try {
       // Fetch category list from Home collection
-     
+
       const chapterDocSnapshot = await firestore()
       .collection('Courses')
       .doc(courseId)
@@ -188,17 +188,17 @@ static async fetchChapter(courseId, chapterId) {
 
       //console.log("Fetched Content data", contetnDocSnapshot.data())
 
-      if (chapterDocSnapshot.exists) { 
-          return chapterDocSnapshot.data()
+      if (chapterDocSnapshot.exists) {
+          return chapterDocSnapshot.data();
       }
       else {
-          return null
+          return null;
       }
 
   } catch (error) {
       console.error('Error fetching data:', error);
-      return null
-  } 
+      return null;
+  }
 }
 
 }

@@ -5,7 +5,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Text,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -110,7 +110,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
               </TouchableOpacity>
           </View>
 
-         
+
 
           {/* Hidden Video player for audio-only */}
           <Video

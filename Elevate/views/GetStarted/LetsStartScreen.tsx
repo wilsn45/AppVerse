@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import ProfileDBHandler from '../../DBHandler/ProfileDBHandler'; 
+import ProfileDBHandler from '../../DBHandler/ProfileDBHandler';
 import theme from '../../Theme/Theme';
 import { AnalyticsHelper, ActionType } from '../../Analytics/AnalyticsHelper';
 
 const LetsStartScreen = ({ navigation }) => {
   const [name, setName] = useState('');
 
-  useEffect(() => { 
-    sendLetsStartmpressionEvent()
+  useEffect(() => {
+    sendLetsStartmpressionEvent();
   }, [navigation]);
 
   const handleStart = async () => {
     if (name.trim()) {
       // Save the user's name and onboarding status (isOnboarded = true)
       await ProfileDBHandler.saveProfile(name, true);
-      sendNavigateToHomeEvent()
+      sendNavigateToHomeEvent();
       navigation.navigate('HomeTabNavigator');
     } else {
-      sendWrongInputnEvent()
+      sendWrongInputnEvent();
       alert('Please enter your name.');
     }
   };
