@@ -39,6 +39,14 @@ export class HomeAnalytics {
       );
   }
 
+  async sendNavigateToLoginEvent() {
+    await AnalyticsHelper.sendEvent(
+        'Navigate_To_Login',
+        'Home',
+        ActionType.NAVIGATION
+      );
+  }
+
   async sendOpenCourseEvent(courseId) {
     await AnalyticsHelper.sendEvent(
         'Open_Course',

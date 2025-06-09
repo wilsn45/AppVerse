@@ -222,6 +222,12 @@ const HomeScreen = () => {
   };
 
   const handleSave = async (item) => {
+
+    if (ProfileDBHandler.isUserLoggedIn() === false) {
+       navigateToLogin()
+      return;
+    }
+
     const isSaved = savedCards.get(item.id);
     if (isSaved) {
       analytics.sendRemoveSavedCourseEvent(item.id);
@@ -324,6 +330,11 @@ const HomeScreen = () => {
    const handleViewAllTopics = () => {
     analytics.sendViewAllTopicsEvent();
     navigation.navigate('TopicsScreen');
+  };
+
+  const navigateToLogin = () => {
+    analytics.sendNavigateToLoginEvent();
+    navigation.navigate('LoginScreen');
   };
 
 

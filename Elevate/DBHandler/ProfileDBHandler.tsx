@@ -1,47 +1,54 @@
+// ProfileDBHandler.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 
-const ProfileDBHandler = {
-  // Function to save user name and onboarding status
-  saveProfile: async (userName, isOnboarded) => {
+export default class ProfileDBHandler {
+  // ✅ Static method to check if user is logged in
+  static isUserLoggedIn(): boolean {
+    const user = auth().currentUser;
+    return user !== null;
+  }
+
+  static getCurrentUserId(): string | null {
+    const user = auth().currentUser;
+    return user ? user.uid : null;
+  }
+
+  static async saveProfile(userName: string, isOnboarded: boolean): Promise<void> {
     try {
-      await AsyncStorage.setItem('@userName', userName); // Save the user name
-      await AsyncStorage.setItem('@isOnboarded', JSON.stringify(isOnboarded)); // Save the onboarding status
+      await AsyncStorage.setItem('@userName', userName);
+      await AsyncStorage.setItem('@isOnboarded', JSON.stringify(isOnboarded));
     } catch (error) {
       console.error('Error saving profile:', error);
     }
-  },
+  }
 
-  // Function to get user name
-  getUserName: async () => {
+  static async getUserName(): Promise<string> {
     try {
       const userName = await AsyncStorage.getItem('@userName');
-      return userName || ''; // Return empty string if user name is not found
+      return userName || '';
     } catch (error) {
       console.error('Error fetching user name:', error);
       return '';
     }
-  },
+  }
 
-  // Function to get onboarding status
-  getIsOnboarded: async () => {
+  static async getIsOnboarded(): Promise<boolean> {
     try {
       const isOnboarded = await AsyncStorage.getItem('@isOnboarded');
-      return isOnboarded ? JSON.parse(isOnboarded) : false; // Default to false if not found
+      return isOnboarded ? JSON.parse(isOnboarded) : false;
     } catch (error) {
       console.error('Error fetching onboarding status:', error);
       return false;
     }
-  },
+  }
 
-  // Function to clear profile data (for example, on logout)
-  clearProfile: async () => {
+  static async clearProfile(): Promise<void> {
     try {
       await AsyncStorage.removeItem('@userName');
       await AsyncStorage.removeItem('@isOnboarded');
     } catch (error) {
       console.error('Error clearing profile:', error);
     }
-  },
-};
-
-export default ProfileDBHandler;
+  }
+}

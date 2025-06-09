@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from './views/HomeScreen';
 import CourseListScreen from './views/Courses/CourseListScreen.tsx';
 import TopicsScreen from './views/Courses/TopicsScreen.tsx';
+import LoginScreen from './views/GetStarted/LoginScreen.tsx';
 import CourseScreen from './views/Courses/CourseScreen.tsx';
 import ChapterScreen from './views/Chapter/ChapterScreen.tsx';
 import MyCourseScreen from './views/MyCourseScreen.tsx';
@@ -159,6 +160,17 @@ const App = () => {
           options={{
             headerShown: true,
             title: 'Categories',
+            headerBackTitle: '',
+            headerTintColor: theme.colors.black,
+          }}
+        />
+
+        <Stack.Screen
+          name="LoginScreen"
+          component={LoginScreen}
+          options={{
+            headerShown: false,
+            title: '',
             headerBackTitle: '',
             headerTintColor: theme.colors.black,
           }}
