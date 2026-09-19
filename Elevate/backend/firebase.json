@@ -1,0 +1,16 @@
+{
+  "functions": [
+    {
+      "source": "user",
+      "codebase": "user"
+    },
+    {
+      "source": "admin",
+      "codebase": "admin"
+    }
+  ],
+  "firestore": {
+    "rules": "firebase/firestore.rules",
+    "indexes": "firebase/firestore.indexes.json"
+  }
+}
