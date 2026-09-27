@@ -9,7 +9,7 @@ export const CurioLogo = ({compact = false}: Props) => (
     <View style={[styles.mark, compact && styles.markCompact]}>
       <Text style={[styles.c, compact && styles.cCompact]}>C</Text>
     </View>
-    {!compact && <Text style={styles.name}>Curio</Text>}
+    {!compact && <Text style={styles.name}>urio</Text>}
   </View>
 );
 
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   c: {fontFamily: 'Roboto-Black', fontSize: 23, color: '#FFF'},
   cCompact: {fontSize: 19},
   name: {
-    marginLeft: 10, fontFamily: 'Roboto-Black',
+    marginLeft: 2, fontFamily: 'Roboto-Black',
     fontSize: 27, letterSpacing: -0.8,
     color: curioTheme.colors.ink,
   },

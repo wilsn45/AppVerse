@@ -18,6 +18,10 @@ import {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
+import {
+  captureRef,
+} from 'react-native-view-shot';
+import Share from 'react-native-share';
 
 import {Curiosity} from '../../models/Curiosity';
 import {MockCuriosityRepository} from '../../repositories/MockCuriosityRepository';
@@ -70,6 +74,41 @@ export const CurioExploreScreen = ({
       new Animated.Value(0),
     ).current;
 
+  const cardRefs =
+    useRef<Record<string, View | null>>(
+      {},
+    );
+
+  const shareCuriosity = async (
+    item: Curiosity,
+  ) => {
+    const card = cardRefs.current[item.id];
+
+    if (!card) {
+      return;
+    }
+
+    try {
+      const uri = await captureRef(card, {
+        format: 'jpg',
+        quality: 0.9,
+        result: 'tmpfile',
+      });
+
+      await Share.open({
+        title: item.hook,
+        message:
+          `${item.hook}\n\n${item.teaser}`,
+        url: uri,
+        type: 'image/jpeg',
+        failOnCancel: false,
+      });
+    } catch {
+      // Sharing is optional. Keep browsing if
+      // capture/share is unavailable.
+    }
+  };
+
   useEffect(() => {
     repository
       .getFeed()
@@ -78,6 +117,14 @@ export const CurioExploreScreen = ({
       );
 
     refreshSaved();
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSwipeHint(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -139,18 +186,6 @@ export const CurioExploreScreen = ({
         }
       />
 
-      <View style={styles.topBar}>
-        <View style={styles.brandMark}>
-          <Text style={styles.brandC}>
-            C
-          </Text>
-        </View>
-
-        <Text style={styles.brand}>
-          Curio
-        </Text>
-      </View>
-
       <FlatList
         data={items}
         keyExtractor={item => item.id}
@@ -183,14 +218,17 @@ export const CurioExploreScreen = ({
           onViewableItemsChanged
         }
 
-        onScrollBeginDrag={() =>
-          setShowSwipeHint(false)
-        }
-
         renderItem={({item}) => (
           <View style={styles.cardPage}>
-            <Pressable
+            <View
               style={styles.card}
+              ref={ref => {
+                cardRefs.current[item.id] =
+                  ref;
+              }}
+              collapsable={false}>
+              <Pressable
+                style={styles.card}
               onPress={() =>
                 onOpenCuriosity(
                   item.id,
@@ -214,53 +252,60 @@ export const CurioExploreScreen = ({
 
                 <View
                   style={
-                    styles.imageTop
+                    styles.imageBottom
                   }>
 
                   <View
                     style={
-                      styles.topicPill
+                      styles.actionStack
                     }>
 
-                    <Text
-                      style={
-                        styles.topic
-                      }>
-                      {item.topic}
-                    </Text>
-                  </View>
+                    <Pressable
+                      hitSlop={10}
+                      onPress={event => {
+                        event.stopPropagation();
 
-                  <Pressable
-                    hitSlop={14}
-
-                    onPress={event => {
-                      event.stopPropagation();
-
-                      toggleSave(
-                        item.id,
-                      );
-                    }}
-
-                    style={styles.save}>
-
-                    <Icon
-                      name={
-                        savedIds.has(
+                        toggleSave(
                           item.id,
-                        )
-                          ? 'bookmark'
-                          : 'bookmark-outline'
-                      }
-                      size={22}
-                      color="#FFFFFF"
-                    />
-                  </Pressable>
-                </View>
+                        );
+                      }}
+                      style={
+                        styles.actionButton
+                      }>
 
-                <View
-                  style={
-                    styles.imageBottom
-                  }>
+                      <Icon
+                        name={
+                          savedIds.has(
+                            item.id,
+                          )
+                            ? 'bookmark'
+                            : 'bookmark-outline'
+                        }
+                        size={23}
+                        color="#FFFFFF"
+                      />
+                    </Pressable>
+
+                    <Pressable
+                      hitSlop={10}
+                      onPress={event => {
+                        event.stopPropagation();
+
+                        shareCuriosity(
+                          item,
+                        );
+                      }}
+                      style={
+                        styles.actionButton
+                      }>
+
+                      <Icon
+                        name="share-social-outline"
+                        size={23}
+                        color="#FFFFFF"
+                      />
+                    </Pressable>
+                  </View>
 
                   <Text
                     style={styles.hook}>
@@ -273,57 +318,33 @@ export const CurioExploreScreen = ({
                     }>
                     {item.teaser}
                   </Text>
-
-                  <View
-                    style={
-                      styles.footer
-                    }>
-
-                    <View
-                      style={
-                        styles.exploreButton
-                      }>
-
-                      <Text
-                        style={
-                          styles.exploreText
-                        }>
-                        Explore this
-                      </Text>
-
-                      <Icon
-                        name="arrow-forward"
-                        size={17}
-                        color="#FFFFFF"
-                      />
-                    </View>
-
-                    {showSwipeHint && (
-                      <Animated.View
-                        pointerEvents="none"
-                        style={[
-                          styles.swipeArrow,
-                          {
-                            transform: [
-                              {
-                                translateY:
-                                  bounce,
-                              },
-                            ],
-                          },
-                        ]}>
-
-                        <Icon
-                          name="chevron-up"
-                          size={28}
-                          color="#FFFFFF"
-                        />
-                      </Animated.View>
-                    )}
-                  </View>
                 </View>
+
+                {showSwipeHint && (
+                  <Animated.View
+                    pointerEvents="none"
+                    style={[
+                      styles.swipeArrow,
+                      {
+                        transform: [
+                          {
+                            translateY:
+                              bounce,
+                          },
+                        ],
+                      },
+                    ]}>
+
+                    <Icon
+                      name="chevron-up"
+                      size={28}
+                      color="#FFFFFF"
+                    />
+                  </Animated.View>
+                )}
               </ImageBackground>
-            </Pressable>
+              </Pressable>
+            </View>
           </View>
         )}
       />
@@ -339,56 +360,9 @@ const styles = StyleSheet.create({
       curioTheme.colors.black,
   },
 
-  topBar: {
-    height: 72,
-
-    paddingHorizontal: 18,
-
-    flexDirection: 'row',
-    alignItems: 'center',
-
-    backgroundColor:
-      curioTheme.colors.black,
-  },
-
-  brandMark: {
-    width: 32,
-    height: 32,
-
-    borderRadius: 10,
-
-    backgroundColor:
-      curioTheme.colors.brand,
-
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    transform: [
-      {rotate: '-7deg'},
-    ],
-  },
-
-  brandC: {
-    fontFamily: 'Roboto-Black',
-
-    fontSize: 19,
-
-    color: '#FFFFFF',
-  },
-
-  brand: {
-    marginLeft: 10,
-
-    fontFamily: 'Roboto-Black',
-
-    fontSize: 20,
-
-    color: '#FFFFFF',
-  },
-
   cardPage: {
     height:
-      SCREEN_HEIGHT - 144,
+      SCREEN_HEIGHT - 72,
 
     paddingHorizontal: 14,
     paddingBottom: 14,
@@ -409,7 +383,7 @@ const styles = StyleSheet.create({
     flex: 1,
 
     justifyContent:
-      'space-between',
+      'flex-end',
   },
 
   imageStyle: {
@@ -423,46 +397,23 @@ const styles = StyleSheet.create({
       curioTheme.colors.darkOverlay,
   },
 
-  imageTop: {
-    padding: 18,
-
-    flexDirection: 'row',
+  actionStack: {
+    alignSelf: 'flex-end',
     alignItems: 'center',
-    justifyContent:
-      'space-between',
+
+    marginBottom: 16,
+
+    gap: 10,
   },
 
-  topicPill: {
-    paddingHorizontal: 12,
-    paddingVertical: 7,
+  actionButton: {
+    width: 46,
+    height: 46,
 
-    borderRadius: 15,
+    borderRadius: 23,
 
     backgroundColor:
-      curioTheme.colors.primary,
-  },
-
-  topic: {
-    fontFamily: 'Roboto-Bold',
-
-    fontSize: 11,
-
-    letterSpacing: 0.6,
-
-    textTransform:
-      'uppercase',
-
-    color: '#FFFFFF',
-  },
-
-  save: {
-    width: 43,
-    height: 43,
-
-    borderRadius: 22,
-
-    backgroundColor:
-      'rgba(0,0,0,0.30)',
+      'rgba(0,0,0,0.38)',
 
     alignItems: 'center',
     justifyContent: 'center',
@@ -504,40 +455,13 @@ const styles = StyleSheet.create({
         .darkTextSecondary,
   },
 
-  footer: {
-    marginTop: 24,
-
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent:
-      'space-between',
-  },
-
-  exploreButton: {
-    height: 45,
-
-    paddingHorizontal: 16,
-
-    borderRadius: 23,
-
-    flexDirection: 'row',
-    alignItems: 'center',
-
-    gap: 8,
-
-    backgroundColor:
-      curioTheme.colors.primary,
-  },
-
-  exploreText: {
-    fontFamily: 'Roboto-Bold',
-
-    fontSize: 14,
-
-    color: '#FFFFFF',
-  },
-
   swipeArrow: {
+    position: 'absolute',
+
+    bottom: 14,
+    left: '50%',
+    marginLeft: -23,
+
     width: 46,
     height: 46,
 
@@ -548,5 +472,7 @@ const styles = StyleSheet.create({
 
     backgroundColor:
       curioTheme.colors.darkControl,
+
+    zIndex: 10,
   },
 });

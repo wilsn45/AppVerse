@@ -51,19 +51,14 @@ export const BottomTabBar = ({
 
   return (
     <View style={styles.container}>
-      <Tab
-        tab={normalTabs[0]}
-        active={selected === 'home'}
-        onPress={() => onSelect('home')}
-      />
-
       <Pressable
         style={styles.item}
         onPress={() => onSelect('curio')}>
         <View
           style={[
             styles.curioIcon,
-            selected === 'curio' && styles.curioIconActive,
+            selected === 'curio' &&
+              styles.curioIconActive,
           ]}>
           <Text
             style={[
@@ -82,11 +77,18 @@ export const BottomTabBar = ({
         <Text
           style={[
             styles.label,
-            selected === 'curio' && styles.active,
+            selected === 'curio' &&
+              styles.active,
           ]}>
           Curio
         </Text>
       </Pressable>
+
+      <Tab
+        tab={normalTabs[0]}
+        active={selected === 'home'}
+        onPress={() => onSelect('home')}
+      />
 
       <Tab
         tab={normalTabs[1]}
@@ -183,7 +185,8 @@ const styles = StyleSheet.create({
 
   curioC: {
     fontFamily: 'Roboto-Black',
-    fontSize: 17,
+    fontSize: 21,
+    lineHeight: 24,
     color: '#FFFFFF',
   },
 });

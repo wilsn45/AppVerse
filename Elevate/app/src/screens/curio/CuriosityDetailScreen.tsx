@@ -24,6 +24,7 @@ import {curioTheme} from '../../theme';
 
 type Props = {
   curiosityId: string;
+  isDeeperDetail?: boolean;
   onBack: () => void;
   onOpenCuriosity: (
     id: string,
@@ -35,6 +36,7 @@ const repository =
 
 export const CuriosityDetailScreen = ({
   curiosityId,
+  isDeeperDetail = false,
   onBack,
   onOpenCuriosity,
 }: Props) => {
@@ -118,7 +120,11 @@ export const CuriosityDetailScreen = ({
     );
   }
 
+  // Image is allowed ONLY on the first detail opened
+  // directly from a card. Once the user follows Keep Going,
+  // every subsequent detail is text-only.
   const hasImage =
+    !isDeeperDetail &&
     Boolean(item.imageUrl);
 
   return (
@@ -134,9 +140,11 @@ export const CuriosityDetailScreen = ({
         showsVerticalScrollIndicator={
           false
         }
-        contentContainerStyle={
-          styles.page
-        }>
+        contentContainerStyle={[
+          styles.page,
+          !hasImage &&
+            styles.plainPage,
+        ]}>
 
         {/* ===============================================
             ROOT ITEM WITH IMAGE
@@ -269,11 +277,7 @@ export const CuriosityDetailScreen = ({
                   }
                   size={20}
                   color={
-                    saved
-                      ? curioTheme.colors
-                          .brand
-                      : curioTheme.colors
-                          .primary
+                    curioTheme.colors.primary
                   }
                 />
               </Pressable>
@@ -385,6 +389,10 @@ const styles = StyleSheet.create({
   page: {
     paddingTop: 20,
     paddingBottom: 55,
+  },
+
+  plainPage: {
+    paddingTop: 20,
   },
 
 
@@ -558,7 +566,7 @@ const styles = StyleSheet.create({
   plainContent: {
     paddingHorizontal: 23,
 
-    paddingTop: 36,
+    paddingTop: 16,
   },
 
   plainTitle: {

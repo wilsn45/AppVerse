@@ -1,42 +1,6 @@
 import {Curiosity} from '../../models/Curiosity';
+import {imageForCategory} from './categoryImages';
 
-
-const imageForTopic = (topicId: string): string => {
-  const images: Record<string, string> = {
-    'psychology':
-      'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&auto=format&fit=crop&q=80',
-    'space':
-      'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900&auto=format&fit=crop&q=80',
-    'science':
-      'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=900&auto=format&fit=crop&q=80',
-    'money':
-      'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=900&auto=format&fit=crop&q=80',
-    'world':
-      'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=900&auto=format&fit=crop&q=80',
-    'animals':
-      'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&auto=format&fit=crop&q=80',
-    'technology':
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&auto=format&fit=crop&q=80',
-    'history':
-      'https://images.unsplash.com/photo-1564399579883-451a5d44ec08?w=900&auto=format&fit=crop&q=80',
-    'entertainment':
-      'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=900&auto=format&fit=crop&q=80',
-    'internet':
-      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&auto=format&fit=crop&q=80',
-    'stories':
-      'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=900&auto=format&fit=crop&q=80',
-    'beautiful-things':
-      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900&auto=format&fit=crop&q=80',
-    'weird-stuff':
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=900&auto=format&fit=crop&q=80',
-    'blow-my-mind':
-      'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=900&auto=format&fit=crop&q=80',
-    'whats-happening':
-      'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&auto=format&fit=crop&q=80',
-  };
-
-  return images[topicId] ?? images['blow-my-mind'];
-};
 
 const base = (
   id: string,
@@ -49,7 +13,7 @@ const base = (
   id, topicId, topic, hook, teaser,
   title: hook,
   summary,
-  imageUrl: imageForTopic(topicId),
+  imageUrl: imageForCategory(topicId),
   depth: 0,
   relatedIds: [],
 });
@@ -319,7 +283,7 @@ mockCuriosities.push(
       'During vivid dreaming, brain regions involved in imagery and emotion can be highly active, while some regions involved in critical reasoning behave differently. Because the brain is generating both the experience and your interpretation of it, bizarre events can temporarily feel completely normal.',
 
     imageUrl:
-      imageForTopic('psychology'),
+      imageForCategory('psychology'),
 
     depth: 1,
 
@@ -346,7 +310,7 @@ mockCuriosities.push(
       'Dreams are more likely to be remembered when you wake during or shortly after them, especially when they contain strong emotion. Rehearsing the dream immediately after waking can also strengthen a memory that would otherwise fade quickly.',
 
     imageUrl:
-      imageForTopic('psychology'),
+      imageForCategory('psychology'),
 
     depth: 2,
 
@@ -371,7 +335,7 @@ mockCuriosities.push(
       'Sleep paralysis can occur while features of REM dreaming are still active. Your eyes may be open and your room may be visible, while dream-like imagery and threat-processing systems remain active. The result can feel like a real person or presence is standing nearby.',
 
     imageUrl:
-      imageForTopic('psychology'),
+      imageForCategory('psychology'),
 
     depth: 1,
 
@@ -398,7 +362,7 @@ mockCuriosities.push(
       'During REM sleep, brainstem systems strongly reduce activity in many voluntary muscles. This temporary muscle atonia helps separate vivid dream activity from physical movement. Sleep paralysis occurs when awareness returns before this process has fully ended.',
 
     imageUrl:
-      imageForTopic('psychology'),
+      imageForCategory('psychology'),
 
     depth: 2,
 
@@ -423,7 +387,7 @@ mockCuriosities.push(
       'Changes in gravity propagate at the speed of light. If the Sun could somehow vanish, Earth would continue following its previous orbit for roughly eight minutes. After the gravitational change reached us, Earth would continue moving approximately along the tangent to its former orbit.',
 
     imageUrl:
-      imageForTopic('space'),
+      imageForCategory('space'),
 
     depth: 1,
 
@@ -450,7 +414,7 @@ mockCuriosities.push(
       'Earth is roughly 150 million kilometres from the Sun. Light travels at about 300,000 kilometres per second, so sunlight needs a little over eight minutes to cross that distance. Every view of the Sun is therefore a view of how it looked minutes earlier.',
 
     imageUrl:
-      imageForTopic('space'),
+      imageForCategory('space'),
 
     depth: 2,
 
@@ -475,7 +439,7 @@ mockCuriosities.push(
       'Surface tension causes tears to cling around the eye instead of falling downward. As more liquid accumulates, it can form an uncomfortable blob around the eye until the astronaut wipes it away.',
 
     imageUrl:
-      imageForTopic('space'),
+      imageForCategory('space'),
 
     depth: 1,
 
@@ -502,7 +466,7 @@ mockCuriosities.push(
       'On Earth, gravity compresses the spine throughout the day. In microgravity that compression is greatly reduced, allowing the discs between vertebrae to expand. Astronauts can temporarily become a few centimetres taller before returning toward normal after coming home.',
 
     imageUrl:
-      imageForTopic('space'),
+      imageForCategory('space'),
 
     depth: 2,
 
@@ -527,7 +491,7 @@ mockCuriosities.push(
       'Recommendation systems can initially expose content to a limited audience and observe signals such as watch time, completion, sharing and interaction. Strong responses can lead to wider distribution, creating a feedback loop that rapidly expands reach.',
 
     imageUrl:
-      imageForTopic('internet'),
+      imageForCategory('internet'),
 
     depth: 1,
 
@@ -554,7 +518,7 @@ mockCuriosities.push(
       'Large recommendation systems continually rank content for individual users. If a piece repeatedly performs well with different audiences, those ranking decisions can compound. What looks like one giant viral decision can instead emerge from millions of smaller recommendations.',
 
     imageUrl:
-      imageForTopic('internet'),
+      imageForCategory('internet'),
 
     depth: 2,
 
@@ -579,7 +543,7 @@ mockCuriosities.push(
       'Threatening information can make uncertainty feel especially uncomfortable. Checking for another update can briefly feel like taking control or gathering useful information, even when the next update increases anxiety and starts the cycle again.',
 
     imageUrl:
-      imageForTopic('internet'),
+      imageForCategory('internet'),
 
     depth: 1,
 
@@ -606,7 +570,7 @@ mockCuriosities.push(
       'Each swipe carries uncertainty about what appears next. Interesting, surprising and emotionally intense items arrive unpredictably. This variable pattern can encourage continued checking because the next swipe might contain something especially rewarding or important.',
 
     imageUrl:
-      imageForTopic('internet'),
+      imageForCategory('internet'),
 
     depth: 2,
 
@@ -631,7 +595,7 @@ mockCuriosities.push(
       'Roman builders commonly combined lime with volcanic ash or other reactive materials. These ingredients could form durable mineral structures over time, helping explain why some Roman concrete has survived in harsh environments for centuries.',
 
     imageUrl:
-      imageForTopic('history'),
+      imageForCategory('history'),
 
     depth: 1,
 
@@ -658,7 +622,7 @@ mockCuriosities.push(
       'Research suggests that some Roman concrete contains lime-rich inclusions created by its manufacturing process. When cracks expose these materials to water, chemical reactions can produce minerals that fill parts of the crack, potentially extending the structure’s lifetime.',
 
     imageUrl:
-      imageForTopic('history'),
+      imageForCategory('history'),
 
     depth: 2,
 
@@ -683,7 +647,7 @@ mockCuriosities.push(
       'The Great Pyramid of Giza was built around the 26th century BCE. Cleopatra VII lived during the first century BCE. That means the pyramid was already roughly two and a half millennia old during her lifetime.',
 
     imageUrl:
-      imageForTopic('history'),
+      imageForCategory('history'),
 
     depth: 1,
 
@@ -710,7 +674,7 @@ mockCuriosities.push(
       'The Great Pyramid was already ancient before many events and civilizations commonly associated with the classical world. Compressing thousands of years into the label “ancient history” can make these enormous chronological distances easy to miss.',
 
     imageUrl:
-      imageForTopic('history'),
+      imageForCategory('history'),
 
     depth: 2,
 

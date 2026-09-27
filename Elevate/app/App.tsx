@@ -71,7 +71,7 @@ const App = () => {
             ? {
                 status: 'main',
                 interests,
-                tab: 'home',
+                tab: 'curio',
               }
             : {
                 status: 'onboarding',
@@ -99,7 +99,7 @@ const App = () => {
     setState({
       status: 'main',
       interests,
-      tab: 'home',
+      tab: 'curio',
     });
   };
 
@@ -174,6 +174,9 @@ const App = () => {
           curiosityId={
             state.curiosityId
           }
+          isDeeperDetail={
+            state.history.length > 0
+          }
           onBack={goBack}
           onOpenCuriosity={
             openRelated
@@ -192,6 +195,9 @@ const App = () => {
         />
 
         <CategoryScreen
+          interests={
+            state.interests
+          }
           categoryId={
             state.categoryId
           }
