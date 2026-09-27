@@ -65,7 +65,18 @@ export const BottomTabBar = ({
             styles.curioIcon,
             selected === 'curio' && styles.curioIconActive,
           ]}>
-          <Text style={styles.curioC}>C</Text>
+          <Text
+            style={[
+              styles.curioC,
+              {
+                color:
+                  selected === 'curio'
+                    ? curioTheme.colors.white
+                    : curioTheme.colors.brand,
+              },
+            ]}>
+            C
+          </Text>
         </View>
 
         <Text
@@ -114,7 +125,7 @@ const Tab = ({
       size={22}
       color={
         active
-          ? curioTheme.colors.purple
+          ? curioTheme.colors.brand
           : curioTheme.colors.muted
       }
     />
@@ -149,20 +160,21 @@ const styles = StyleSheet.create({
   },
 
   active: {
-    color: curioTheme.colors.purple,
+    color: curioTheme.colors.brand,
   },
 
   curioIcon: {
     width: 29,
     height: 29,
     borderRadius: 10,
-    backgroundColor: curioTheme.colors.purple,
+    backgroundColor: curioTheme.colors.white,
     alignItems: 'center',
     justifyContent: 'center',
     transform: [{rotate: '-7deg'}],
   },
 
   curioIconActive: {
+    backgroundColor: curioTheme.colors.brand,
     transform: [
       {rotate: '-7deg'},
       {scale: 1.08},

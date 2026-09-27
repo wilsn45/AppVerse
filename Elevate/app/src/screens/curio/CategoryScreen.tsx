@@ -71,7 +71,7 @@ export const CategoryScreen = ({
           <Icon
             name="chevron-back"
             size={27}
-            color={curioTheme.colors.purple}
+            color={curioTheme.colors.primary}
           />
         </Pressable>
 
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     backgroundColor:
-      curioTheme.colors.purpleSoft,
+      curioTheme.colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -25,318 +25,224 @@ export const CuriosityCard = ({
   curiosity,
   onPress,
   onSave,
-  saved,
+  saved = false,
   fullWidth = false,
-}: Props) => {
-  if (fullWidth) {
-    return (
-      <Pressable
-        onPress={onPress}
-        style={({pressed}) => [
-          styles.fullCard,
-          pressed && styles.pressed,
-        ]}>
+}: Props) => (
+  <Pressable
+    onPress={onPress}
+    style={({pressed}) => [
+      styles.card,
+      fullWidth && styles.fullWidth,
+      pressed && styles.pressed,
+    ]}>
 
-        <Image
-          source={{uri: curiosity.imageUrl}}
-          style={styles.fullImage}
-        />
+    <View style={styles.topRow}>
 
-        <View style={styles.fullBody}>
-          <View style={styles.top}>
-            <TopicPill topic={curiosity.topic} />
-
-            {onSave && (
-              <SaveButton
-                saved={saved}
-                onSave={onSave}
-              />
-            )}
-          </View>
-
-          <Text
-            numberOfLines={2}
-            style={styles.fullHook}>
-            {curiosity.hook}
-          </Text>
-
-          <Text
-            numberOfLines={2}
-            style={styles.teaser}>
-            {curiosity.teaser}
-          </Text>
-        </View>
-      </Pressable>
-    );
-  }
-
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({pressed}) => [
-        styles.card,
-        pressed && styles.pressed,
-      ]}>
-
-      <View style={styles.content}>
-        <View style={styles.top}>
-          <TopicPill topic={curiosity.topic} />
-
-          {onSave && (
-            <SaveButton
-              saved={saved}
-              onSave={onSave}
-            />
-          )}
-        </View>
-
+      {/* LEFT: TITLE */}
+      <View style={styles.textArea}>
         <Text
-          numberOfLines={2}
-          style={styles.hook}>
+          numberOfLines={3}
+          style={styles.title}>
           {curiosity.hook}
         </Text>
-
-
       </View>
 
-      <View style={styles.imageContainer}>
+
+      {/* RIGHT: IMAGE */}
+      {!!curiosity.imageUrl && (
         <Image
-          source={{uri: curiosity.imageUrl}}
+          source={{
+            uri: curiosity.imageUrl,
+          }}
           style={styles.image}
         />
+      )}
+
+    </View>
+
+
+    <View style={styles.bottomRow}>
+
+      {/* CATEGORY */}
+      <View style={styles.categoryPill}>
+        <Text
+          numberOfLines={1}
+          style={styles.category}>
+          {curiosity.topic}
+        </Text>
       </View>
-    </Pressable>
-  );
-};
 
-const TopicPill = ({
-  topic,
-}: {
-  topic: string;
-}) => (
-  <View style={styles.topicPill}>
-    <Text
-      numberOfLines={1}
-      style={styles.topic}>
-      {topic}
-    </Text>
-  </View>
-);
 
-const SaveButton = ({
-  saved,
-  onSave,
-}: {
-  saved?: boolean;
-  onSave: () => void;
-}) => (
-  <Pressable
-    hitSlop={12}
-    onPress={event => {
-      event.stopPropagation();
-      onSave();
-    }}
-    style={styles.saveButton}>
+      {/* SAVE */}
+      {!!onSave && (
+        <Pressable
+          hitSlop={10}
+          onPress={event => {
+            event.stopPropagation();
+            onSave();
+          }}
+          style={styles.saveButton}>
 
-    <Icon
-      name={
-        saved
-          ? 'bookmark'
-          : 'bookmark-outline'
-      }
-      size={16}
-      color={
-        saved
-          ? curioTheme.colors.primary
-          : curioTheme.colors.muted
-      }
-    />
+          <Icon
+            name={
+              saved
+                ? 'bookmark'
+                : 'bookmark-outline'
+            }
+            size={21}
+            color={
+              curioTheme.colors.primary
+            }
+          />
+
+        </Pressable>
+      )}
+
+    </View>
+
   </Pressable>
 );
 
+
 const styles = StyleSheet.create({
+
   card: {
     width: 340,
-    height: 128,
 
-    flexDirection: 'row',
+    minHeight: 160,
 
     marginRight: 12,
 
-    borderRadius: 19,
-
-    backgroundColor:
-      curioTheme.colors.surface,
-
-    borderWidth: 1,
-    borderColor:
-      curioTheme.colors.border,
-
-    overflow: 'hidden',
-
-    elevation: 1,
-
-    shadowColor: '#000000',
-    shadowOpacity: 0.035,
-    shadowRadius: 6,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-  },
-
-  pressed: {
-    opacity: 0.82,
-    transform: [{scale: 0.985}],
-  },
-
-  content: {
-    flex: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-  },
-
-  imageContainer: {
-    width: 112,
-
-    paddingTop: 10,
-    paddingRight: 10,
-    paddingBottom: 10,
-    paddingLeft: 6,
-
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  image: {
-    width: 92,
-    height: 92,
+    padding: 14,
 
     borderRadius: 16,
 
     backgroundColor:
-      curioTheme.colors.surfaceMuted,
-  },
-
-  top: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-
-    marginBottom: 7,
-  },
-
-  topicPill: {
-    maxWidth: 112,
-
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-
-    borderRadius: 8,
-
-    backgroundColor:
-      curioTheme.colors.primarySoft,
-  },
-
-  topic: {
-    fontFamily: 'Roboto-Bold',
-
-    fontSize: 9,
-
-    letterSpacing: 0.35,
-
-    textTransform: 'uppercase',
-
-    color: curioTheme.colors.primary,
-  },
-
-  hook: {
-    fontFamily: 'Roboto-Bold',
-
-    fontSize: 16,
-    lineHeight: 20,
-
-    color: curioTheme.colors.ink,
-  },
-
-  explore: {
-    marginTop: 'auto',
-
-    flexDirection: 'row',
-    alignItems: 'center',
-
-    gap: 4,
-  },
-
-  exploreText: {
-    fontFamily: 'Roboto-Bold',
-
-    fontSize: 11,
-
-    color: curioTheme.colors.primary,
-  },
-
-  saveButton: {
-    width: 27,
-    height: 27,
-
-    borderRadius: 14,
-
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    backgroundColor:
-      curioTheme.colors.surfaceMuted,
-  },
-
-  fullCard: {
-    width: '100%',
-
-    marginBottom: 16,
-
-    borderRadius: 21,
-
-    backgroundColor:
       curioTheme.colors.surface,
 
     borderWidth: 1,
+
     borderColor:
       curioTheme.colors.border,
 
-    overflow: 'hidden',
+    shadowColor:
+      curioTheme.colors.shadow,
+
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+
+    shadowOpacity: 0.13,
+    shadowRadius: 5,
+
+    elevation: 2,
   },
 
-  fullImage: {
+  fullWidth: {
     width: '100%',
-    height: 165,
+    marginRight: 0,
+  },
+
+  pressed: {
+    opacity: 0.82,
+  },
+
+
+  // ========================================================
+  // TOP
+  // ========================================================
+
+  topRow: {
+    flexDirection: 'row',
+
+    alignItems: 'flex-start',
+
+    justifyContent:
+      'space-between',
+  },
+
+  textArea: {
+    flex: 1,
+
+    paddingRight: 14,
+  },
+
+  title: {
+    fontFamily:
+      'Roboto-Bold',
+
+    fontSize: 19,
+    lineHeight: 24,
+
+    letterSpacing: -0.3,
+
+    color:
+      curioTheme.colors.ink,
+  },
+
+  image: {
+    width: 102,
+    height: 82,
+
+    borderRadius: 12,
+
+    resizeMode: 'cover',
 
     backgroundColor:
-      curioTheme.colors.surfaceMuted,
+      curioTheme.colors
+        .surfaceMuted,
   },
 
-  fullBody: {
-    padding: 16,
+
+  // ========================================================
+  // BOTTOM
+  // ========================================================
+
+  bottomRow: {
+    marginTop: 13,
+
+    flexDirection: 'row',
+
+    alignItems: 'center',
+
+    justifyContent:
+      'space-between',
   },
 
-  fullHook: {
-    fontFamily: 'Roboto-Black',
+  categoryPill: {
+    alignSelf: 'flex-start',
 
-    fontSize: 20,
-    lineHeight: 25,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
 
-    letterSpacing: -0.35,
+    borderRadius: 9,
 
-    color: curioTheme.colors.ink,
+    // fill only — no outline
+    backgroundColor:
+      curioTheme.colors.brandSoft,
   },
 
-  teaser: {
-    marginTop: 7,
+  category: {
+    fontFamily:
+      'Roboto-Medium',
 
-    fontFamily: 'Roboto-Regular',
+    fontSize: 11,
 
-    fontSize: 13,
-    lineHeight: 19,
+    color:
+      curioTheme.colors.brand,
+  },
 
-    color: curioTheme.colors.muted,
+
+  // ========================================================
+  // SAVE — NO BACKGROUND
+  // ========================================================
+
+  saveButton: {
+    width: 34,
+    height: 34,
+
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

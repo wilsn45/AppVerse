@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   mark: {
     width: 38, height: 38, borderRadius: 13,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: curioTheme.colors.purple,
+    backgroundColor: curioTheme.colors.brand,
     transform: [{rotate: '-7deg'}],
   },
   markCompact: {width: 32, height: 32, borderRadius: 11},

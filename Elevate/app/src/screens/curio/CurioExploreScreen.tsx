@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
 
     backgroundColor:
-      curioTheme.colors.primary,
+      curioTheme.colors.brand,
 
     alignItems: 'center',
     justifyContent: 'center',

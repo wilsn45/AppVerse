@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   safeArea: {flex: 1, backgroundColor: curioTheme.colors.canvas},
   content: {paddingHorizontal: 20, paddingTop: 18, paddingBottom: 118},
   brandRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 34},
-  brandMark: {width: 38, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: curioTheme.colors.purple, transform: [{rotate: '-7deg'}]},
+  brandMark: {width: 38, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: curioTheme.colors.brand, transform: [{rotate: '-7deg'}]},
   brandMarkText: {fontFamily: 'Roboto-Black', fontSize: 23, color: '#FFFFFF'},
   brand: {fontFamily: 'Roboto-Black', fontSize: 27, color: curioTheme.colors.ink, marginLeft: 10, letterSpacing: -0.8},
   title: {fontFamily: 'Roboto-Black', fontSize: 39, lineHeight: 44, letterSpacing: -1.4, color: curioTheme.colors.ink},

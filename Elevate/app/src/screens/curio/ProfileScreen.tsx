@@ -105,14 +105,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
   selected: {
-    borderColor: curioTheme.colors.purple,
-    backgroundColor: curioTheme.colors.primarySoft,
+    borderColor: curioTheme.colors.brand,
+    backgroundColor: curioTheme.colors.brandSoft,
   },
   emoji: {fontSize: 17, marginRight: 7},
   label: {fontFamily: 'Roboto-Medium', fontSize: 13, color: curioTheme.colors.ink},
   order: {
     marginLeft: 8, width: 21, height: 21, borderRadius: 11,
-    backgroundColor: curioTheme.colors.purple,
+    backgroundColor: curioTheme.colors.primary,
     alignItems: 'center', justifyContent: 'center',
   },
   orderText: {fontFamily: 'Roboto-Bold', fontSize: 11, color: '#FFF'},

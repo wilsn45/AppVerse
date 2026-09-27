@@ -112,7 +112,7 @@ const App = () => {
         />
 
         <ActivityIndicator
-          color={curioTheme.colors.purple}
+          color={curioTheme.colors.brand}
         />
       </View>
     );
@@ -281,6 +281,16 @@ const App = () => {
                   state.interests,
                 categoryId,
                 categoryName,
+              })
+            }
+            onSeeAllCategories={() =>
+              setState({
+                status: 'category',
+                interests:
+                  state.interests,
+                categoryId: '__all__',
+                categoryName:
+                  'All Categories',
               })
             }
           />

@@ -1,40 +1,60 @@
 export const curioTheme = {
   colors: {
-    // Brand
-    primary: '#6657E8',
-    primaryPressed: '#5749D3',
-    primarySoft: '#F0EEFF',
-
-    // Surfaces
+    // Base
     white: '#FFFFFF',
-    canvas: '#FAFAFC',
+    canvas: '#FEFEFE',
     surface: '#FFFFFF',
-    surfaceMuted: '#F5F5F8',
+    surfaceMuted: '#F7F7F7',
 
-    // Typography
-    ink: '#18171C',
-    text: '#28272D',
-    muted: '#77747E',
-    subtle: '#A5A2AB',
+    // Curio brand
+    // Stronger brand colour used by logo and immersive moments.
+    brand: '#DD4F5A',
+    brandSoft: '#FCEAEC',
 
-    // Structure
-    border: '#EBE9EF',
+    // Primary interaction colour
+    // Original Upward teal.
+    primary: '#37817B',
+    primarySoft: '#EBF6F6',
+    primaryDisabled: '#A9C2BF',
 
-    // Immersive Curio mode
+    // Accent compatibility
+    accent: '#DD4F5A',
+    accentSoft: '#FCEAEC',
+
+    // Text
+    ink: '#1A1A1A',
+    text: '#1F1F1F',
+    textSecondary: '#595959',
+    muted: '#969696',
+
+    // UI
+    border: '#EBEBEB',
+    borderSoft: '#F5F5F5',
+    shadow: '#D3D3D3',
+
+    // Immersive Curio tab
     black: '#09090B',
     darkSurface: '#151519',
     darkOverlay: 'rgba(0,0,0,0.38)',
     darkControl: 'rgba(255,255,255,0.16)',
     darkTextSecondary: 'rgba(255,255,255,0.84)',
 
-    // Compatibility
-    purple: '#6657E8',
-    purpleSoft: '#F0EEFF',
+    // Compatibility with older Curio code
+    purple: '#37817B',
+    purpleSoft: '#EBF6F6',
   },
 
   radius: {
-    small: 12,
-    medium: 18,
-    large: 26,
+    small: 10,
+    medium: 16,
+    large: 22,
+  },
+
+  spacing: {
+    xs: 6,
+    small: 10,
+    medium: 16,
+    large: 20,
+    xl: 28,
   },
 };

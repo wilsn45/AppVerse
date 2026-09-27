@@ -5,10 +5,11 @@ import React, {
 
 import {
   ActivityIndicator,
-  Image,
+  ImageBackground,
   Pressable,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -59,34 +60,57 @@ export const CuriosityDetailScreen = ({
           return;
         }
 
-        const children =
+        setRelated(
           await repository
             .getRelatedCuriosities(
               curiosity,
-            );
-
-        setRelated(children);
-
-        CurioStorage.addSeenId(
-          curiosity.id,
+            ),
         );
 
-        setSaved(
-          await CurioStorage.isSaved(
+        await CurioStorage
+          .addSeenId(
             curiosity.id,
-          ),
+          );
+
+        setSaved(
+          await CurioStorage
+            .isSaved(
+              curiosity.id,
+            ),
         );
       });
   }, [curiosityId]);
+
+  const toggleSave =
+    async () => {
+      if (!item) {
+        return;
+      }
+
+      setSaved(
+        await CurioStorage
+          .toggleSaved(
+            item.id,
+          ),
+      );
+    };
 
   if (!item) {
     return (
       <SafeAreaView
         style={styles.safe}>
+
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={
+            curioTheme.colors.canvas
+          }
+        />
+
         <View style={styles.loading}>
           <ActivityIndicator
             color={
-              curioTheme.colors.primary
+              curioTheme.colors.brand
             }
           />
         </View>
@@ -94,143 +118,251 @@ export const CuriosityDetailScreen = ({
     );
   }
 
-  const toggleSave = async () => {
-    setSaved(
-      await CurioStorage.toggleSaved(
-        item.id,
-      ),
-    );
-  };
+  const hasImage =
+    Boolean(item.imageUrl);
 
   return (
     <SafeAreaView style={styles.safe}>
-      <View style={styles.topSpacer} />
-
-      <View style={styles.nav}>
-        <Pressable
-          onPress={onBack}
-          hitSlop={14}
-          style={styles.navButton}>
-
-          <Icon
-            name="chevron-back"
-            size={26}
-            color={
-              curioTheme.colors.primary
-            }
-          />
-        </Pressable>
-
-        <Pressable
-          onPress={toggleSave}
-          hitSlop={14}
-          style={styles.navButton}>
-
-          <Icon
-            name={
-              saved
-                ? 'bookmark'
-                : 'bookmark-outline'
-            }
-            size={21}
-            color={
-              curioTheme.colors.primary
-            }
-          />
-        </Pressable>
-      </View>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={
+          curioTheme.colors.canvas
+        }
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={
           false
         }
         contentContainerStyle={
-          styles.content
+          styles.page
         }>
 
-        <Image
-          source={{
-            uri: item.imageUrl,
-          }}
-          style={styles.hero}
-        />
+        {/* ===============================================
+            ROOT ITEM WITH IMAGE
+           =============================================== */}
 
-        <Text style={styles.topic}>
-          {item.topic.toUpperCase()}
-        </Text>
-
-        <Text style={styles.title}>
-          {item.title}
-        </Text>
-
-        <Text style={styles.summary}>
-          {item.summary}
-        </Text>
-
-        {!!related.length && (
-          <View style={styles.relatedArea}>
-            <Text
-              style={
-                styles.exploreTitle
+        {hasImage ? (
+          <View style={styles.mainCard}>
+            <ImageBackground
+              source={{
+                uri: item.imageUrl,
+              }}
+              style={styles.hero}
+              imageStyle={
+                styles.heroImage
               }>
-              Go deeper
-            </Text>
 
-            <Text
-              style={
-                styles.exploreSubtitle
-              }>
-              Keep following this
-              curiosity
-            </Text>
+              <View
+                style={
+                  styles.heroOverlay
+                }
+              />
 
-            {related.map(
-              (next, index) => (
+              <View style={styles.nav}>
                 <Pressable
-                  key={next.id}
-                  onPress={() =>
-                    onOpenCuriosity(
-                      next.id,
-                    )
-                  }
-                  style={styles.related}>
-
-                  <View
-                    style={
-                      styles.relatedNumber
-                    }>
-                    <Text
-                      style={
-                        styles.relatedNumberText
-                      }>
-                      {index + 1}
-                    </Text>
-                  </View>
-
-                  <Text
-                    style={
-                      styles.relatedText
-                    }>
-                    {next.hook}
-                  </Text>
+                  onPress={onBack}
+                  hitSlop={14}
+                  style={
+                    styles.imageNavButton
+                  }>
 
                   <Icon
-                    name="chevron-forward"
-                    size={19}
-                    color={
-                      curioTheme.colors
-                        .primary
-                    }
+                    name="chevron-back"
+                    size={27}
+                    color="#FFFFFF"
                   />
                 </Pressable>
-              ),
-            )}
+
+                <Pressable
+                  onPress={toggleSave}
+                  hitSlop={14}
+                  style={
+                    styles.imageNavButton
+                  }>
+
+                  <Icon
+                    name={
+                      saved
+                        ? 'bookmark'
+                        : 'bookmark-outline'
+                    }
+                    size={22}
+                    color="#FFFFFF"
+                  />
+                </Pressable>
+              </View>
+
+              <View
+                style={
+                  styles.heroContent
+                }>
+
+                <View
+                  style={
+                    styles.topicPill
+                  }>
+                  <Text
+                    style={
+                      styles.topic
+                    }>
+                    {item.topic}
+                  </Text>
+                </View>
+
+                <Text
+                  style={
+                    styles.imageTitle
+                  }>
+                  {item.title}
+                </Text>
+              </View>
+            </ImageBackground>
+
+            <View style={styles.answer}>
+              <Text
+                style={
+                  styles.answerText
+                }>
+                {item.summary}
+              </Text>
+            </View>
+          </View>
+        ) : (
+
+          /* =============================================
+             DEEPER ITEM WITHOUT IMAGE
+             No placeholder.
+             ============================================= */
+
+          <>
+            <View style={styles.plainNav}>
+              <Pressable
+                onPress={onBack}
+                hitSlop={14}
+                style={
+                  styles.plainNavButton
+                }>
+
+                <Icon
+                  name="chevron-back"
+                  size={25}
+                  color={
+                    curioTheme.colors
+                      .primary
+                  }
+                />
+              </Pressable>
+
+              <Pressable
+                onPress={toggleSave}
+                hitSlop={14}
+                style={
+                  styles.plainNavButton
+                }>
+
+                <Icon
+                  name={
+                    saved
+                      ? 'bookmark'
+                      : 'bookmark-outline'
+                  }
+                  size={20}
+                  color={
+                    saved
+                      ? curioTheme.colors
+                          .brand
+                      : curioTheme.colors
+                          .primary
+                  }
+                />
+              </Pressable>
+            </View>
+
+            <View
+              style={
+                styles.plainContent
+              }>
+
+              <View
+                style={
+                  styles.topicPill
+                }>
+                <Text
+                  style={
+                    styles.topic
+                  }>
+                  {item.topic}
+                </Text>
+              </View>
+
+              <Text
+                style={
+                  styles.plainTitle
+                }>
+                {item.title}
+              </Text>
+
+              <Text
+                style={
+                  styles.plainAnswer
+                }>
+                {item.summary}
+              </Text>
+            </View>
+          </>
+        )}
+
+
+        {/* ===============================================
+            KEEP GOING
+            Deliberately understated.
+           =============================================== */}
+
+        {!!related.length && (
+          <View
+            style={
+              styles.keepGoing
+            }>
+
+            <Text
+              style={
+                styles.keepGoingTitle
+              }>
+              Keep going
+            </Text>
+
+            {related.map(next => (
+              <Pressable
+                key={next.id}
+                hitSlop={5}
+                onPress={() =>
+                  onOpenCuriosity(
+                    next.id,
+                  )
+                }
+                style={({pressed}) => [
+                  styles.relatedItem,
+                  pressed &&
+                    styles.relatedPressed,
+                ]}>
+
+                <Text
+                  style={
+                    styles.relatedText
+                  }>
+                  {next.hook}
+                </Text>
+              </Pressable>
+            ))}
           </View>
         )}
+
       </ScrollView>
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   safe: {
@@ -240,29 +372,176 @@ const styles = StyleSheet.create({
       curioTheme.colors.canvas,
   },
 
-  topSpacer: {
-    height: 22,
-  },
-
   loading: {
     flex: 1,
 
     alignItems: 'center',
     justifyContent: 'center',
+
+    backgroundColor:
+      curioTheme.colors.canvas,
   },
 
-  nav: {
-    height: 54,
+  page: {
+    paddingTop: 20,
+    paddingBottom: 55,
+  },
 
-    paddingHorizontal: 18,
 
-    flexDirection: 'row',
-    alignItems: 'center',
+  // ======================================================
+  // MAIN CURIOSITY
+  // ======================================================
+
+  mainCard: {
+    marginHorizontal: 14,
+
+    overflow: 'hidden',
+
+    borderRadius: 28,
+
+    backgroundColor:
+      curioTheme.colors.surface,
+
+    borderWidth: 1,
+
+    borderColor:
+      curioTheme.colors.border,
+  },
+
+  hero: {
+    height: 390,
+
     justifyContent:
       'space-between',
   },
 
-  navButton: {
+  heroImage: {
+    borderTopLeftRadius: 27,
+    borderTopRightRadius: 27,
+  },
+
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+
+    backgroundColor:
+      'rgba(0,0,0,0.30)',
+  },
+
+  nav: {
+    paddingHorizontal: 15,
+    paddingTop: 16,
+
+    flexDirection: 'row',
+
+    justifyContent:
+      'space-between',
+  },
+
+  imageNavButton: {
+    width: 43,
+    height: 43,
+
+    borderRadius: 22,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    backgroundColor:
+      'rgba(0,0,0,0.28)',
+  },
+
+  heroContent: {
+    paddingHorizontal: 21,
+    paddingBottom: 24,
+  },
+
+  topicPill: {
+    alignSelf:
+      'flex-start',
+
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+
+    marginBottom: 11,
+
+    borderRadius: 11,
+
+    backgroundColor:
+      curioTheme.colors.brand,
+  },
+
+  topic: {
+    fontFamily:
+      'Roboto-Bold',
+
+    fontSize: 10,
+
+    letterSpacing: 0.6,
+
+    textTransform:
+      'uppercase',
+
+    color: '#FFFFFF',
+  },
+
+  imageTitle: {
+    maxWidth: '96%',
+
+    fontFamily:
+      'Roboto-Black',
+
+    fontSize: 29,
+    lineHeight: 35,
+
+    letterSpacing: -0.7,
+
+    color: '#FFFFFF',
+
+    textShadowColor:
+      'rgba(0,0,0,0.40)',
+
+    textShadowRadius: 8,
+  },
+
+  answer: {
+    paddingHorizontal: 21,
+
+    paddingTop: 19,
+    paddingBottom: 23,
+
+    backgroundColor:
+      curioTheme.colors.surface,
+  },
+
+  answerText: {
+    fontFamily:
+      'Roboto-Regular',
+
+    fontSize: 20,
+    lineHeight: 31,
+
+    color:
+      curioTheme.colors
+        .textSecondary,
+  },
+
+
+  // ======================================================
+  // IMAGELESS DEEPER DETAIL
+  // ======================================================
+
+  plainNav: {
+    paddingHorizontal: 18,
+
+    flexDirection: 'row',
+
+    alignItems: 'center',
+
+    justifyContent:
+      'space-between',
+  },
+
+  plainNavButton: {
     width: 40,
     height: 40,
 
@@ -272,132 +551,84 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     backgroundColor:
-      curioTheme.colors.primarySoft,
+      curioTheme.colors
+        .primarySoft,
   },
 
-  content: {
-    paddingHorizontal: 20,
+  plainContent: {
+    paddingHorizontal: 23,
 
-    paddingTop: 15,
-    paddingBottom: 60,
+    paddingTop: 36,
   },
 
-  hero: {
-    width: '100%',
-    height: 205,
+  plainTitle: {
+    maxWidth: '96%',
 
-    borderRadius: 24,
+    fontFamily:
+      'Roboto-Black',
 
-    marginBottom: 25,
+    fontSize: 29,
+    lineHeight: 36,
 
-    backgroundColor:
-      curioTheme.colors.surfaceMuted,
-  },
-
-  topic: {
-    fontFamily: 'Roboto-Bold',
-
-    fontSize: 11,
-
-    letterSpacing: 0.9,
+    letterSpacing: -0.7,
 
     color:
-      curioTheme.colors.primary,
-
-    marginBottom: 12,
+      curioTheme.colors.ink,
   },
 
-  title: {
-    fontFamily: 'Roboto-Black',
-
-    fontSize: 30,
-    lineHeight: 37,
-
-    letterSpacing: -0.8,
-
-    color: curioTheme.colors.ink,
-  },
-
-  summary: {
+  plainAnswer: {
     marginTop: 20,
 
-    fontFamily: 'Roboto-Regular',
+    fontFamily:
+      'Roboto-Regular',
 
-    fontSize: 17,
-    lineHeight: 27,
-
-    color: curioTheme.colors.text,
-  },
-
-  relatedArea: {
-    marginTop: 40,
-  },
-
-  exploreTitle: {
-    fontFamily: 'Roboto-Black',
-
-    fontSize: 22,
-
-    color: curioTheme.colors.ink,
-  },
-
-  exploreSubtitle: {
-    marginTop: 3,
-    marginBottom: 12,
-
-    fontFamily: 'Roboto-Regular',
-
-    fontSize: 13,
-
-    color: curioTheme.colors.muted,
-  },
-
-  related: {
-    minHeight: 76,
-
-    flexDirection: 'row',
-    alignItems: 'center',
-
-    borderTopWidth: 1,
-
-    borderTopColor:
-      curioTheme.colors.border,
-  },
-
-  relatedNumber: {
-    width: 30,
-    height: 30,
-
-    borderRadius: 15,
-
-    marginRight: 12,
-
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    backgroundColor:
-      curioTheme.colors.primarySoft,
-  },
-
-  relatedNumberText: {
-    fontFamily: 'Roboto-Bold',
-
-    fontSize: 12,
+    fontSize: 20,
+    lineHeight: 31,
 
     color:
-      curioTheme.colors.primary,
+      curioTheme.colors
+        .textSecondary,
+  },
+
+
+  // ======================================================
+  // KEEP GOING
+  // ======================================================
+
+  keepGoing: {
+    marginTop: 30,
+
+    paddingHorizontal: 23,
+  },
+
+  keepGoingTitle: {
+    marginBottom: 7,
+
+    fontFamily:
+      'Roboto-Medium',
+
+    fontSize: 15,
+
+    color:
+      curioTheme.colors.muted,
+  },
+
+  relatedItem: {
+    paddingVertical: 11,
+  },
+
+  relatedPressed: {
+    opacity: 0.5,
   },
 
   relatedText: {
-    flex: 1,
+    fontFamily:
+      'Roboto-Regular',
 
-    marginRight: 10,
+    fontSize: 16,
+    lineHeight: 22,
 
-    fontFamily: 'Roboto-Medium',
-
-    fontSize: 15,
-    lineHeight: 21,
-
-    color: curioTheme.colors.ink,
+    color:
+      curioTheme.colors.primary,
   },
 });
