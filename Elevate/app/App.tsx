@@ -1,14 +1,20 @@
 import React, {
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
 import {
-  ActivityIndicator,
+  Animated,
+  Image,
   StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
+
+import {
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
 
 import {InterestSelectionScreen} from './src/screens/InterestSelectionScreen';
 
@@ -60,6 +66,81 @@ const App = () => {
       status: 'loading',
     });
 
+  const [showSplash, setShowSplash] =
+    useState(true);
+
+  const splashScale =
+    useRef(
+      new Animated.Value(0.82),
+    ).current;
+
+  const splashOpacity =
+    useRef(
+      new Animated.Value(1),
+    ).current;
+
+  const splashRotation =
+    useRef(
+      new Animated.Value(0),
+    ).current;
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.delay(350),
+
+      Animated.spring(
+        splashScale,
+        {
+          toValue: 1,
+          friction: 7,
+          tension: 55,
+          useNativeDriver: true,
+        },
+      ),
+
+      Animated.delay(300),
+
+      Animated.parallel([
+        Animated.timing(
+          splashScale,
+          {
+            toValue: 18,
+            duration: 650,
+            useNativeDriver: true,
+          },
+        ),
+
+        Animated.timing(
+          splashRotation,
+          {
+            toValue: 1,
+            duration: 650,
+            useNativeDriver: true,
+          },
+        ),
+
+        Animated.sequence([
+          Animated.delay(350),
+
+          Animated.timing(
+            splashOpacity,
+            {
+              toValue: 0,
+              duration: 300,
+              useNativeDriver: true,
+            },
+          ),
+        ]),
+      ]),
+    ]).start(() => {
+      setShowSplash(false);
+    });
+  }, [
+    splashOpacity,
+    splashRotation,
+    splashScale,
+  ]);
+
   useEffect(() => {
     Promise.all([
       CurioStorage.isOnboarded(),
@@ -103,17 +184,49 @@ const App = () => {
     });
   };
 
-  if (state.status === 'loading') {
+  if (
+    showSplash ||
+    state.status === 'loading'
+  ) {
     return (
-      <View style={styles.loading}>
+      <View style={styles.splash}>
         <StatusBar
           barStyle="dark-content"
           backgroundColor="#FFFFFF"
         />
 
-        <ActivityIndicator
-          color={curioTheme.colors.brand}
-        />
+        {showSplash && (
+          <Animated.Image
+            source={require(
+              './assets/brand/curio-mark.png'
+            )}
+            resizeMode="contain"
+            style={[
+              styles.splashLogo,
+              {
+                opacity:
+                  splashOpacity,
+
+                transform: [
+                  {
+                    scale:
+                      splashScale,
+                  },
+                  {
+                    rotate:
+                      splashRotation.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [
+                          '0deg',
+                          '-7deg',
+                        ],
+                      }),
+                  },
+                ],
+              },
+            ]}
+          />
+        )}
       </View>
     );
   }
@@ -268,7 +381,13 @@ const App = () => {
       />
 
       <View style={styles.screen}>
-        {state.tab === 'home' && (
+
+        <View
+          style={[
+            styles.tabScreen,
+            state.tab !== 'home' &&
+              styles.hiddenTab,
+          ]}>
           <CurioHomeScreen
             interests={
               state.interests
@@ -300,17 +419,27 @@ const App = () => {
               })
             }
           />
-        )}
+        </View>
 
-        {state.tab === 'curio' && (
+        <View
+          style={[
+            styles.tabScreen,
+            state.tab !== 'curio' &&
+              styles.hiddenTab,
+          ]}>
           <CurioExploreScreen
             onOpenCuriosity={
               openCuriosity
             }
           />
-        )}
+        </View>
 
-        {state.tab === 'saved' && (
+        <View
+          style={[
+            styles.tabScreen,
+            state.tab !== 'saved' &&
+              styles.hiddenTab,
+          ]}>
           <SavedScreen
             interests={
               state.interests
@@ -319,9 +448,14 @@ const App = () => {
               openCuriosity
             }
           />
-        )}
+        </View>
 
-        {state.tab === 'profile' && (
+        <View
+          style={[
+            styles.tabScreen,
+            state.tab !== 'profile' &&
+              styles.hiddenTab,
+          ]}>
           <ProfileScreen
             interests={
               state.interests
@@ -330,7 +464,8 @@ const App = () => {
               updateInterests
             }
           />
-        )}
+        </View>
+
       </View>
 
       <BottomTabBar
@@ -342,6 +477,24 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  gestureRoot: {
+    flex: 1,
+  },
+
+  splash: {
+    flex: 1,
+
+    backgroundColor: '#FFFFFF',
+
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  splashLogo: {
+    width: 92,
+    height: 92,
+  },
+
   app: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -349,6 +502,14 @@ const styles = StyleSheet.create({
 
   screen: {
     flex: 1,
+  },
+
+  tabScreen: {
+    ...StyleSheet.absoluteFillObject,
+  },
+
+  hiddenTab: {
+    display: 'none',
   },
 
   loading: {
@@ -360,4 +521,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+const RootApp = () => (
+  <GestureHandlerRootView
+    style={styles.gestureRoot}>
+    <App />
+  </GestureHandlerRootView>
+);
+
+export default RootApp;

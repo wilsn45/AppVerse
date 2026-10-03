@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Curio rounded rectangle -->
+    <path
+        android:fillColor="#4682B4"
+        android:pathData="
+            M27,25
+            H81
+            C91,25 97,31 97,41
+            V67
+            C97,77 91,83 81,83
+            H27
+            C17,83 11,77 11,67
+            V41
+            C11,31 17,25 27,25
+            Z" />
+
+    <!-- Curio C -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="
+            M70,41
+            C66,36 60,34 54,34
+            C42,34 34,42 34,54
+            C34,66 42,74 54,74
+            C61,74 67,71 71,66
+            L64,59
+            C61,62 58,64 54,64
+            C48,64 44,60 44,54
+            C44,48 48,44 54,44
+            C58,44 61,46 64,49
+            Z" />
+</vector>

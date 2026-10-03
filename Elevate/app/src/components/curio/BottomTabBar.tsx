@@ -67,7 +67,7 @@ export const BottomTabBar = ({
                 color:
                   selected === 'curio'
                     ? curioTheme.colors.white
-                    : curioTheme.colors.brand,
+                    : curioTheme.colors.primary,
               },
             ]}>
             C
@@ -127,7 +127,7 @@ const Tab = ({
       size={22}
       color={
         active
-          ? curioTheme.colors.brand
+          ? curioTheme.colors.primary
           : curioTheme.colors.muted
       }
     />
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
 
   active: {
-    color: curioTheme.colors.brand,
+    color: curioTheme.colors.primary,
   },
 
   curioIcon: {
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   },
 
   curioIconActive: {
-    backgroundColor: curioTheme.colors.brand,
+    backgroundColor: curioTheme.colors.primary,
     transform: [
       {rotate: '-7deg'},
       {scale: 1.08},

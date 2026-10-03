@@ -5,6 +5,7 @@ import React, {
 } from 'react';
 
 import {
+  Modal,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -21,6 +22,8 @@ import {
   CurioStorage,
   SavedCuriosity,
 } from '../../services/CurioStorage';
+
+import {Swipeable} from 'react-native-gesture-handler';
 
 import {curioTheme} from '../../theme';
 
@@ -40,6 +43,9 @@ export const SavedScreen = ({
 
   const [filter, setFilter] =
     useState('all');
+
+  const [showFilters, setShowFilters] =
+    useState(false);
 
   const refresh = () =>
     CurioStorage
@@ -104,38 +110,87 @@ export const SavedScreen = ({
           Saved
         </Text>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={
-            false
-          }
-          contentContainerStyle={
-            styles.filters
+        <Pressable
+          style={styles.dropdown}
+          onPress={() =>
+            setShowFilters(true)
           }>
 
-          <Filter
-            label="All"
-            selected={
-              filter === 'all'
-            }
-            onPress={() =>
-              setFilter('all')
-            }
-          />
+          <Text
+            style={
+              styles.dropdownText
+            }>
+            {filter === 'all'
+              ? 'All categories'
+              : filters.find(
+                  item =>
+                    item.id === filter,
+                )?.label ??
+                'All categories'}
+          </Text>
 
-          {filters.map(item => (
-            <Filter
-              key={item.id}
-              label={item.label}
-              selected={
-                filter === item.id
-              }
-              onPress={() =>
-                setFilter(item.id)
-              }
-            />
-          ))}
-        </ScrollView>
+          <Text
+            style={
+              styles.dropdownChevron
+            }>
+            ▾
+          </Text>
+        </Pressable>
+
+        <Modal
+          visible={showFilters}
+          transparent
+          animationType="fade"
+          onRequestClose={() =>
+            setShowFilters(false)
+          }>
+
+          <Pressable
+            style={styles.modalBackdrop}
+            onPress={() =>
+              setShowFilters(false)
+            }>
+
+            <View
+              style={
+                styles.dropdownMenu
+              }>
+
+              <Text
+                style={
+                  styles.menuTitle
+                }>
+                Category
+              </Text>
+
+              <Filter
+                label="All categories"
+                selected={
+                  filter === 'all'
+                }
+                onPress={() => {
+                  setFilter('all');
+                  setShowFilters(false);
+                }}
+              />
+
+              {filters.map(item => (
+                <Filter
+                  key={item.id}
+                  label={item.label}
+                  selected={
+                    filter === item.id
+                  }
+                  onPress={() => {
+                    setFilter(item.id);
+                    setShowFilters(false);
+                  }}
+                />
+              ))}
+
+            </View>
+          </Pressable>
+        </Modal>
 
         <View style={styles.cards}>
           {!items.length ? (
@@ -158,25 +213,47 @@ export const SavedScreen = ({
             </View>
           ) : (
             items.map(item => (
-              <CuriosityCard
+              <View
                 key={item.id}
-                curiosity={item}
-                fullWidth
-                saved
-                onPress={() =>
-                  onOpenCuriosity(
-                    item.id,
-                  )
-                }
-                onSave={async () => {
-                  await CurioStorage
-                    .toggleSaved(
-                      item.id,
-                    );
+                style={styles.swipeContainer}>
 
-                  refresh();
-                }}
-              />
+                <Swipeable
+                  overshootRight={false}
+                  friction={2}
+                  rightThreshold={40}
+                  renderRightActions={() => (
+                    <Pressable
+                      style={styles.deleteAction}
+                      onPress={async () => {
+                        await CurioStorage
+                          .toggleSaved(
+                            item.id,
+                          );
+
+                        refresh();
+                      }}>
+
+                      <Text
+                        style={
+                          styles.deleteText
+                        }>
+                        Delete
+                      </Text>
+                    </Pressable>
+                  )}>
+
+                  <CuriosityCard
+                    curiosity={item}
+                    fullWidth
+                    onPress={() =>
+                      onOpenCuriosity(
+                        item.id,
+                      )
+                    }
+                  />
+
+                </Swipeable>
+              </View>
             ))
           )}
         </View>
@@ -240,22 +317,23 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
 
-  filters: {
-    paddingHorizontal: 20,
+  dropdown: {
+    alignSelf: 'flex-start',
 
-    gap: 8,
+    marginLeft: 20,
+    marginBottom: 16,
 
-    paddingBottom: 12,
-  },
+    minHeight: 42,
 
-  filter: {
-    height: 34,
+    paddingLeft: 14,
+    paddingRight: 12,
 
-    paddingHorizontal: 14,
+    borderRadius: 14,
 
-    borderRadius: 17,
+    flexDirection: 'row',
+    alignItems: 'center',
 
-    justifyContent: 'center',
+    gap: 10,
 
     backgroundColor:
       curioTheme.colors.surface,
@@ -266,30 +344,117 @@ const styles = StyleSheet.create({
       curioTheme.colors.border,
   },
 
+  dropdownText: {
+    fontFamily: 'Roboto-Medium',
+
+    fontSize: 14,
+
+    color: curioTheme.colors.text,
+  },
+
+  dropdownChevron: {
+    fontSize: 18,
+
+    color:
+      curioTheme.colors.primary,
+  },
+
+  modalBackdrop: {
+    flex: 1,
+
+    justifyContent: 'center',
+
+    paddingHorizontal: 28,
+
+    backgroundColor:
+      'rgba(0,0,0,0.35)',
+  },
+
+  dropdownMenu: {
+    padding: 18,
+
+    borderRadius: 20,
+
+    backgroundColor:
+      curioTheme.colors.surface,
+
+    gap: 8,
+  },
+
+  menuTitle: {
+    marginBottom: 6,
+
+    fontFamily: 'Roboto-Bold',
+
+    fontSize: 18,
+
+    color: curioTheme.colors.ink,
+  },
+
+  filter: {
+    minHeight: 44,
+
+    paddingHorizontal: 14,
+
+    borderRadius: 12,
+
+    justifyContent: 'center',
+
+    backgroundColor:
+      curioTheme.colors.surfaceMuted,
+  },
+
   filterSelected: {
     backgroundColor:
-      curioTheme.colors.primary,
-
-    borderColor:
-      curioTheme.colors.primary,
+      curioTheme.colors.primarySoft,
   },
 
   filterText: {
     fontFamily: 'Roboto-Medium',
 
-    fontSize: 12,
+    fontSize: 14,
 
     color: curioTheme.colors.text,
   },
 
   filterTextSelected: {
-    color: '#FFFFFF',
+    color:
+      curioTheme.colors.primary,
   },
 
   cards: {
     paddingHorizontal: 20,
 
     paddingTop: 0,
+  },
+
+  swipeContainer: {
+    marginBottom: 12,
+
+    borderRadius: 16,
+
+    overflow: 'hidden',
+  },
+
+  deleteAction: {
+    width: 92,
+
+    marginLeft: 8,
+
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    borderRadius: 16,
+
+    backgroundColor: '#D64545',
+  },
+
+  deleteText: {
+    fontFamily: 'Roboto-Bold',
+
+    fontSize: 14,
+
+    color: '#FFFFFF',
   },
 
   empty: {

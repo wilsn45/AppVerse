@@ -47,11 +47,24 @@ const shuffled = <T,>(
     () => Math.random() - 0.5,
   );
 
+/*
+ * Curio session state.
+ *
+ * This intentionally lives outside the component so opening
+ * a detail screen does not destroy the current feed/session.
+ *
+ * It resets naturally when the app process is restarted.
+ */
+let cachedFeed: Curiosity[] | null = null;
+let cachedScrollOffset = 0;
+
 export const CurioExploreScreen = ({
   onOpenCuriosity,
 }: Props) => {
   const [items, setItems] =
-    useState<Curiosity[]>([]);
+    useState<Curiosity[]>(
+      cachedFeed ?? [],
+    );
 
   const [savedIds, setSavedIds] =
     useState<Set<string>>(new Set());
@@ -110,11 +123,17 @@ export const CurioExploreScreen = ({
   };
 
   useEffect(() => {
-    repository
-      .getFeed()
-      .then(data =>
-        setItems(shuffled(data)),
-      );
+    if (!cachedFeed) {
+      repository
+        .getFeed()
+        .then(data => {
+          const feed =
+            shuffled(data);
+
+          cachedFeed = feed;
+          setItems(feed);
+        });
+    }
 
     refreshSaved();
   }, []);
@@ -122,7 +141,7 @@ export const CurioExploreScreen = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSwipeHint(false);
-    }, 3000);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -190,6 +209,19 @@ export const CurioExploreScreen = ({
         data={items}
         keyExtractor={item => item.id}
 
+        contentOffset={{
+          x: 0,
+          y: cachedScrollOffset,
+        }}
+
+        onScroll={event => {
+          cachedScrollOffset =
+            event.nativeEvent
+              .contentOffset.y;
+        }}
+
+        scrollEventThrottle={16}
+
         pagingEnabled
 
         showsVerticalScrollIndicator={
@@ -252,60 +284,61 @@ export const CurioExploreScreen = ({
 
                 <View
                   style={
-                    styles.imageBottom
+                    styles.actionStack
                   }>
 
-                  <View
+                  <Pressable
+                    hitSlop={10}
+                    onPress={event => {
+                      event.stopPropagation();
+
+                      toggleSave(
+                        item.id,
+                      );
+                    }}
                     style={
-                      styles.actionStack
+                      styles.actionButton
                     }>
 
-                    <Pressable
-                      hitSlop={10}
-                      onPress={event => {
-                        event.stopPropagation();
-
-                        toggleSave(
+                    <Icon
+                      name={
+                        savedIds.has(
                           item.id,
-                        );
-                      }}
-                      style={
-                        styles.actionButton
-                      }>
+                        )
+                          ? 'bookmark'
+                          : 'bookmark-outline'
+                      }
+                      size={23}
+                      color="#FFFFFF"
+                    />
+                  </Pressable>
 
-                      <Icon
-                        name={
-                          savedIds.has(
-                            item.id,
-                          )
-                            ? 'bookmark'
-                            : 'bookmark-outline'
-                        }
-                        size={23}
-                        color="#FFFFFF"
-                      />
-                    </Pressable>
+                  <Pressable
+                    hitSlop={10}
+                    onPress={event => {
+                      event.stopPropagation();
 
-                    <Pressable
-                      hitSlop={10}
-                      onPress={event => {
-                        event.stopPropagation();
+                      shareCuriosity(
+                        item,
+                      );
+                    }}
+                    style={
+                      styles.actionButton
+                    }>
 
-                        shareCuriosity(
-                          item,
-                        );
-                      }}
-                      style={
-                        styles.actionButton
-                      }>
+                    <Icon
+                      name="share-social-outline"
+                      size={23}
+                      color="#FFFFFF"
+                    />
+                  </Pressable>
+                </View>
 
-                      <Icon
-                        name="share-social-outline"
-                        size={23}
-                        color="#FFFFFF"
-                      />
-                    </Pressable>
-                  </View>
+
+                <View
+                  style={
+                    styles.imageBottom
+                  }>
 
                   <Text
                     style={styles.hook}>
@@ -383,7 +416,7 @@ const styles = StyleSheet.create({
     flex: 1,
 
     justifyContent:
-      'flex-end',
+      'center',
   },
 
   imageStyle: {
@@ -398,12 +431,16 @@ const styles = StyleSheet.create({
   },
 
   actionStack: {
-    alignSelf: 'flex-end',
+    position: 'absolute',
+
+    right: 18,
+    bottom: 18,
+
     alignItems: 'center',
 
-    marginBottom: 16,
-
     gap: 10,
+
+    zIndex: 5,
   },
 
   actionButton: {
@@ -420,8 +457,11 @@ const styles = StyleSheet.create({
   },
 
   imageBottom: {
-    padding: 22,
-    paddingBottom: 25,
+    paddingHorizontal: 26,
+    paddingVertical: 32,
+
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   hook: {
@@ -434,6 +474,8 @@ const styles = StyleSheet.create({
 
     color: '#FFFFFF',
 
+    textAlign: 'center',
+
     textShadowColor:
       'rgba(0,0,0,0.35)',
 
@@ -441,18 +483,23 @@ const styles = StyleSheet.create({
   },
 
   teaser: {
-    marginTop: 12,
+    marginTop: 18,
 
-    maxWidth: '92%',
+    maxWidth: '94%',
 
     fontFamily: 'Roboto-Regular',
 
-    fontSize: 16,
-    lineHeight: 23,
+    fontSize: 17,
+    lineHeight: 25,
 
-    color:
-      curioTheme.colors
-        .darkTextSecondary,
+    textAlign: 'center',
+
+    color: '#FFFFFF',
+
+    textShadowColor:
+      'rgba(0,0,0,0.45)',
+
+    textShadowRadius: 8,
   },
 
   swipeArrow: {

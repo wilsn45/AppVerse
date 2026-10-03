@@ -8,18 +8,18 @@ export const curioTheme = {
 
     // Curio brand
     // Stronger brand colour used by logo and immersive moments.
-    brand: '#DD4F5A',
-    brandSoft: '#FCEAEC',
+    brand: '#111111',
+    brandSoft: '#F3F3F3',
 
     // Primary interaction colour
-    // Original Upward teal.
-    primary: '#37817B',
-    primarySoft: '#EBF6F6',
-    primaryDisabled: '#A9C2BF',
+    // Steel blue interaction colour.
+    primary: '#4682B4',
+    primarySoft: '#EAF2F8',
+    primaryDisabled: '#A9B8C4',
 
     // Accent compatibility
-    accent: '#DD4F5A',
-    accentSoft: '#FCEAEC',
+    accent: '#4682B4',
+    accentSoft: '#EAF2F8',
 
     // Text
     ink: '#1A1A1A',
@@ -40,8 +40,8 @@ export const curioTheme = {
     darkTextSecondary: 'rgba(255,255,255,0.84)',
 
     // Compatibility with older Curio code
-    purple: '#37817B',
-    purpleSoft: '#EBF6F6',
+    purple: '#4682B4',
+    purpleSoft: '#EAF2F8',
   },
 
   radius: {

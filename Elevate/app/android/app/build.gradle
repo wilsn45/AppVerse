@@ -84,7 +84,7 @@ android {
         applicationId "com.nextworklab.elevate"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 116
+        versionCode 117
         versionName "2.1.3"
     }
     signingConfigs {

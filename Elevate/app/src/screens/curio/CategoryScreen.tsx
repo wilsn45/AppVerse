@@ -4,6 +4,7 @@ import React, {
 } from 'react';
 
 import {
+  ImageBackground,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -14,66 +15,24 @@ import {
 
 import Icon from 'react-native-vector-icons/Ionicons';
 
-import {CategoryCard} from '../../components/curio/CategoryCard';
-import {CuriosityCard} from '../../components/curio/CuriosityCard';
-import {INTERESTS} from '../../data/interests';
 import {Curiosity} from '../../models/Curiosity';
 import {MockCuriosityRepository} from '../../repositories/MockCuriosityRepository';
-import {CurioStorage} from '../../services/CurioStorage';
 import {curioTheme} from '../../theme';
 
-const repository = new MockCuriosityRepository();
+const repository =
+  new MockCuriosityRepository();
 
 type Props = {
   interests: string[];
   categoryId: string;
   categoryName: string;
   onBack: () => void;
-  onOpenCuriosity: (id: string) => void;
-};
-
-const imageForCategory = (
-  topicId: string,
-) => {
-  const images: Record<string, string> = {
-    psychology:
-      'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800',
-    space:
-      'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800',
-    science:
-      'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800',
-    money:
-      'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800',
-    world:
-      'https://images.unsplash.com/photo-1521295121783-8a321d551ad2?w=800',
-    animals:
-      'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=800',
-    technology:
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800',
-    history:
-      'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800',
-    entertainment:
-      'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800',
-    internet:
-      'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800',
-    stories:
-      'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=800',
-    'beautiful-things':
-      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800',
-    'weird-stuff':
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800',
-    'blow-my-mind':
-      'https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800',
-    'whats-happening':
-      'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=800',
-  };
-
-  return images[topicId] ??
-    'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800';
+  onOpenCuriosity: (
+    id: string,
+  ) => void;
 };
 
 export const CategoryScreen = ({
-  interests,
   categoryId,
   categoryName,
   onBack,
@@ -82,56 +41,27 @@ export const CategoryScreen = ({
   const [items, setItems] =
     useState<Curiosity[]>([]);
 
-  const [savedIds, setSavedIds] =
-    useState<Set<string>>(new Set());
-
-  const refreshSaved = async () => {
-    const saved = await CurioStorage.getSaved();
-    setSavedIds(
-      new Set(saved.map(item => item.id)),
-    );
-  };
-
   useEffect(() => {
-    if (categoryId !== '__all__') {
-      repository
-        .getByTopic(categoryId)
-        .then(setItems);
-    }
-
-    refreshSaved();
+    repository
+      .getByTopic(categoryId)
+      .then(setItems);
   }, [categoryId]);
-
-  const toggleSave = async (id: string) => {
-    await CurioStorage.toggleSaved(id);
-    refreshSaved();
-  };
-
-  const preferredCategories = interests
-    .map(id =>
-      INTERESTS.find(
-        interest => interest.id === id,
-      ),
-    )
-    .filter(
-      (
-        interest,
-      ): interest is NonNullable<
-        typeof interest
-      > => Boolean(interest),
-    );
 
   return (
     <SafeAreaView style={styles.safe}>
+
       <View style={styles.nav}>
         <Pressable
           onPress={onBack}
           hitSlop={14}
           style={styles.back}>
+
           <Icon
             name="chevron-back"
-            size={27}
-            color={curioTheme.colors.primary}
+            size={25}
+            color={
+              curioTheme.colors.primary
+            }
           />
         </Pressable>
 
@@ -143,65 +73,54 @@ export const CategoryScreen = ({
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}>
-        {categoryId === '__all__' ? (
-          <>
-            <Text style={styles.heading}>
-              Your categories
-            </Text>
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={
+          styles.content
+        }>
 
-            <Text style={styles.subtitle}>
-              Explore the topics you picked.
-            </Text>
+        <View style={styles.grid}>
+          {items.map(item => (
+            <Pressable
+              key={item.id}
+              style={({pressed}) => [
+                styles.card,
+                pressed &&
+                  styles.cardPressed,
+              ]}
+              onPress={() =>
+                onOpenCuriosity(
+                  item.id,
+                )
+              }>
 
-            <View style={styles.categoryGrid}>
-              {preferredCategories.map(
-                category => (
-                  <CategoryCard
-                    key={category.id}
-                    title={category.label}
-                    imageUrl={imageForCategory(
-                      category.id,
-                    )}
-                    onPress={() => {}}
-                  />
-                ),
-              )}
-            </View>
-          </>
-        ) : (
-          <>
-            <Text style={styles.heading}>
-              Explore {categoryName}
-            </Text>
+              <ImageBackground
+                source={{
+                  uri: item.imageUrl,
+                }}
+                style={styles.image}
+                imageStyle={
+                  styles.imageRadius
+                }>
 
-            <Text style={styles.subtitle}>
-              Questions worth following.
-            </Text>
-
-            <View style={styles.cards}>
-              {items.map(item => (
-                <CuriosityCard
-                  key={item.id}
-                  curiosity={item}
-                  fullWidth
-                  saved={savedIds.has(
-                    item.id,
-                  )}
-                  onPress={() =>
-                    onOpenCuriosity(
-                      item.id,
-                    )
-                  }
-                  onSave={() =>
-                    toggleSave(item.id)
+                <View
+                  style={
+                    styles.overlay
                   }
                 />
-              ))}
-            </View>
-          </>
-        )}
+
+                <Text
+                  numberOfLines={5}
+                  style={
+                    styles.question
+                  }>
+                  {item.hook}
+                </Text>
+
+              </ImageBackground>
+            </Pressable>
+          ))}
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -215,26 +134,38 @@ const styles = StyleSheet.create({
 
   nav: {
     height: 64,
-    marginTop: 12,
+    marginTop: 8,
     paddingHorizontal: 14,
+
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent:
+      'space-between',
   },
 
   back: {
     width: 42,
     height: 42,
+
     borderRadius: 21,
+
     backgroundColor:
       curioTheme.colors.primarySoft,
+
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   navTitle: {
+    flex: 1,
+
+    paddingHorizontal: 10,
+
+    textAlign: 'center',
+
     fontFamily: 'Roboto-Bold',
-    fontSize: 16,
+    fontSize: 18,
+
     color: curioTheme.colors.ink,
   },
 
@@ -243,34 +174,67 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    paddingHorizontal: 20,
-    paddingTop: 18,
+    paddingHorizontal: 16,
+    paddingTop: 12,
     paddingBottom: 40,
   },
 
-  heading: {
-    fontFamily: 'Roboto-Black',
-    fontSize: 31,
-    letterSpacing: -0.8,
-    color: curioTheme.colors.ink,
-  },
-
-  subtitle: {
-    marginTop: 5,
-    marginBottom: 24,
-    fontFamily: 'Roboto-Regular',
-    fontSize: 15,
-    color: curioTheme.colors.muted,
-  },
-
-  cards: {
-    width: '100%',
-  },
-
-  categoryGrid: {
+  grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: 10,
+
+    justifyContent:
+      'space-between',
+
+    rowGap: 12,
+  },
+
+  card: {
+    width: '48.4%',
+    aspectRatio: 1,
+
+    borderRadius: 18,
+    overflow: 'hidden',
+
+    backgroundColor:
+      curioTheme.colors.surfaceMuted,
+  },
+
+  cardPressed: {
+    opacity: 0.86,
+    transform: [{scale: 0.98}],
+  },
+
+  image: {
+    flex: 1,
+
+    justifyContent: 'flex-end',
+
+    padding: 14,
+  },
+
+  imageRadius: {
+    borderRadius: 18,
+  },
+
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+
+    backgroundColor:
+      'rgba(0,0,0,0.35)',
+  },
+
+  question: {
+    fontFamily: 'Roboto-Bold',
+
+    fontSize: 16,
+    lineHeight: 20,
+
+    color: '#FFFFFF',
+
+    textShadowColor:
+      'rgba(0,0,0,0.45)',
+
+    textShadowRadius: 7,
   },
 });
