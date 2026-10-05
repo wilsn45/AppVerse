@@ -111,7 +111,7 @@ export const CurioExploreScreen = ({
       await Share.open({
         title: item.hook,
         message:
-          `${item.hook}\n\n${item.teaser}`,
+          `${item.hook}\n\n${item.answer}`,
         url: uri,
         type: 'image/jpeg',
         failOnCancel: false,
@@ -269,7 +269,7 @@ export const CurioExploreScreen = ({
 
               <ImageBackground
                 source={{
-                  uri: item.imageUrl,
+                  uri: item.visual.url,
                 }}
                 style={styles.image}
                 imageStyle={
@@ -349,7 +349,7 @@ export const CurioExploreScreen = ({
                     style={
                       styles.teaser
                     }>
-                    {item.teaser}
+                    {item.answer}
                   </Text>
                 </View>
 

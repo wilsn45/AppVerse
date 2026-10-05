@@ -17,6 +17,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Sparkles,
   Tag,
   Trash2,
   Upload,
@@ -38,9 +39,12 @@ import {
   updateInterest,
   type AdminInterest,
 } from './services/interestService';
+import {
+  AIStudioPage,
+} from './pages/AIStudioPage';
 import './App.css';
 
-type Section = 'content' | 'interests' | 'analytics';
+type Section = 'content' | 'interests' | 'ai-studio' | 'analytics';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -108,7 +112,7 @@ function App() {
     () =>
       [...new Set(
         items
-          .map(item => item.interestTitle)
+          .map(item => item.topic)
           .filter((value): value is string => Boolean(value)),
       )].sort(),
     [items],
@@ -124,7 +128,7 @@ function App() {
         String(item.id).toLowerCase().includes(query) ||
         String(item.hook ?? '').toLowerCase().includes(query);
 
-      const matchesInterest = interest === 'all' || item.interestTitle === interest;
+      const matchesInterest = interest === 'all' || item.topic === interest;
 
       let matchesDate = true;
 
@@ -220,12 +224,66 @@ function App() {
           throw new Error('Every content item requires "hook".');
         }
 
-        if (!('interestTitle' in value)) {
-          throw new Error('Every content item requires "interestTitle".');
+        const requiredFields = [
+          'hook',
+          'answer',
+          'explanation',
+          'topicId',
+          'topic',
+          'tags',
+          'concepts',
+          'feedEligible',
+          'visual',
+          'connections',
+          'sources',
+          'editorial',
+        ];
+
+        for (const field of requiredFields) {
+          if (!(field in value)) {
+            throw new Error(
+              `Every Curio requires "${field}".`,
+            );
+          }
         }
 
-        if (!('format' in value)) {
-          throw new Error('Every content item requires "format".');
+        if (
+          typeof value.hook !== 'string' ||
+          typeof value.answer !== 'string' ||
+          typeof value.explanation !== 'string'
+        ) {
+          throw new Error(
+            'hook, answer and explanation must be strings.',
+          );
+        }
+
+        if (
+          !Array.isArray(value.tags) ||
+          !Array.isArray(value.concepts) ||
+          !Array.isArray(value.connections) ||
+          !Array.isArray(value.sources)
+        ) {
+          throw new Error(
+            'tags, concepts, connections and sources must be arrays.',
+          );
+        }
+
+        if (
+          typeof value.visual !== 'object' ||
+          value.visual === null
+        ) {
+          throw new Error(
+            'Every Curio requires a visual object.',
+          );
+        }
+
+        if (
+          typeof value.editorial !== 'object' ||
+          value.editorial === null
+        ) {
+          throw new Error(
+            'Every Curio requires an editorial object.',
+          );
         }
       }
 
@@ -387,6 +445,13 @@ function App() {
           />
 
           <NavButton
+            active={section === 'ai-studio'}
+            icon={<Sparkles size={21} />}
+            label="AI Studio"
+            onClick={() => setSection('ai-studio')}
+          />
+
+          <NavButton
             active={section === 'analytics'}
             icon={<BarChart3 size={21} />}
             label="Analytics"
@@ -446,6 +511,12 @@ function App() {
         )}
 
         {section === 'interests' && <InterestsPage />}
+
+        {section === 'ai-studio' && (
+          <AIStudioPage
+            onDraftCreated={loadItems}
+          />
+        )}
 
         {section === 'analytics' && <AnalyticsPage />}
       </main>
@@ -629,8 +700,8 @@ function ContentPage({
                       </td>
 
                       <td>
-                        <span className={`status-pill ${item.status ?? ''}`}>
-                          {item.status ?? 'unknown'}
+                        <span className={`status-pill ${item.editorial?.status ?? ''}`}>
+                          {item.editorial?.status ?? 'unknown'}
                         </span>
                       </td>
 
@@ -1115,12 +1186,26 @@ function JsonModal({
           onChange={event => setJsonText(event.target.value)}
           placeholder={`[
   {
-    "interestTitle": "Space",
-    "format": "microFact",
-    "origin": "evergreen",
-    "hook": "A day on Venus is longer than its year.",
-    "status": "published",
-    "qualityScore": 90
+    "hook": "Why is a day on Venus longer than its year?",
+    "answer": "Venus rotates so slowly that one full rotation takes longer than one orbit around the Sun.",
+    "explanation": "Venus takes about 243 Earth days to rotate once, while it completes an orbit around the Sun in about 225 Earth days.",
+    "quickFact": "Venus also rotates in the opposite direction to most planets.",
+    "topicId": "space",
+    "topic": "Space",
+    "tags": ["venus", "planets", "solar-system"],
+    "concepts": ["venus-rotation", "venus-orbit"],
+    "feedEligible": true,
+    "visual": {
+      "url": "",
+      "type": "photo"
+    },
+    "connections": [],
+    "sources": [],
+    "editorial": {
+      "status": "draft",
+      "factChecked": false,
+      "qualityScore": 90
+    }
   }
 ]`}
         />

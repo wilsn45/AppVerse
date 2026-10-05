@@ -125,7 +125,7 @@ export const CuriosityDetailScreen = ({
   // every subsequent detail is text-only.
   const hasImage =
     !isDeeperDetail &&
-    Boolean(item.imageUrl);
+    Boolean(item.visual.url);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -154,7 +154,7 @@ export const CuriosityDetailScreen = ({
           <View style={styles.mainCard}>
             <ImageBackground
               source={{
-                uri: item.imageUrl,
+                uri: item.visual.url,
               }}
               style={styles.hero}
               imageStyle={
@@ -222,7 +222,7 @@ export const CuriosityDetailScreen = ({
                   style={
                     styles.imageTitle
                   }>
-                  {item.title}
+                  {item.hook}
                 </Text>
               </View>
             </ImageBackground>
@@ -232,7 +232,7 @@ export const CuriosityDetailScreen = ({
                 style={
                   styles.answerText
                 }>
-                {item.summary}
+                {item.explanation}
               </Text>
             </View>
           </View>
@@ -304,14 +304,14 @@ export const CuriosityDetailScreen = ({
                 style={
                   styles.plainTitle
                 }>
-                {item.title}
+                {item.hook}
               </Text>
 
               <Text
                 style={
                   styles.plainAnswer
                 }>
-                {item.summary}
+                {item.explanation}
               </Text>
             </View>
           </>

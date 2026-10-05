@@ -49,10 +49,10 @@ export const CuriosityCard = ({
 
 
       {/* RIGHT: IMAGE */}
-      {!!curiosity.imageUrl && (
+      {!!curiosity.visual.url && (
         <Image
           source={{
-            uri: curiosity.imageUrl,
+            uri: curiosity.visual.url,
           }}
           style={styles.image}
         />

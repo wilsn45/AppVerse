@@ -7,15 +7,35 @@ const base = (
   topicId: string,
   topic: string,
   hook: string,
-  teaser: string,
-  summary: string,
+  answer: string,
+  explanation: string,
 ): Curiosity => ({
-  id, topicId, topic, hook, teaser,
-  title: hook,
-  summary,
-  imageUrl: imageForCategory(topicId),
-  depth: 0,
-  relatedIds: [],
+  id,
+  topicId,
+  topic,
+
+  hook,
+  answer,
+  explanation,
+
+  tags: [topicId],
+  concepts: [],
+
+  feedEligible: true,
+
+  visual: {
+    url: imageForCategory(topicId),
+    type: 'photo',
+  },
+
+  connections: [],
+
+  sources: [],
+
+  editorial: {
+    status: 'published',
+    factChecked: false,
+  },
 });
 
 export const mockCuriosities: Curiosity[] = [
@@ -270,26 +290,34 @@ mockCuriosities.push(
     topicId: 'psychology',
     topic: 'Psychology',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why can dreams feel completely real while they are happening?',
 
-    teaser:
+    answer:
       'The dreaming brain does not question reality the same way your waking brain does.',
 
-    title:
-      'Why can dreams feel completely real?',
-
-    summary:
+    explanation:
       'During vivid dreaming, brain regions involved in imagery and emotion can be highly active, while some regions involved in critical reasoning behave differently. Because the brain is generating both the experience and your interpretation of it, bizarre events can temporarily feel completely normal.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('psychology'),
+      type: 'photo',
+    },
 
-    depth: 1,
+    feedEligible: true,
 
-    relatedIds: [
-      'dream-memory',
-    ],
+    connections: [],
   },
 
   {
@@ -297,24 +325,34 @@ mockCuriosities.push(
     topicId: 'psychology',
     topic: 'Psychology',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why are some dreams remembered for years while most disappear?',
 
-    teaser:
+    answer:
       'Emotion and the moment you wake up can change whether a dream survives.',
 
-    title:
-      'Why do only certain dreams become lasting memories?',
-
-    summary:
+    explanation:
       'Dreams are more likely to be remembered when you wake during or shortly after them, especially when they contain strong emotion. Rehearsing the dream immediately after waking can also strengthen a memory that would otherwise fade quickly.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('psychology'),
+      type: 'photo',
+    },
 
-    depth: 2,
+    feedEligible: true,
 
-    relatedIds: [],
+    connections: [],
   },
 
   {
@@ -322,26 +360,34 @@ mockCuriosities.push(
     topicId: 'psychology',
     topic: 'Psychology',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why do people sometimes see a person in the room during sleep paralysis?',
 
-    teaser:
+    answer:
       'Dream imagery can overlap with the real bedroom around you.',
 
-    title:
-      'Why can sleep paralysis create frightening figures?',
-
-    summary:
+    explanation:
       'Sleep paralysis can occur while features of REM dreaming are still active. Your eyes may be open and your room may be visible, while dream-like imagery and threat-processing systems remain active. The result can feel like a real person or presence is standing nearby.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('psychology'),
+      type: 'photo',
+    },
 
-    depth: 1,
+    feedEligible: true,
 
-    relatedIds: [
-      'rem-paralysis',
-    ],
+    connections: [],
   },
 
   {
@@ -349,24 +395,34 @@ mockCuriosities.push(
     topicId: 'psychology',
     topic: 'Psychology',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why does the brain temporarily paralyze the body during REM sleep?',
 
-    teaser:
+    answer:
       'It may prevent your body from physically acting out most dreams.',
 
-    title:
-      'Why does REM sleep switch off many muscles?',
-
-    summary:
+    explanation:
       'During REM sleep, brainstem systems strongly reduce activity in many voluntary muscles. This temporary muscle atonia helps separate vivid dream activity from physical movement. Sleep paralysis occurs when awareness returns before this process has fully ended.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('psychology'),
+      type: 'photo',
+    },
 
-    depth: 2,
+    feedEligible: true,
 
-    relatedIds: [],
+    connections: [],
   },
 
   {
@@ -374,26 +430,34 @@ mockCuriosities.push(
     topicId: 'space',
     topic: 'Space',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Would Earth instantly fly away if the Sun disappeared?',
 
-    teaser:
+    answer:
       'Even gravity cannot communicate a change instantaneously.',
 
-    title:
-      'What would happen to Earth’s orbit without the Sun?',
-
-    summary:
+    explanation:
       'Changes in gravity propagate at the speed of light. If the Sun could somehow vanish, Earth would continue following its previous orbit for roughly eight minutes. After the gravitational change reached us, Earth would continue moving approximately along the tangent to its former orbit.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('space'),
+      type: 'photo',
+    },
 
-    depth: 1,
+    feedEligible: true,
 
-    relatedIds: [
-      'sun-eight-minutes',
-    ],
+    connections: [],
   },
 
   {
@@ -401,24 +465,34 @@ mockCuriosities.push(
     topicId: 'space',
     topic: 'Space',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why does sunlight take about eight minutes to reach Earth?',
 
-    teaser:
+    answer:
       'Even the fastest thing in the universe needs time to cross space.',
 
-    title:
-      'Why are we always seeing the Sun eight minutes in the past?',
-
-    summary:
+    explanation:
       'Earth is roughly 150 million kilometres from the Sun. Light travels at about 300,000 kilometres per second, so sunlight needs a little over eight minutes to cross that distance. Every view of the Sun is therefore a view of how it looked minutes earlier.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('space'),
+      type: 'photo',
+    },
 
-    depth: 2,
+    feedEligible: true,
 
-    relatedIds: [],
+    connections: [],
   },
 
   {
@@ -426,26 +500,34 @@ mockCuriosities.push(
     topicId: 'space',
     topic: 'Space',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Where do your tears go when there is almost no gravity?',
 
-    teaser:
+    answer:
       'They do not roll down your cheeks.',
 
-    title:
-      'What happens to tears in microgravity?',
-
-    summary:
+    explanation:
       'Surface tension causes tears to cling around the eye instead of falling downward. As more liquid accumulates, it can form an uncomfortable blob around the eye until the astronaut wipes it away.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('space'),
+      type: 'photo',
+    },
 
-    depth: 1,
+    feedEligible: true,
 
-    relatedIds: [
-      'space-body',
-    ],
+    connections: [],
   },
 
   {
@@ -453,24 +535,34 @@ mockCuriosities.push(
     topicId: 'space',
     topic: 'Space',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why do astronauts become slightly taller in space?',
 
-    teaser:
+    answer:
       'Without normal gravity, the spine can expand.',
 
-    title:
-      'Why can astronauts grow taller in orbit?',
-
-    summary:
+    explanation:
       'On Earth, gravity compresses the spine throughout the day. In microgravity that compression is greatly reduced, allowing the discs between vertebrae to expand. Astronauts can temporarily become a few centimetres taller before returning toward normal after coming home.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('space'),
+      type: 'photo',
+    },
 
-    depth: 2,
+    feedEligible: true,
 
-    relatedIds: [],
+    connections: [],
   },
 
   {
@@ -478,26 +570,34 @@ mockCuriosities.push(
     topicId: 'internet',
     topic: 'Internet',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why can the first hour matter so much for a viral post?',
 
-    teaser:
+    answer:
       'Early audience reactions can determine how widely a system tests the content.',
 
-    title:
-      'How can early engagement amplify a post?',
-
-    summary:
+    explanation:
       'Recommendation systems can initially expose content to a limited audience and observe signals such as watch time, completion, sharing and interaction. Strong responses can lead to wider distribution, creating a feedback loop that rapidly expands reach.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('internet'),
+      type: 'photo',
+    },
 
-    depth: 1,
+    feedEligible: true,
 
-    relatedIds: [
-      'viral-algorithm',
-    ],
+    connections: [],
   },
 
   {
@@ -505,24 +605,34 @@ mockCuriosities.push(
     topicId: 'internet',
     topic: 'Internet',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Does an algorithm actually decide that something should go viral?',
 
-    teaser:
+    answer:
       'Usually there is no single “make this viral” decision.',
 
-    title:
-      'How recommendation systems can create viral growth',
-
-    summary:
+    explanation:
       'Large recommendation systems continually rank content for individual users. If a piece repeatedly performs well with different audiences, those ranking decisions can compound. What looks like one giant viral decision can instead emerge from millions of smaller recommendations.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('internet'),
+      type: 'photo',
+    },
 
-    depth: 2,
+    feedEligible: true,
 
-    relatedIds: [],
+    connections: [],
   },
 
   {
@@ -530,26 +640,34 @@ mockCuriosities.push(
     topicId: 'internet',
     topic: 'Internet',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why does bad news make you want to check for even more bad news?',
 
-    teaser:
+    answer:
       'Your brain may be trying to reduce uncertainty.',
 
-    title:
-      'Why uncertainty can keep doomscrolling alive',
-
-    summary:
+    explanation:
       'Threatening information can make uncertainty feel especially uncomfortable. Checking for another update can briefly feel like taking control or gathering useful information, even when the next update increases anxiety and starts the cycle again.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('internet'),
+      type: 'photo',
+    },
 
-    depth: 1,
+    feedEligible: true,
 
-    relatedIds: [
-      'doom-reward',
-    ],
+    connections: [],
   },
 
   {
@@ -557,24 +675,34 @@ mockCuriosities.push(
     topicId: 'internet',
     topic: 'Internet',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Why is “just one more scroll” so powerful?',
 
-    teaser:
+    answer:
       'The next item is unpredictable—and that uncertainty keeps attention engaged.',
 
-    title:
-      'Why endless feeds are difficult to leave',
-
-    summary:
+    explanation:
       'Each swipe carries uncertainty about what appears next. Interesting, surprising and emotionally intense items arrive unpredictably. This variable pattern can encourage continued checking because the next swipe might contain something especially rewarding or important.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('internet'),
+      type: 'photo',
+    },
 
-    depth: 2,
+    feedEligible: true,
 
-    relatedIds: [],
+    connections: [],
   },
 
   {
@@ -582,26 +710,34 @@ mockCuriosities.push(
     topicId: 'history',
     topic: 'History',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'What was actually inside Roman concrete?',
 
-    teaser:
+    answer:
       'Volcanic material and lime gave it unusual chemistry.',
 
-    title:
-      'What made Roman concrete different?',
-
-    summary:
+    explanation:
       'Roman builders commonly combined lime with volcanic ash or other reactive materials. These ingredients could form durable mineral structures over time, helping explain why some Roman concrete has survived in harsh environments for centuries.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('history'),
+      type: 'photo',
+    },
 
-    depth: 1,
+    feedEligible: true,
 
-    relatedIds: [
-      'roman-concrete-2',
-    ],
+    connections: [],
   },
 
   {
@@ -609,24 +745,34 @@ mockCuriosities.push(
     topicId: 'history',
     topic: 'History',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'Could Roman concrete actually repair its own cracks?',
 
-    teaser:
+    answer:
       'Certain lime-rich fragments may react when water enters a crack.',
 
-    title:
-      'How could ancient concrete partially heal itself?',
-
-    summary:
+    explanation:
       'Research suggests that some Roman concrete contains lime-rich inclusions created by its manufacturing process. When cracks expose these materials to water, chemical reactions can produce minerals that fill parts of the crack, potentially extending the structure’s lifetime.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('history'),
+      type: 'photo',
+    },
 
-    depth: 2,
+    feedEligible: true,
 
-    relatedIds: [],
+    connections: [],
   },
 
   {
@@ -634,26 +780,34 @@ mockCuriosities.push(
     topicId: 'history',
     topic: 'History',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'How old were the pyramids when Cleopatra was alive?',
 
-    teaser:
+    answer:
       'To Cleopatra, the Great Pyramid was already extremely ancient.',
 
-    title:
-      'Cleopatra lived surprisingly late in Egyptian history',
-
-    summary:
+    explanation:
       'The Great Pyramid of Giza was built around the 26th century BCE. Cleopatra VII lived during the first century BCE. That means the pyramid was already roughly two and a half millennia old during her lifetime.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('history'),
+      type: 'photo',
+    },
 
-    depth: 1,
+    feedEligible: true,
 
-    relatedIds: [
-      'pyramid-timeline',
-    ],
+    connections: [],
   },
 
   {
@@ -661,32 +815,66 @@ mockCuriosities.push(
     topicId: 'history',
     topic: 'History',
 
+    tags: [],
+    concepts: [],
+
+    sources: [],
+
+    editorial: {
+      status: 'published',
+      factChecked: false,
+    },
+
     hook:
       'What other famous civilizations appeared after the pyramids were already ancient?',
 
-    teaser:
+    answer:
       'The pyramids sit astonishingly early in recorded history.',
 
-    title:
-      'The pyramids predate much of the ancient world we group together',
-
-    summary:
+    explanation:
       'The Great Pyramid was already ancient before many events and civilizations commonly associated with the classical world. Compressing thousands of years into the label “ancient history” can make these enormous chronological distances easy to miss.',
 
-    imageUrl:
+    visual: {
+      url:
       imageForCategory('history'),
+      type: 'photo',
+    },
 
-    depth: 2,
+    feedEligible: true,
 
-    relatedIds: [],
+    connections: [],
   },
 );
 
 
-// Apply only explicitly authored relationships.
+// Apply explicitly authored relationships.
+//
+// These are graph edges rather than parent/child hierarchy.
+// Every Curio remains independently usable.
 mockCuriosities.forEach(item => {
-  item.relatedIds =
-    curiosityGraph[item.id] ??
-    item.relatedIds ??
-    [];
+  const related =
+    curiosityGraph[item.id] ?? [];
+
+  item.connections =
+    related.map(curiosityId => ({
+      curiosityId,
+      relationship: 'deeper',
+    }));
+
+  item.tags =
+    item.tags ?? [item.topicId];
+
+  item.concepts =
+    item.concepts ?? [];
+
+  item.feedEligible = true;
+
+  item.sources =
+    item.sources ?? [];
+
+  item.editorial =
+    item.editorial ?? {
+      status: 'published',
+      factChecked: false,
+    };
 });

@@ -1,0 +1,131 @@
+export type CuriosityConnectionType =
+  | 'deeper'
+  | 'why'
+  | 'how'
+  | 'related'
+  | 'surprising';
+
+export type CuriosityVisualType =
+  | 'photo'
+  | 'generated'
+  | 'illustration'
+  | 'diagram'
+  | 'archival'
+  | 'map'
+  | 'portrait';
+
+export type CuriosityStatus =
+  | 'draft'
+  | 'review'
+  | 'published';
+
+export interface CuriosityConnection {
+  curiosityId: string;
+  relationship: CuriosityConnectionType;
+}
+
+export interface CuriositySource {
+  title: string;
+  url: string;
+  publisher?: string;
+}
+
+export interface CuriosityVisual {
+  url: string;
+  type: CuriosityVisualType;
+
+  generationPrompt?: string;
+
+  source?: {
+    provider: string;
+    author?: string;
+    sourceUrl?: string;
+    license?: string;
+  };
+}
+
+export interface CuriosityEditorial {
+  status: CuriosityStatus;
+
+  factChecked: boolean;
+
+  qualityScore?: number;
+
+  generatedBy?: string;
+}
+
+export interface Curiosity {
+  id: string;
+
+  /*
+   * The question / curiosity gap.
+   *
+   * Example:
+   * Why can't you tickle yourself?
+   */
+  hook: string;
+
+  /*
+   * Mandatory direct answer.
+   *
+   * This is displayed directly in the feed.
+   * It MUST satisfy the question without requiring
+   * the user to open the Curio.
+   */
+  answer: string;
+
+  /*
+   * Additional explanation shown when the
+   * user chooses to explore the Curio.
+   */
+  explanation: string;
+
+  /*
+   * Optional memorable extra detail.
+   */
+  quickFact?: string;
+
+  /*
+   * Classification.
+   */
+  topicId: string;
+  topic: string;
+
+  tags: string[];
+
+  /*
+   * Canonical concepts represented by this Curio.
+   *
+   * Used later for:
+   * - personalization
+   * - semantic discovery
+   * - duplicate detection
+   * - graph generation
+   */
+  concepts: string[];
+
+  /*
+   * A Curio is independently feed-worthy.
+   *
+   * Connections do NOT determine whether the
+   * Curio can appear in the feed.
+   */
+  feedEligible: boolean;
+
+  visual: CuriosityVisual;
+
+  /*
+   * Knowledge graph edges.
+   */
+  connections: CuriosityConnection[];
+
+  /*
+   * Evidence supporting factual content.
+   *
+   * Empty in mock content for now.
+   * Production AI content will require sources.
+   */
+  sources: CuriositySource[];
+
+  editorial: CuriosityEditorial;
+}

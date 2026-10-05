@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import {HttpsError, onCall} from "firebase-functions/v2/https";
+import type {NewCuriosity} from "@curio/shared";
 
 admin.initializeApp();
 
@@ -66,39 +67,170 @@ const requireObject = (
 
 const validateContent = (
   value: unknown,
-): Record<string, unknown> => {
-  const item = requireObject(value, "Each content item must be an object.");
+): NewCuriosity => {
+  const item = requireObject(
+    value,
+    "Each Curio must be an object.",
+  );
 
-  if (
-    typeof item.interestTitle !== "string" ||
-    !item.interestTitle.trim()
-  ) {
+  const requireString = (
+    key: string,
+  ): string => {
+    const value = item[key];
+
+    if (
+      typeof value !== "string" ||
+      !value.trim()
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Curio requires "${key}".`,
+      );
+    }
+
+    return value.trim();
+  };
+
+  const requireStringArray = (
+    key: string,
+  ): string[] => {
+    const value = item[key];
+
+    if (
+      !Array.isArray(value) ||
+      value.some(
+        entry =>
+          typeof entry !== "string" ||
+          !entry.trim(),
+      )
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Curio requires "${key}" to be a string array.`,
+      );
+    }
+
+    return value as string[];
+  };
+
+  requireString("hook");
+  requireString("answer");
+  requireString("explanation");
+  requireString("topicId");
+  requireString("topic");
+
+  requireStringArray("tags");
+  requireStringArray("concepts");
+
+  if (typeof item.feedEligible !== "boolean") {
     throw new HttpsError(
       "invalid-argument",
-      'Content requires "interestTitle".',
+      'Curio requires boolean "feedEligible".',
     );
   }
 
-  if (typeof item.format !== "string" || !item.format.trim()) {
-    throw new HttpsError("invalid-argument", 'Content requires "format".');
-  }
+  const visual = requireObject(
+    item.visual,
+    'Curio requires "visual".',
+  );
 
-  if (typeof item.hook !== "string" || !item.hook.trim()) {
-    throw new HttpsError("invalid-argument", 'Content requires "hook".');
-  }
+  const visualTypes = new Set([
+    "photo",
+    "generated",
+    "illustration",
+    "diagram",
+    "archival",
+    "map",
+    "portrait",
+  ]);
 
   if (
-    item.status !== "draft" &&
-    item.status !== "published" &&
-    item.status !== "archived"
+    typeof visual.type !== "string" ||
+    !visualTypes.has(visual.type)
   ) {
     throw new HttpsError(
       "invalid-argument",
-      'Content status must be "draft", "published", or "archived".',
+      "Curio has an invalid visual type.",
     );
   }
 
-  return item;
+  if (typeof visual.url !== "string") {
+    throw new HttpsError(
+      "invalid-argument",
+      'Curio visual requires string "url".',
+    );
+  }
+
+  if (!Array.isArray(item.connections)) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Curio requires "connections".',
+    );
+  }
+
+  if (!Array.isArray(item.sources)) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Curio requires "sources".',
+    );
+  }
+
+  const editorial = requireObject(
+    item.editorial,
+    'Curio requires "editorial".',
+  );
+
+  if (
+    editorial.status !== "draft" &&
+    editorial.status !== "review" &&
+    editorial.status !== "published"
+  ) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Editorial status must be "draft", "review", or "published".',
+    );
+  }
+
+  if (
+    typeof editorial.factChecked !== "boolean"
+  ) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Editorial requires boolean "factChecked".',
+    );
+  }
+
+  /*
+   * Publishing gate.
+   *
+   * Drafts/review items may still be incomplete.
+   * Published Curios must satisfy our minimum
+   * editorial requirements.
+   */
+  if (editorial.status === "published") {
+    if (!editorial.factChecked) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Published Curios must be fact checked.",
+      );
+    }
+
+    if (item.sources.length === 0) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Published Curios require at least one source.",
+      );
+    }
+
+    if (!item.feedEligible) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Published Curios must be feed eligible.",
+      );
+    }
+  }
+
+  return item as unknown as NewCuriosity;
 };
 
 export const adminListContent = onCall(
@@ -367,3 +499,83 @@ export const adminUpdateInterest = onCall(
   },
 );
 
+
+
+type GenerateCurioRequestData = {
+  topicId?: unknown;
+  topic?: unknown;
+  direction?: unknown;
+};
+
+export const adminBuildCurioPrompt = onCall(
+  async request => {
+    requireAdmin(request.auth?.uid);
+
+    const data = requireObject(
+      request.data,
+      "Prompt request must be an object.",
+    );
+
+    const topicId = data.topicId;
+    const topic = data.topic;
+    const direction = data.direction;
+
+    if (
+      typeof topicId !== "string" ||
+      !topicId.trim()
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        '"topicId" is required.',
+      );
+    }
+
+    if (
+      typeof topic !== "string" ||
+      !topic.trim()
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        '"topic" is required.',
+      );
+    }
+
+    if (
+      direction !== undefined &&
+      (
+        typeof direction !== "string" ||
+        !direction.trim()
+      )
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        '"direction" must be a non-empty string.',
+      );
+    }
+
+    const {
+      CurioPromptBuilder,
+    } = await import(
+      "./application/generation/CurioPromptBuilder"
+    );
+
+    const builder =
+      new CurioPromptBuilder();
+
+    const prompt = builder.build({
+      topicId: topicId.trim(),
+      topic: topic.trim(),
+
+      ...(typeof direction === "string"
+        ? {
+            direction:
+              direction.trim(),
+          }
+        : {}),
+    });
+
+    return {
+      prompt,
+    };
+  },
+);

@@ -95,7 +95,7 @@ export const CategoryScreen = ({
 
               <ImageBackground
                 source={{
-                  uri: item.imageUrl,
+                  uri: item.visual.url,
                 }}
                 style={styles.image}
                 imageStyle={

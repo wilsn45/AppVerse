@@ -7,7 +7,7 @@ export class MockCuriosityRepository
 
   async getFeed(): Promise<Curiosity[]> {
     return mockCuriosities.filter(
-      item => item.depth === 0,
+      item => item.feedEligible,
     );
   }
 
@@ -22,10 +22,12 @@ export class MockCuriosityRepository
   async getRelatedCuriosities(
     curiosity: Curiosity,
   ): Promise<Curiosity[]> {
-    return curiosity.relatedIds
-      .map(id =>
+    return curiosity.connections
+      .map(connection =>
         mockCuriosities.find(
-          item => item.id === id,
+          item =>
+            item.id ===
+            connection.curiosityId,
         ),
       )
       .filter(
@@ -42,7 +44,7 @@ export class MockCuriosityRepository
     return mockCuriosities.filter(
       item =>
         item.topicId === topicId &&
-        item.depth === 0,
+        item.feedEligible,
     );
   }
 }
