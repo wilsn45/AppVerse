@@ -11,7 +11,7 @@
     "clean": "rm -rf lib"
   },
   "dependencies": {
-    "@curio/shared": "file:../../shared",
+    "@curio/shared": "file:./vendor/curio-shared",
     "firebase-admin": "^13.0.0",
     "firebase-functions": "^6.0.0",
     "openai": "^7.27.0"

@@ -3,249 +3,159 @@ import {
   Clipboard,
   Sparkles,
 } from 'lucide-react';
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 
 import {
-  buildCurioPrompt,
+  buildBatchCurioPrompt,
+  importGeneratedCurioBatch,
+  type BatchImportResult,
+  type BatchPromptResponse,
 } from '../services/aiStudioService';
-import {
-  importContent,
-} from '../services/contentService';
-import {
-  listInterests,
-  type AdminInterest,
-} from '../services/interestService';
 
 interface Props {
   onDraftCreated: () => Promise<void>;
 }
 
-type AIResponse = {
-  hook: string;
-  answer: string;
-  explanation: string;
-  quickFact?: string | null;
-  tags: string[];
-  concepts: string[];
-  visual: Record<string, unknown>;
-  connections: unknown[];
-  sources: unknown[];
-};
-
 export function AIStudioPage({
   onDraftCreated,
 }: Props) {
-  const [interests, setInterests] =
-    useState<AdminInterest[]>([]);
-
-  const [topicId, setTopicId] = useState('');
-  const [topic, setTopic] = useState('');
-  const [direction, setDirection] = useState('');
-
   const [prompt, setPrompt] = useState('');
-  const [aiResponse, setAIResponse] = useState('');
+  const [batchJSON, setBatchJSON] = useState('');
+  const [promptInfo, setPromptInfo] =
+    useState<BatchPromptResponse | null>(null);
+  const [result, setResult] =
+    useState<BatchImportResult | null>(null);
 
-  const [building, setBuilding] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [loadingPrompt, setLoadingPrompt] =
+    useState(false);
+  const [processing, setProcessing] =
+    useState(false);
+  const [copied, setCopied] =
+    useState(false);
+  const [error, setError] =
+    useState('');
 
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const values = await listInterests();
-
-        setInterests(
-          values.filter(item => item.enabled !== false),
-        );
-      } catch (loadError) {
-        console.error(loadError);
-
-        setError(
-          loadError instanceof Error
-            ? loadError.message
-            : 'Unable to load topics.',
-        );
-      }
-    };
-
-    void load();
-  }, []);
-
-  const selectTopic = (
-    selectedId: string,
-  ) => {
-    setTopicId(selectedId);
-
-    const selected = interests.find(
-      item => item.id === selectedId,
-    );
-
-    setTopic(selected?.title ?? '');
-
-    setPrompt('');
-    setSuccess('');
-    setError('');
-  };
-
-  const handleBuildPrompt = async () => {
-    if (!topicId || !topic) {
-      setError('Select a topic first.');
-      return;
-    }
-
+  const handleGeneratePrompt = async () => {
     try {
-      setBuilding(true);
+      setLoadingPrompt(true);
       setError('');
-      setSuccess('');
+      setResult(null);
 
-      const generatedPrompt =
-        await buildCurioPrompt({
-          topicId,
-          topic,
-          ...(direction.trim()
-            ? {direction: direction.trim()}
-            : {}),
-        });
+      const response =
+        await buildBatchCurioPrompt();
 
-      setPrompt(generatedPrompt);
-    } catch (buildError) {
-      console.error(buildError);
+      setPrompt(response.prompt);
+      setPromptInfo(response);
+      setCopied(false);
+    } catch (err) {
+      console.error(err);
 
       setError(
-        buildError instanceof Error
-          ? buildError.message
-          : 'Unable to generate prompt.',
+        err instanceof Error
+          ? err.message
+          : 'Unable to generate content prompt.',
       );
     } finally {
-      setBuilding(false);
+      setLoadingPrompt(false);
     }
   };
 
-  const handleCopyPrompt = async () => {
+  const handleCopy = async () => {
     if (!prompt) {
       return;
     }
 
     await navigator.clipboard.writeText(prompt);
 
-    setSuccess(
-      'Prompt copied. Paste it into ChatGPT.',
+    setCopied(true);
+
+    window.setTimeout(
+      () => setCopied(false),
+      1500,
     );
   };
 
-  const parseAIResponse = (): AIResponse => {
-    const parsed: unknown =
-      JSON.parse(aiResponse);
+  const parseBatch = (): Record<
+    string,
+    unknown
+  >[] => {
+    const raw = batchJSON.trim();
 
-    if (
-      !parsed ||
-      typeof parsed !== 'object' ||
-      Array.isArray(parsed)
-    ) {
+    if (!raw) {
       throw new Error(
-        'AI response must be one JSON object.',
+        'Paste the ChatGPT JSON array first.',
       );
     }
 
-    const value =
-      parsed as Record<string, unknown>;
+    let cleaned = raw;
 
-    for (const field of [
-      'hook',
-      'answer',
-      'explanation',
-    ]) {
+    if (cleaned.startsWith('```')) {
+      cleaned = cleaned
+        .replace(/^```(?:json)?\s*/i, '')
+        .replace(/\s*```$/, '');
+    }
+
+    const parsed: unknown =
+      JSON.parse(cleaned);
+
+    if (!Array.isArray(parsed)) {
+      throw new Error(
+        'ChatGPT response must be one JSON array.',
+      );
+    }
+
+    if (parsed.length === 0) {
+      throw new Error(
+        'The JSON array is empty.',
+      );
+    }
+
+    return parsed.map((item, index) => {
       if (
-        typeof value[field] !== 'string' ||
-        !String(value[field]).trim()
+        !item ||
+        typeof item !== 'object' ||
+        Array.isArray(item)
       ) {
         throw new Error(
-          `AI response requires "${field}".`,
+          `Item ${index + 1} is not a JSON object.`,
         );
       }
-    }
 
-    for (const field of [
-      'tags',
-      'concepts',
-      'connections',
-      'sources',
-    ]) {
-      if (!Array.isArray(value[field])) {
-        throw new Error(
-          `"${field}" must be an array.`,
-        );
-      }
-    }
-
-    if (
-      !value.visual ||
-      typeof value.visual !== 'object' ||
-      Array.isArray(value.visual)
-    ) {
-      throw new Error(
-        '"visual" must be an object.',
-      );
-    }
-
-    return value as AIResponse;
+      return item as Record<
+        string,
+        unknown
+      >;
+    });
   };
 
-  const handleCreateDraft = async () => {
-    if (!topicId || !topic) {
-      setError('Select a topic first.');
-      return;
-    }
-
+  const handleProcessBatch = async () => {
     try {
-      setSaving(true);
+      setProcessing(true);
       setError('');
-      setSuccess('');
+      setResult(null);
 
-      const generated =
-        parseAIResponse();
+      const items = parseBatch();
 
-      /*
-       * AI is deliberately not allowed to control
-       * editorial/publication state.
-       */
-      const draft = {
-        ...generated,
+      const response =
+        await importGeneratedCurioBatch(
+          items,
+        );
 
-        topicId,
-        topic,
+      setResult(response);
 
-        feedEligible: false,
-
-        editorial: {
-          status: 'draft',
-          factChecked: false,
-        },
-      };
-
-      await importContent([draft]);
-
-      setAIResponse('');
-      setPrompt('');
-      setDirection('');
-
-      setSuccess(
-        'Curio draft created successfully.',
-      );
-
-      await onDraftCreated();
-    } catch (saveError) {
-      console.error(saveError);
+      if (response.imported > 0) {
+        await onDraftCreated();
+      }
+    } catch (err) {
+      console.error(err);
 
       setError(
-        saveError instanceof Error
-          ? saveError.message
-          : 'Unable to create draft.',
+        err instanceof Error
+          ? err.message
+          : 'Unable to process Curio batch.',
       );
     } finally {
-      setSaving(false);
+      setProcessing(false);
     }
   };
 
@@ -255,160 +165,155 @@ export function AIStudioPage({
         <div>
           <h1>AI Studio</h1>
           <p>
-            Generate Curio content with your AI assistant,
-            then review it before publishing.
+            Create hundreds of unique Curios with
+            one ChatGPT prompt.
           </p>
         </div>
       </div>
 
-      <div className="ai-workflow">
-        <section className="ai-card">
-          <div className="ai-card-heading">
-            <div className="ai-step">1</div>
+      <div className="panel">
+        <h2>1. Generate master prompt</h2>
 
-            <div>
-              <h2>Build Prompt</h2>
-              <p>
-                Choose what you want Curio to explore.
-              </p>
-            </div>
-          </div>
+        <p>
+          Curio automatically reads all enabled
+          categories and your existing Curio library.
+          No topic selection is required.
+        </p>
 
-          <div className="ai-form">
-            <label>
-              Topic
+        <button
+          type="button"
+          className="primary-button"
+          disabled={loadingPrompt}
+          onClick={handleGeneratePrompt}>
+          <Sparkles size={18} />
 
-              <select
-                value={topicId}
-                onChange={event =>
-                  selectTopic(event.target.value)
-                }>
-                <option value="">
-                  Select a topic
-                </option>
+          {loadingPrompt
+            ? 'Building prompt...'
+            : 'Generate Content Prompt'}
+        </button>
 
-                {interests.map(item => (
-                  <option
-                    key={item.id}
-                    value={item.id}>
-                    {item.title}
-                  </option>
-                ))}
-              </select>
-            </label>
+        {promptInfo && (
+          <p>
+            {promptInfo.categories} categories
+            {' · '}
+            {promptInfo.requestedPerCategory} per category
+            {' · '}
+            {promptInfo.requestedTotal} Curios requested
+            {' · '}
+            {promptInfo.existingCurios} existing excluded
+          </p>
+        )}
 
-            <label>
-              Direction
-              <span className="field-hint">
-                Optional
-              </span>
-
-              <textarea
-                value={direction}
-                onChange={event =>
-                  setDirection(event.target.value)
-                }
-                placeholder="e.g. Something surprising about memory"
-              />
-            </label>
+        {prompt && (
+          <>
+            <textarea
+              value={prompt}
+              readOnly
+              rows={16}
+            />
 
             <button
-              className="primary-button"
-              disabled={building || !topicId}
-              onClick={() =>
-                void handleBuildPrompt()
-              }>
-              <Sparkles size={18} />
+              type="button"
+              className="secondary-button"
+              onClick={handleCopy}>
+              {copied ? (
+                <CheckCircle2 size={18} />
+              ) : (
+                <Clipboard size={18} />
+              )}
 
-              {building
-                ? 'Building…'
-                : 'Generate Prompt'}
+              {copied
+                ? 'Copied'
+                : 'Copy Prompt'}
             </button>
-          </div>
-        </section>
+          </>
+        )}
+      </div>
 
-        <section className="ai-card">
-          <div className="ai-card-heading">
-            <div className="ai-step">2</div>
+      <div className="panel">
+        <h2>2. Paste ChatGPT response</h2>
 
-            <div>
-              <h2>Ask ChatGPT</h2>
-              <p>
-                Copy this prompt and paste it into ChatGPT.
-              </p>
-            </div>
-          </div>
+        <p>
+          Paste the complete JSON array returned by
+          ChatGPT. Curio will validate it, reject
+          duplicates, and save only safe drafts.
+        </p>
 
-          <textarea
-            className="ai-code-area"
-            value={prompt}
-            readOnly
-            placeholder="Your generated prompt will appear here."
-          />
+        <textarea
+          value={batchJSON}
+          onChange={event =>
+            setBatchJSON(
+              event.target.value,
+            )
+          }
+          rows={18}
+          placeholder='[{"hook":"...","answer":"...", ...}]'
+        />
 
-          <button
-            className="secondary-button"
-            disabled={!prompt}
-            onClick={() =>
-              void handleCopyPrompt()
-            }>
-            <Clipboard size={18} />
-            Copy Prompt
-          </button>
-        </section>
-
-        <section className="ai-card">
-          <div className="ai-card-heading">
-            <div className="ai-step">3</div>
-
-            <div>
-              <h2>Create Draft</h2>
-              <p>
-                Paste the JSON returned by ChatGPT.
-              </p>
-            </div>
-          </div>
-
-          <textarea
-            className="ai-code-area response"
-            value={aiResponse}
-            onChange={event => {
-              setAIResponse(event.target.value);
-              setError('');
-              setSuccess('');
-            }}
-            placeholder={'{\n  "hook": "...",\n  "answer": "..."\n}'}
-          />
-
-          <button
-            className="primary-button"
-            disabled={
-              saving ||
-              !topicId ||
-              !aiResponse.trim()
-            }
-            onClick={() =>
-              void handleCreateDraft()
-            }>
-            <CheckCircle2 size={18} />
-
-            {saving
-              ? 'Creating Draft…'
-              : 'Validate & Create Draft'}
-          </button>
-        </section>
+        <button
+          type="button"
+          className="primary-button"
+          disabled={
+            processing ||
+            !batchJSON.trim()
+          }
+          onClick={handleProcessBatch}>
+          {processing
+            ? 'Processing...'
+            : 'Process Batch'}
+        </button>
       </div>
 
       {error && (
-        <div className="ai-message error">
-          {error}
+        <div className="panel">
+          <strong>Error</strong>
+          <p>{error}</p>
         </div>
       )}
 
-      {success && (
-        <div className="ai-message success">
-          <CheckCircle2 size={17} />
-          {success}
+      {result && (
+        <div className="panel">
+          <h2>Batch result</h2>
+
+          <p>
+            Received: {result.received}
+            {' · '}
+            Imported: {result.imported}
+            {' · '}
+            Duplicates rejected: {result.duplicates}
+            {' · '}
+            Invalid rejected: {result.invalid}
+          </p>
+
+          {result.duplicateItems.length > 0 && (
+            <>
+              <h3>Duplicates rejected</h3>
+
+              <ul>
+                {result.duplicateItems.map(
+                  (item, index) => (
+                    <li key={`${item.hook}-${index}`}>
+                      {item.hook} — {item.reason}
+                    </li>
+                  ),
+                )}
+              </ul>
+            </>
+          )}
+
+          {result.invalidItems.length > 0 && (
+            <>
+              <h3>Invalid Curios</h3>
+
+              <ul>
+                {result.invalidItems.map(item => (
+                  <li key={item.index}>
+                    Item {item.index + 1}: {item.reason}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
       )}
     </div>
