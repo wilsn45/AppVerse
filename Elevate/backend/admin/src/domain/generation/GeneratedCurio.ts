@@ -1,5 +1,5 @@
 import type {
-  CuriosityConnection,
+  CuriosityExploreNode,
   CuriositySource,
   CuriosityVisual,
 } from "@curio/shared";
@@ -20,6 +20,6 @@ export interface GeneratedCurio {
   concepts: string[];
 
   visual: CuriosityVisual;
-  connections: CuriosityConnection[];
+  explore: CuriosityExploreNode[];
   sources: CuriositySource[];
 }

@@ -1,10 +1,3 @@
-export type CuriosityConnectionType =
-  | 'deeper'
-  | 'why'
-  | 'how'
-  | 'related'
-  | 'surprising';
-
 export type CuriosityVisualType =
   | 'photo'
   | 'generated'
@@ -14,14 +7,20 @@ export type CuriosityVisualType =
   | 'map'
   | 'portrait';
 
+export type CuriosityImageSource =
+  | 'none'
+  | 'external'
+  | 'uploaded';
+
 export type CuriosityStatus =
   | 'draft'
   | 'review'
   | 'published';
 
-export interface CuriosityConnection {
-  curiosityId: string;
-  relationship: CuriosityConnectionType;
+export interface CuriosityExploreNode {
+  question: string;
+  answer: string;
+  children: CuriosityExploreNode[];
 }
 
 export interface CuriositySource {
@@ -33,6 +32,14 @@ export interface CuriositySource {
 export interface CuriosityVisual {
   url: string;
   type: CuriosityVisualType;
+
+  imageSource?: CuriosityImageSource;
+  storagePath?: string;
+
+  width?: number;
+  height?: number;
+  bytes?: number;
+
   generationPrompt?: string;
 
   source?: {
@@ -68,16 +75,20 @@ export interface Curiosity {
 
   visual: CuriosityVisual;
 
-  connections: CuriosityConnection[];
+  /**
+   * Plain-text curiosity exploration tree.
+   *
+   * Main card = depth 0.
+   * explore[] = depth 1.
+   * Maximum depth below the main card = 3.
+   * Maximum children per node = 3.
+   */
+  explore: CuriosityExploreNode[];
 
   sources: CuriositySource[];
 
   editorial: CuriosityEditorial;
 }
 
-/**
- * Curiosity without its database-generated ID.
- *
- * Used when creating new Curios through the backend.
- */
-export type NewCuriosity = Omit<Curiosity, 'id'>;
+export type NewCuriosity =
+  Omit<Curiosity, 'id'>;

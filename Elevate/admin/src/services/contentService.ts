@@ -58,3 +58,15 @@ export const deleteContent = async (id: string): Promise<void> => {
 
   await callable({id});
 };
+
+
+export const deleteContentBatch = async (
+  ids: string[],
+): Promise<void> => {
+  const callable = httpsCallable<
+    {ids: string[]},
+    {success: boolean; deleted: number}
+  >(functions, 'adminDeleteContentBatch');
+
+  await callable({ids});
+};

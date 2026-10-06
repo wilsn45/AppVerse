@@ -196,9 +196,7 @@ export function AIStudioPage({
           <p>
             {promptInfo.categories} categories
             {' · '}
-            {promptInfo.requestedPerCategory} per category
-            {' · '}
-            {promptInfo.requestedTotal} Curios requested
+            {promptInfo.requestedTotal} main Curios requested
             {' · '}
             {promptInfo.existingCurios} existing excluded
           </p>

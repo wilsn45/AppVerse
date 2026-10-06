@@ -27,6 +27,7 @@ import {
 import {auth, googleProvider} from './firebase/firebase';
 import {
   deleteContent,
+  deleteContentBatch,
   importContent,
   listContent,
   updateContent,
@@ -42,6 +43,14 @@ import {
 import {
   AIStudioPage,
 } from './pages/AIStudioPage';
+
+import {
+  ImageStatusButton,
+} from './components/content/ImageStatusButton';
+
+import {
+  CurioImageModal,
+} from './components/content/CurioImageModal';
 import './App.css';
 
 type Section = 'content' | 'interests' | 'ai-studio' | 'analytics';
@@ -69,6 +78,17 @@ function App() {
   const [parsedCount, setParsedCount] = useState<number | null>(null);
   const [editingContentId, setEditingContentId] = useState<string | null>(null);
   const [jsonSaving, setJsonSaving] = useState(false);
+
+  const [
+    imageEditingItem,
+    setImageEditingItem,
+  ] = useState<AdminContentItem | null>(null);
+
+  const [selectedContentIds, setSelectedContentIds] =
+    useState<Set<string>>(new Set());
+
+  const [bulkDeleting, setBulkDeleting] =
+    useState(false);
 
   useEffect(() => {
     return onAuthStateChanged(auth, currentUser => {
@@ -234,7 +254,7 @@ function App() {
           'concepts',
           'feedEligible',
           'visual',
-          'connections',
+          'explore',
           'sources',
           'editorial',
         ];
@@ -260,11 +280,11 @@ function App() {
         if (
           !Array.isArray(value.tags) ||
           !Array.isArray(value.concepts) ||
-          !Array.isArray(value.connections) ||
+          !Array.isArray(value.explore) ||
           !Array.isArray(value.sources)
         ) {
           throw new Error(
-            'tags, concepts, connections and sources must be arrays.',
+            'tags, concepts, explore and sources must be arrays.',
           );
         }
 
@@ -363,20 +383,70 @@ function App() {
     }
 
     try {
-      setLoading(true);
       setError('');
 
       await deleteContent(id);
-      await loadItems();
+
+      setItems(current =>
+        current.filter(item => item.id !== id),
+      );
+
+      setSelectedContentIds(current => {
+        const next = new Set(current);
+        next.delete(id);
+        return next;
+      });
     } catch (deleteError) {
       console.error(deleteError);
+
       setError(
         deleteError instanceof Error
           ? deleteError.message
           : 'Unable to delete content.',
       );
+    }
+  };
+
+  const handleBulkDeleteContent = async (
+    ids: string[],
+  ) => {
+    if (!ids.length) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete ${ids.length} selected Curio${ids.length === 1 ? '' : 's'}? This action cannot be undone.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setBulkDeleting(true);
+      setError('');
+
+      await deleteContentBatch(ids);
+
+      const deletedIds = new Set(ids);
+
+      setItems(current =>
+        current.filter(
+          item => !deletedIds.has(item.id),
+        ),
+      );
+
+      setSelectedContentIds(new Set());
+    } catch (deleteError) {
+      console.error(deleteError);
+
+      setError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : 'Unable to delete selected content.',
+      );
     } finally {
-      setLoading(false);
+      setBulkDeleting(false);
     }
   };
 
@@ -506,6 +576,12 @@ function App() {
             onImport={openImport}
             onEdit={openEditor}
             onDelete={handleDeleteContent}
+            onManageImage={setImageEditingItem}
+            selectedIds={selectedContentIds}
+            setSelectedIds={setSelectedContentIds}
+            allMatchingIds={filteredItems.map(item => item.id)}
+            onBulkDelete={handleBulkDeleteContent}
+            bulkDeleting={bulkDeleting}
             onReload={loadItems}
           />
         )}
@@ -543,6 +619,16 @@ function App() {
           }}
         />
       )}
+
+      {imageEditingItem && (
+        <CurioImageModal
+          item={imageEditingItem}
+          onSaved={loadItems}
+          onClose={() =>
+            setImageEditingItem(null)
+          }
+        />
+      )}
     </div>
   );
 }
@@ -569,6 +655,12 @@ interface ContentPageProps {
   onImport: () => void;
   onEdit: (item: AdminContentItem) => void;
   onDelete: (id: string) => void;
+  onManageImage: (item: AdminContentItem) => void;
+  selectedIds: Set<string>;
+  setSelectedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  allMatchingIds: string[];
+  onBulkDelete: (ids: string[]) => Promise<void>;
+  bulkDeleting: boolean;
   onReload: () => Promise<void>;
 }
 
@@ -594,8 +686,60 @@ function ContentPage({
   onImport,
   onEdit,
   onDelete,
+  onManageImage,
+  selectedIds,
+  setSelectedIds,
+  allMatchingIds,
+  onBulkDelete,
+  bulkDeleting,
   onReload,
 }: ContentPageProps) {
+  const pageIds = items.map(item => item.id);
+
+  const allPageSelected =
+    pageIds.length > 0 &&
+    pageIds.every(id => selectedIds.has(id));
+
+  const allMatchingSelected =
+    allMatchingIds.length > 0 &&
+    allMatchingIds.every(id => selectedIds.has(id));
+
+  const toggleItem = (id: string) => {
+    setSelectedIds(current => {
+      const next = new Set(current);
+
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+
+      return next;
+    });
+  };
+
+  const togglePage = () => {
+    setSelectedIds(current => {
+      const next = new Set(current);
+
+      if (allPageSelected) {
+        pageIds.forEach(id => next.delete(id));
+      } else {
+        pageIds.forEach(id => next.add(id));
+      }
+
+      return next;
+    });
+  };
+
+  const selectAllMatching = () => {
+    setSelectedIds(
+      allMatchingSelected
+        ? new Set()
+        : new Set(allMatchingIds),
+    );
+  };
+
   return (
     <div className="page">
       <div className="page-heading simple-heading">
@@ -651,6 +795,47 @@ function ContentPage({
         </select>
       </section>
 
+      {selectedIds.size > 0 && (
+        <div className="bulk-action-bar">
+          <div>
+            <strong>{selectedIds.size}</strong>
+            {' selected'}
+
+            {allMatchingIds.length > items.length && (
+              <button
+                className="bulk-link-button"
+                disabled={bulkDeleting}
+                onClick={selectAllMatching}>
+                {allMatchingSelected
+                  ? 'Clear selection'
+                  : `Select all ${allMatchingIds.length} matching`}
+              </button>
+            )}
+          </div>
+
+          <div className="bulk-action-buttons">
+            <button
+              className="secondary-button"
+              disabled={bulkDeleting}
+              onClick={() => setSelectedIds(new Set())}>
+              Clear
+            </button>
+
+            <button
+              className="bulk-delete-button"
+              disabled={bulkDeleting}
+              onClick={() =>
+                void onBulkDelete([...selectedIds])
+              }>
+              <Trash2 size={16} />
+              {bulkDeleting
+                ? 'Deleting…'
+                : 'Delete selected'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <section className="content-panel list-panel">
         {loading ? (
           <div className="empty-state">
@@ -671,10 +856,18 @@ function ContentPage({
             <table className="content-table">
               <thead>
                 <tr>
+                  <th className="select-column">
+                    <input
+                      type="checkbox"
+                      aria-label="Select all posts on this page"
+                      checked={allPageSelected}
+                      onChange={togglePage}
+                    />
+                  </th>
                   <th>Content ID</th>
                   <th>Text</th>
                   <th>Status</th>
-                  <th>Image Link</th>
+                  <th>Image</th>
                   <th className="actions-heading">Actions</th>
                 </tr>
               </thead>
@@ -682,7 +875,7 @@ function ContentPage({
               <tbody>
                 {items.length === 0 ? (
                   <tr>
-                    <td colSpan={5}>
+                    <td colSpan={6}>
                       <div className="table-empty">
                         No content found.
                       </div>
@@ -690,7 +883,22 @@ function ContentPage({
                   </tr>
                 ) : (
                   items.map(item => (
-                    <tr key={item.id}>
+                    <tr
+                      key={item.id}
+                      className={
+                        selectedIds.has(item.id)
+                          ? 'selected-row'
+                          : ''
+                      }>
+                      <td className="select-column">
+                        <input
+                          type="checkbox"
+                          aria-label={`Select ${item.hook}`}
+                          checked={selectedIds.has(item.id)}
+                          onChange={() => toggleItem(item.id)}
+                        />
+                      </td>
+
                       <td>
                         <code className="id-code">{item.id}</code>
                       </td>
@@ -706,17 +914,12 @@ function ContentPage({
                       </td>
 
                       <td>
-                        {getImageUrl(item) ? (
-                          <a
-                            className="image-link"
-                            href={getImageUrl(item)}
-                            target="_blank"
-                            rel="noreferrer">
-                            View image
-                          </a>
-                        ) : (
-                          <span className="muted">—</span>
-                        )}
+                        <ImageStatusButton
+                          item={item}
+                          onClick={() =>
+                            onManageImage(item)
+                          }
+                        />
                       </td>
 
                       <td>
@@ -1199,7 +1402,7 @@ function JsonModal({
       "url": "",
       "type": "photo"
     },
-    "connections": [],
+    "explore": [],
     "sources": [],
     "editorial": {
       "status": "draft",
@@ -1245,21 +1448,6 @@ function JsonModal({
       </div>
     </div>
   );
-}
-
-function getImageUrl(item: AdminContentItem): string | undefined {
-  const visual = item.visual;
-
-  if (
-    typeof visual === 'object' &&
-    visual !== null &&
-    'url' in visual &&
-    typeof visual.url === 'string'
-  ) {
-    return visual.url;
-  }
-
-  return undefined;
 }
 
 interface NavButtonProps {
