@@ -39,6 +39,8 @@ export class GenerateCurioUseCase {
       topicId: request.topicId,
       topic: request.topic,
 
+      explore: generated.explore ?? [],
+
       feedEligible: false,
 
       editorial: {

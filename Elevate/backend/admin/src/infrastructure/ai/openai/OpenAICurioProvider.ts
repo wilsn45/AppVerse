@@ -129,29 +129,73 @@ const generatedCurioSchema = {
         "generationPrompt",
       ],
     },
-    connections: {
+    explore: {
       type: "array",
+      maxItems: 3,
       items: {
         type: "object",
         additionalProperties: false,
         properties: {
-          curiosityId: {
+          question: {
             type: "string",
           },
-          relationship: {
+          answer: {
             type: "string",
-            enum: [
-              "deeper",
-              "why",
-              "how",
-              "related",
-              "surprising",
-            ],
+          },
+          children: {
+            type: "array",
+            maxItems: 3,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                question: {
+                  type: "string",
+                },
+                answer: {
+                  type: "string",
+                },
+                children: {
+                  type: "array",
+                  maxItems: 3,
+                  items: {
+                    type: "object",
+                    additionalProperties: false,
+                    properties: {
+                      question: {
+                        type: "string",
+                      },
+                      answer: {
+                        type: "string",
+                      },
+                      children: {
+                        type: "array",
+                        maxItems: 0,
+                        items: {
+                          type: "object",
+                        },
+                      },
+                    },
+                    required: [
+                      "question",
+                      "answer",
+                      "children",
+                    ],
+                  },
+                },
+              },
+              required: [
+                "question",
+                "answer",
+                "children",
+              ],
+            },
           },
         },
         required: [
-          "curiosityId",
-          "relationship",
+          "question",
+          "answer",
+          "children",
         ],
       },
     },
@@ -187,7 +231,7 @@ const generatedCurioSchema = {
     "tags",
     "concepts",
     "visual",
-    "connections",
+    "explore",
     "sources",
   ],
 } as const;
@@ -204,7 +248,7 @@ type OpenAIGeneratedCurio = {
     type: GeneratedCurio["visual"]["type"];
     generationPrompt: string | null;
   };
-  connections: GeneratedCurio["connections"];
+  explore: GeneratedCurio["explore"];
   sources: Array<{
     title: string;
     url: string;
@@ -299,7 +343,7 @@ implements CurioAIProvider {
           : {}),
       },
 
-      connections: parsed.connections,
+      explore: parsed.explore,
 
       sources: parsed.sources.map(source => ({
         title: source.title.trim(),

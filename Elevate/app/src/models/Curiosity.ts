@@ -1,11 +1,11 @@
 export type {
   Curiosity,
   NewCuriosity,
-  CuriosityConnection,
-  CuriosityConnectionType,
+  CuriosityExploreNode,
   CuriositySource,
   CuriosityVisual,
   CuriosityVisualType,
+  CuriosityImageSource,
   CuriosityEditorial,
   CuriosityStatus,
 } from '@curio/shared';

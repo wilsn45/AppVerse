@@ -70,8 +70,8 @@ const normalize = (
 
     visual: data.visual as Curiosity["visual"],
 
-    connections: Array.isArray(data.connections)
-      ? data.connections
+    explore: Array.isArray(data.explore)
+      ? data.explore
       : [],
 
     sources: Array.isArray(data.sources)

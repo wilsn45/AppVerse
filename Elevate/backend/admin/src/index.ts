@@ -161,12 +161,125 @@ const validateContent = (
     );
   }
 
-  if (!Array.isArray(item.connections)) {
+  if (
+    visual.imageSource !== undefined &&
+    visual.imageSource !== "none" &&
+    visual.imageSource !== "external" &&
+    visual.imageSource !== "uploaded"
+  ) {
     throw new HttpsError(
       "invalid-argument",
-      'Curio requires "connections".',
+      "Curio visual has an invalid imageSource.",
     );
   }
+
+  if (
+    visual.storagePath !== undefined &&
+    typeof visual.storagePath !== "string"
+  ) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Curio visual "storagePath" must be a string.',
+    );
+  }
+
+  for (
+    const key of [
+      "width",
+      "height",
+      "bytes",
+    ]
+  ) {
+    const value = visual[key];
+
+    if (
+      value !== undefined &&
+      (
+        typeof value !== "number" ||
+        !Number.isFinite(value) ||
+        value <= 0
+      )
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Curio visual "${key}" must be a positive number.`,
+      );
+    }
+  }
+
+  const validateExploreNodes = (
+    value: unknown,
+    depth: number,
+  ): void => {
+    if (!Array.isArray(value)) {
+      throw new HttpsError(
+        "invalid-argument",
+        'Curio requires "explore" to be an array.',
+      );
+    }
+
+    if (value.length > 3) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Explore depth ${depth} may contain at most 3 questions.`,
+      );
+    }
+
+    for (const rawNode of value) {
+      const node = requireObject(
+        rawNode,
+        "Every explore node must be an object.",
+      );
+
+      if (
+        typeof node.question !== "string" ||
+        !node.question.trim()
+      ) {
+        throw new HttpsError(
+          "invalid-argument",
+          "Every explore node requires a question.",
+        );
+      }
+
+      if (
+        typeof node.answer !== "string" ||
+        !node.answer.trim()
+      ) {
+        throw new HttpsError(
+          "invalid-argument",
+          "Every explore node requires an answer.",
+        );
+      }
+
+      if (!Array.isArray(node.children)) {
+        throw new HttpsError(
+          "invalid-argument",
+          "Every explore node requires children[].",
+        );
+      }
+
+      if (depth >= 3) {
+        if (node.children.length !== 0) {
+          throw new HttpsError(
+            "invalid-argument",
+            "Explore trees may not exceed 3 levels below the main Curio.",
+          );
+        }
+
+        continue;
+      }
+
+      validateExploreNodes(
+        node.children,
+        depth + 1,
+      );
+    }
+  };
+
+  validateExploreNodes(
+    item.explore,
+    1,
+  );
 
   if (!Array.isArray(item.sources)) {
     throw new HttpsError(
@@ -584,7 +697,11 @@ Curio is an entertainment-first curiosity app whose goal is:
 
 YOUR TASK
 
-Generate exactly 20 UNIQUE Curios for EACH category listed below.
+Generate approximately 50 UNIQUE MAIN Curios across the categories listed below.
+
+Distribute them broadly across the available categories.
+
+Every main Curio MUST include its complete curiosity exploration tree.
 
 Every Curio must teach a genuinely interesting fact, phenomenon, story, idea, misconception, mechanism, historical event, scientific observation, cultural curiosity, technological curiosity, or surprising piece of knowledge.
 
@@ -618,6 +735,31 @@ EDITORIAL STANDARD
 - hook: compelling natural-language question or statement.
 - answer: direct answer visible in the feed.
 - answer should preferably be 60-220 characters.
+
+IMAGE / VISUAL RULES
+
+Every main Curio has one visual object.
+
+Set visual.url to "".
+Never invent an image URL.
+
+If generated imagery is appropriate, generationPrompt must be
+a complete standalone image-generation instruction.
+
+The Curio feed uses a 4:3 landscape image frame.
+
+Every generationPrompt MUST explicitly request:
+- 4:3 landscape composition
+- target size 1600x1200 pixels
+- the primary subject inside the central safe area
+- no essential visual information at extreme edges
+- a composition that remains strong after a small responsive crop
+- no text, captions, logos, UI, borders, or watermarks unless
+  labels are genuinely required for a diagram
+- a clear focal subject readable on both phones and tablets
+
+generationPrompt must describe the actual scene/image to generate,
+not simply repeat the Curio hook.
 - explanation: useful deeper context, approximately 45-140 words.
 - quickFact: optional additional surprising fact, otherwise null.
 - tags: 2-5 useful tags.
@@ -628,7 +770,46 @@ EDITORIAL STANDARD
 - No trivia whose only value is memorizing a number.
 - Avoid claims you are not confident are factual.
 - Do not invent URLs or sources.
-- connections must be [].
+EXPLORATION TREE RULES
+
+Every main Curio must contain an "explore" array.
+
+The main Curio is depth 0.
+
+explore[] contains Level 1 follow-up questions.
+
+Each exploration node has ONLY:
+- question
+- answer
+- children
+
+Each node may have 0 to 3 children.
+
+Maximum exploration depth below the main Curio is exactly 3 levels:
+Level 1 -> Level 2 -> Level 3 -> STOP.
+
+Level 3 nodes MUST always have children: [].
+
+Do NOT force 3 children.
+Generate only genuinely interesting, natural follow-up questions.
+
+The exploration should feel like a person repeatedly asking:
+"But why?"
+"How does that work?"
+"What happened next?"
+"Does that mean...?"
+"What is surprising about that?"
+
+Every child answer must directly answer its own question.
+
+Children are plain text.
+Do NOT add images, topics, tags, concepts, IDs, sources,
+editorial metadata, or visual metadata to child nodes.
+
+The entire tree must remain tightly related to the MAIN Curio.
+
+Do not wander into weakly related trivia.
+
 - sources must be [] for this generation stage.
 - visual.url must be "".
 - Choose the best visual.type from:
@@ -665,7 +846,25 @@ Every object MUST have exactly this content structure:
     "type": "photo | generated | illustration | diagram | archival | map | portrait",
     "generationPrompt": "string"
   },
-  "connections": [],
+  "explore": [
+    {
+      "question": "natural follow-up question",
+      "answer": "direct useful answer",
+      "children": [
+        {
+          "question": "natural level-2 follow-up",
+          "answer": "direct useful answer",
+          "children": [
+            {
+              "question": "natural level-3 follow-up",
+              "answer": "direct useful answer",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "sources": []
 }
 
@@ -682,8 +881,13 @@ Curio's backend owns those fields.
 
 FINAL SELF-CHECK BEFORE RESPONDING
 
-- Exactly 20 Curios per category.
+- Approximately 50 MAIN Curios total.
+- Broad category distribution.
 - Correct topicId/category pairing.
+- Every main Curio contains explore[].
+- Maximum 3 children per node.
+- Maximum 3 levels below main card.
+- Every Level 3 node has children: [].
 - No duplicate underlying concepts.
 - No overlap with EXISTING CURIO LIBRARY.
 - Every hook has its answer directly in answer.
@@ -694,9 +898,8 @@ FINAL SELF-CHECK BEFORE RESPONDING
       prompt,
       categories: interests.length,
       existingCurios: existing.length,
-      requestedPerCategory: 20,
-      requestedTotal:
-        interests.length * 20,
+      requestedPerCategory: 0,
+      requestedTotal: 50,
     };
   },
 );
@@ -924,6 +1127,61 @@ export const adminDeleteContent = onCall(
     await db.collection("content").doc(data.id).delete();
 
     return {success: true};
+  },
+);
+
+
+export const adminDeleteContentBatch = onCall(
+  {region: "us-central1", cors: true},
+  async (request) => {
+    requireAdmin(request.auth?.uid);
+
+    const data = requireObject(request.data);
+
+    if (
+      !Array.isArray(data.ids) ||
+      data.ids.length === 0 ||
+      data.ids.some(
+        id =>
+          typeof id !== "string" ||
+          !id.trim(),
+      )
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "ids must be a non-empty array of content IDs.",
+      );
+    }
+
+    if (data.ids.length > 500) {
+      throw new HttpsError(
+        "invalid-argument",
+        "A maximum of 500 Curios may be deleted at once.",
+      );
+    }
+
+    const ids = [
+      ...new Set(
+        data.ids.map(id =>
+          String(id).trim(),
+        ),
+      ),
+    ];
+
+    const batch = db.batch();
+
+    for (const id of ids) {
+      batch.delete(
+        db.collection("content").doc(id),
+      );
+    }
+
+    await batch.commit();
+
+    return {
+      success: true,
+      deleted: ids.length,
+    };
   },
 );
 
