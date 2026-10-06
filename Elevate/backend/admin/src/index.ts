@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import {HttpsError, onCall} from "firebase-functions/v2/https";
+import type {NewCuriosity} from "@curio/shared";
 
 admin.initializeApp();
 
@@ -66,39 +67,170 @@ const requireObject = (
 
 const validateContent = (
   value: unknown,
-): Record<string, unknown> => {
-  const item = requireObject(value, "Each content item must be an object.");
+): NewCuriosity => {
+  const item = requireObject(
+    value,
+    "Each Curio must be an object.",
+  );
 
-  if (
-    typeof item.interestTitle !== "string" ||
-    !item.interestTitle.trim()
-  ) {
+  const requireString = (
+    key: string,
+  ): string => {
+    const value = item[key];
+
+    if (
+      typeof value !== "string" ||
+      !value.trim()
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Curio requires "${key}".`,
+      );
+    }
+
+    return value.trim();
+  };
+
+  const requireStringArray = (
+    key: string,
+  ): string[] => {
+    const value = item[key];
+
+    if (
+      !Array.isArray(value) ||
+      value.some(
+        entry =>
+          typeof entry !== "string" ||
+          !entry.trim(),
+      )
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Curio requires "${key}" to be a string array.`,
+      );
+    }
+
+    return value as string[];
+  };
+
+  requireString("hook");
+  requireString("answer");
+  requireString("explanation");
+  requireString("topicId");
+  requireString("topic");
+
+  requireStringArray("tags");
+  requireStringArray("concepts");
+
+  if (typeof item.feedEligible !== "boolean") {
     throw new HttpsError(
       "invalid-argument",
-      'Content requires "interestTitle".',
+      'Curio requires boolean "feedEligible".',
     );
   }
 
-  if (typeof item.format !== "string" || !item.format.trim()) {
-    throw new HttpsError("invalid-argument", 'Content requires "format".');
-  }
+  const visual = requireObject(
+    item.visual,
+    'Curio requires "visual".',
+  );
 
-  if (typeof item.hook !== "string" || !item.hook.trim()) {
-    throw new HttpsError("invalid-argument", 'Content requires "hook".');
-  }
+  const visualTypes = new Set([
+    "photo",
+    "generated",
+    "illustration",
+    "diagram",
+    "archival",
+    "map",
+    "portrait",
+  ]);
 
   if (
-    item.status !== "draft" &&
-    item.status !== "published" &&
-    item.status !== "archived"
+    typeof visual.type !== "string" ||
+    !visualTypes.has(visual.type)
   ) {
     throw new HttpsError(
       "invalid-argument",
-      'Content status must be "draft", "published", or "archived".',
+      "Curio has an invalid visual type.",
     );
   }
 
-  return item;
+  if (typeof visual.url !== "string") {
+    throw new HttpsError(
+      "invalid-argument",
+      'Curio visual requires string "url".',
+    );
+  }
+
+  if (!Array.isArray(item.connections)) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Curio requires "connections".',
+    );
+  }
+
+  if (!Array.isArray(item.sources)) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Curio requires "sources".',
+    );
+  }
+
+  const editorial = requireObject(
+    item.editorial,
+    'Curio requires "editorial".',
+  );
+
+  if (
+    editorial.status !== "draft" &&
+    editorial.status !== "review" &&
+    editorial.status !== "published"
+  ) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Editorial status must be "draft", "review", or "published".',
+    );
+  }
+
+  if (
+    typeof editorial.factChecked !== "boolean"
+  ) {
+    throw new HttpsError(
+      "invalid-argument",
+      'Editorial requires boolean "factChecked".',
+    );
+  }
+
+  /*
+   * Publishing gate.
+   *
+   * Drafts/review items may still be incomplete.
+   * Published Curios must satisfy our minimum
+   * editorial requirements.
+   */
+  if (editorial.status === "published") {
+    if (!editorial.factChecked) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Published Curios must be fact checked.",
+      );
+    }
+
+    if (item.sources.length === 0) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Published Curios require at least one source.",
+      );
+    }
+
+    if (!item.feedEligible) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Published Curios must be feed eligible.",
+      );
+    }
+  }
+
+  return item as unknown as NewCuriosity;
 };
 
 export const adminListContent = onCall(
@@ -166,6 +298,591 @@ export const adminImportContent = onCall(
 
     return {
       imported: ids.length,
+      ids,
+    };
+  },
+);
+
+
+/**
+ * Imports one Curio generated through the manual AI Studio workflow.
+ *
+ * The AI response is deliberately not trusted with publication state.
+ * Editorial and feed eligibility are owned by the backend.
+ */
+export const adminImportGeneratedCurio = onCall(
+  {region: "us-central1", cors: true},
+  async (request) => {
+    requireAdmin(request.auth?.uid);
+
+    const data = requireObject(request.data);
+
+    if (
+      typeof data.topicId !== "string" ||
+      !data.topicId.trim()
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "topicId is required.",
+      );
+    }
+
+    if (
+      typeof data.topic !== "string" ||
+      !data.topic.trim()
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "topic is required.",
+      );
+    }
+
+    const generated = requireObject(
+      data.generated,
+      "generated Curio is required.",
+    );
+
+    /*
+     * Security boundary:
+     *
+     * Never trust AI-provided topic, feed eligibility,
+     * publication status, or fact-check state.
+     */
+    const safeDraft = {
+      ...generated,
+
+      topicId: data.topicId.trim(),
+      topic: data.topic.trim(),
+
+      feedEligible: false,
+
+      editorial: {
+        status: "draft",
+        factChecked: false,
+        generatedBy: "manual-ai",
+      },
+    };
+
+    const validated = validateContent(safeDraft);
+
+    const ref = db.collection("content").doc();
+
+    await ref.set({
+      ...validated,
+
+      /*
+       * Keep this explicit even after validation so the persisted
+       * publication state can never be controlled by pasted AI JSON.
+       */
+      feedEligible: false,
+
+      editorial: {
+        ...validated.editorial,
+        status: "draft",
+        factChecked: false,
+        generatedBy: "manual-ai",
+      },
+
+      createdAt:
+        admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt:
+        admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return {
+      success: true,
+      id: ref.id,
+    };
+  },
+);
+
+
+const normalizeCurioText = (value: string): string =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const curioConceptSet = (
+  value: unknown,
+): Set<string> => {
+  if (!Array.isArray(value)) {
+    return new Set();
+  }
+
+  return new Set(
+    value
+      .filter(
+        entry =>
+          typeof entry === "string" &&
+          entry.trim(),
+      )
+      .map(entry =>
+        normalizeCurioText(String(entry)),
+      )
+      .filter(Boolean),
+  );
+};
+
+const conceptSimilarity = (
+  left: Set<string>,
+  right: Set<string>,
+): number => {
+  if (!left.size || !right.size) {
+    return 0;
+  }
+
+  let intersection = 0;
+
+  for (const value of left) {
+    if (right.has(value)) {
+      intersection += 1;
+    }
+  }
+
+  const union =
+    new Set([...left, ...right]).size;
+
+  return union === 0
+    ? 0
+    : intersection / union;
+};
+
+const areCuriosDuplicate = (
+  left: Record<string, unknown>,
+  right: Record<string, unknown>,
+): boolean => {
+  const leftHook =
+    typeof left.hook === "string"
+      ? normalizeCurioText(left.hook)
+      : "";
+
+  const rightHook =
+    typeof right.hook === "string"
+      ? normalizeCurioText(right.hook)
+      : "";
+
+  if (
+    leftHook &&
+    rightHook &&
+    leftHook === rightHook
+  ) {
+    return true;
+  }
+
+  const leftConcepts =
+    curioConceptSet(left.concepts);
+
+  const rightConcepts =
+    curioConceptSet(right.concepts);
+
+  return conceptSimilarity(
+    leftConcepts,
+    rightConcepts,
+  ) >= 0.6;
+};
+
+/**
+ * Builds one master prompt for manual ChatGPT generation.
+ *
+ * No topic selection is required. The backend reads enabled
+ * interests and the existing Curio library automatically.
+ */
+export const adminBuildBatchCurioPrompt = onCall(
+  {region: "us-central1", cors: true},
+  async request => {
+    requireAdmin(request.auth?.uid);
+
+    const [
+      interestSnapshot,
+      contentSnapshot,
+    ] = await Promise.all([
+      db.collection("interests").get(),
+      db.collection("content").limit(500).get(),
+    ]);
+
+    const interests = interestSnapshot.docs
+      .map(doc => {
+        const data = doc.data();
+
+        return {
+          id: doc.id,
+          title:
+            typeof data.title === "string"
+              ? data.title.trim()
+              : "",
+          enabled: data.enabled !== false,
+        };
+      })
+      .filter(
+        item =>
+          item.enabled &&
+          item.title,
+      )
+      .sort((a, b) =>
+        a.title.localeCompare(b.title),
+      );
+
+    if (!interests.length) {
+      throw new HttpsError(
+        "failed-precondition",
+        "No enabled Curio categories were found.",
+      );
+    }
+
+    const existing = contentSnapshot.docs
+      .map(doc => {
+        const data = doc.data();
+
+        return {
+          hook:
+            typeof data.hook === "string"
+              ? data.hook.trim()
+              : "",
+          topic:
+            typeof data.topic === "string"
+              ? data.topic.trim()
+              : "",
+          concepts: Array.isArray(data.concepts)
+            ? data.concepts
+                .filter(
+                  value =>
+                    typeof value === "string",
+                )
+                .map(String)
+            : [],
+        };
+      })
+      .filter(item => item.hook);
+
+    const categoryText = interests
+      .map(
+        item =>
+          `- ${item.title} | topicId: ${item.id}`,
+      )
+      .join("\n");
+
+    const existingText = existing.length
+      ? existing
+          .map(
+            item =>
+              `- [${item.topic}] ${item.hook}` +
+              (
+                item.concepts.length
+                  ? ` | concepts: ${item.concepts.join(", ")}`
+                  : ""
+              ),
+          )
+          .join("\n")
+      : "- No existing Curios yet.";
+
+    const prompt = `You are the senior editorial content engine for Curio.
+
+Curio is an entertainment-first curiosity app whose goal is:
+"The most interesting feed on your phone."
+
+YOUR TASK
+
+Generate exactly 20 UNIQUE Curios for EACH category listed below.
+
+Every Curio must teach a genuinely interesting fact, phenomenon, story, idea, misconception, mechanism, historical event, scientific observation, cultural curiosity, technological curiosity, or surprising piece of knowledge.
+
+The user must get the core answer directly in the feed. Never hide the answer behind the detail screen.
+
+CATEGORIES
+
+${categoryText}
+
+EXISTING CURIO LIBRARY
+
+The following Curios already exist.
+
+DO NOT generate the same underlying fact, phenomenon, story, concept, event, mechanism, or idea again, even if you can phrase the hook differently.
+
+${existingText}
+
+CRITICAL DUPLICATE RULES
+
+1. Every generated Curio must be semantically different from every existing Curio above.
+2. Every generated Curio must also be semantically different from every other Curio in THIS response.
+3. Rewording an existing fact does NOT make it unique.
+4. Two hooks about the same underlying phenomenon are duplicates.
+5. Before returning your answer, internally compare the entire generated set and remove/replace duplicates.
+6. Prefer breadth and surprising subject diversity.
+7. concepts[] must describe the actual underlying concepts accurately. These fields are used by Curio's duplicate detector.
+8. Do not generate multiple Curios merely because one subject has several slightly different phrasings.
+
+EDITORIAL STANDARD
+
+- hook: compelling natural-language question or statement.
+- answer: direct answer visible in the feed.
+- answer should preferably be 60-220 characters.
+- explanation: useful deeper context, approximately 45-140 words.
+- quickFact: optional additional surprising fact, otherwise null.
+- tags: 2-5 useful tags.
+- concepts: 2-5 precise semantic concepts.
+- No clickbait.
+- No motivational filler.
+- No generic textbook definitions.
+- No trivia whose only value is memorizing a number.
+- Avoid claims you are not confident are factual.
+- Do not invent URLs or sources.
+- connections must be [].
+- sources must be [] for this generation stage.
+- visual.url must be "".
+- Choose the best visual.type from:
+  photo
+  generated
+  illustration
+  diagram
+  archival
+  map
+  portrait
+- visual.generationPrompt may contain a useful image-generation description when appropriate.
+
+OUTPUT FORMAT
+
+Return ONLY one valid JSON array.
+
+No markdown.
+No code fences.
+No commentary before or after the JSON.
+
+Every object MUST have exactly this content structure:
+
+{
+  "hook": "string",
+  "answer": "string",
+  "explanation": "string",
+  "quickFact": "string or null",
+  "topicId": "EXACT topicId supplied above",
+  "topic": "EXACT category title supplied above",
+  "tags": ["string"],
+  "concepts": ["string"],
+  "visual": {
+    "url": "",
+    "type": "photo | generated | illustration | diagram | archival | map | portrait",
+    "generationPrompt": "string"
+  },
+  "connections": [],
+  "sources": []
+}
+
+Do NOT include:
+feedEligible
+editorial
+status
+factChecked
+id
+createdAt
+updatedAt
+
+Curio's backend owns those fields.
+
+FINAL SELF-CHECK BEFORE RESPONDING
+
+- Exactly 20 Curios per category.
+- Correct topicId/category pairing.
+- No duplicate underlying concepts.
+- No overlap with EXISTING CURIO LIBRARY.
+- Every hook has its answer directly in answer.
+- Valid JSON.
+- One JSON array only.`;
+
+    return {
+      prompt,
+      categories: interests.length,
+      existingCurios: existing.length,
+      requestedPerCategory: 20,
+      requestedTotal:
+        interests.length * 20,
+    };
+  },
+);
+
+/**
+ * Imports a manually-generated Curio batch.
+ *
+ * Publication state is controlled exclusively by the backend.
+ * Exact-hook and concept-overlap duplicate protection is applied
+ * against both the existing library and the incoming batch.
+ */
+export const adminImportGeneratedCurioBatch = onCall(
+  {region: "us-central1", cors: true},
+  async request => {
+    requireAdmin(request.auth?.uid);
+
+    const data = requireObject(request.data);
+    const rawItems = data.items;
+
+    if (
+      !Array.isArray(rawItems) ||
+      rawItems.length === 0
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "items must be a non-empty JSON array.",
+      );
+    }
+
+    if (rawItems.length > 400) {
+      throw new HttpsError(
+        "invalid-argument",
+        "A maximum of 400 generated Curios can be processed at once.",
+      );
+    }
+
+    const existingSnapshot =
+      await db
+        .collection("content")
+        .limit(500)
+        .get();
+
+    const existing =
+      existingSnapshot.docs.map(
+        doc => doc.data() as Record<string, unknown>,
+      );
+
+    const accepted:
+      Array<ReturnType<typeof validateContent>> = [];
+
+    const duplicateItems:
+      Array<{
+        hook: string;
+        reason: string;
+      }> = [];
+
+    const invalidItems:
+      Array<{
+        index: number;
+        reason: string;
+      }> = [];
+
+    for (
+      let index = 0;
+      index < rawItems.length;
+      index += 1
+    ) {
+      try {
+        const generated = requireObject(
+          rawItems[index],
+          `Curio at index ${index} must be an object.`,
+        );
+
+        const safeDraft = {
+          ...generated,
+
+          feedEligible: false,
+
+          editorial: {
+            status: "draft",
+            factChecked: false,
+            generatedBy: "manual-ai-batch",
+          },
+        };
+
+        const validated =
+          validateContent(safeDraft);
+
+        const comparable =
+          validated as unknown as Record<
+            string,
+            unknown
+          >;
+
+        const existingDuplicate =
+          existing.some(item =>
+            areCuriosDuplicate(
+              comparable,
+              item,
+            ),
+          );
+
+        if (existingDuplicate) {
+          duplicateItems.push({
+            hook: validated.hook,
+            reason:
+              "Matches an existing Curio by hook or concepts.",
+          });
+
+          continue;
+        }
+
+        const batchDuplicate =
+          accepted.some(item =>
+            areCuriosDuplicate(
+              comparable,
+              item as unknown as Record<
+                string,
+                unknown
+              >,
+            ),
+          );
+
+        if (batchDuplicate) {
+          duplicateItems.push({
+            hook: validated.hook,
+            reason:
+              "Duplicates another Curio in this batch.",
+          });
+
+          continue;
+        }
+
+        accepted.push(validated);
+      } catch (error) {
+        invalidItems.push({
+          index,
+          reason:
+            error instanceof Error
+              ? error.message
+              : "Invalid Curio.",
+        });
+      }
+    }
+
+    const batch = db.batch();
+    const ids: string[] = [];
+
+    for (const item of accepted) {
+      const ref =
+        db.collection("content").doc();
+
+      ids.push(ref.id);
+
+      batch.set(ref, {
+        ...item,
+
+        feedEligible: false,
+
+        editorial: {
+          ...item.editorial,
+          status: "draft",
+          factChecked: false,
+          generatedBy:
+            "manual-ai-batch",
+        },
+
+        createdAt:
+          admin.firestore.FieldValue.serverTimestamp(),
+
+        updatedAt:
+          admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    if (accepted.length) {
+      await batch.commit();
+    }
+
+    return {
+      received: rawItems.length,
+      imported: accepted.length,
+      duplicates: duplicateItems.length,
+      invalid: invalidItems.length,
+      duplicateItems,
+      invalidItems,
       ids,
     };
   },
@@ -367,3 +1084,83 @@ export const adminUpdateInterest = onCall(
   },
 );
 
+
+
+type GenerateCurioRequestData = {
+  topicId?: unknown;
+  topic?: unknown;
+  direction?: unknown;
+};
+
+export const adminBuildCurioPrompt = onCall(
+  async request => {
+    requireAdmin(request.auth?.uid);
+
+    const data = requireObject(
+      request.data,
+      "Prompt request must be an object.",
+    );
+
+    const topicId = data.topicId;
+    const topic = data.topic;
+    const direction = data.direction;
+
+    if (
+      typeof topicId !== "string" ||
+      !topicId.trim()
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        '"topicId" is required.',
+      );
+    }
+
+    if (
+      typeof topic !== "string" ||
+      !topic.trim()
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        '"topic" is required.',
+      );
+    }
+
+    if (
+      direction !== undefined &&
+      (
+        typeof direction !== "string" ||
+        !direction.trim()
+      )
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        '"direction" must be a non-empty string.',
+      );
+    }
+
+    const {
+      CurioPromptBuilder,
+    } = await import(
+      "./application/generation/CurioPromptBuilder"
+    );
+
+    const builder =
+      new CurioPromptBuilder();
+
+    const prompt = builder.build({
+      topicId: topicId.trim(),
+      topic: topic.trim(),
+
+      ...(typeof direction === "string"
+        ? {
+            direction:
+              direction.trim(),
+          }
+        : {}),
+    });
+
+    return {
+      prompt,
+    };
+  },
+);

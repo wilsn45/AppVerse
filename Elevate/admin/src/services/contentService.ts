@@ -1,27 +1,13 @@
 import {httpsCallable} from 'firebase/functions';
 import {functions} from '../firebase/firebase';
+import type {Curiosity} from '@curio/shared';
 
-export interface AdminContentItem {
-  id: string;
-  interestId?: string;
-  interestTitle?: string;
-  tags?: string[];
-  format?: string;
-  origin?: string;
-  hook?: string;
-  body?: string;
-  visual?: {
-    type?: string;
-    url?: string;
-    visualPrompt?: string;
-    [key: string]: unknown;
+export type AdminContentItem =
+  Curiosity & {
+    createdAt?: string;
+    updatedAt?: string;
+    publishedAt?: string;
   };
-  status?: string;
-  qualityScore?: number;
-  createdAt?: string;
-  updatedAt?: string;
-  [key: string]: unknown;
-}
 
 interface ListContentResponse {
   items: AdminContentItem[];

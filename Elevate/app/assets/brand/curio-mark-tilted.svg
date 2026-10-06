@@ -1,0 +1,29 @@
+<svg
+  width="1024"
+  height="1024"
+  viewBox="0 0 1024 1024"
+  xmlns="http://www.w3.org/2000/svg">
+
+  <g transform="rotate(-7 512 512)">
+    <rect
+      x="192"
+      y="192"
+      width="640"
+      height="640"
+      rx="220"
+      fill="#4682B4"
+    />
+
+    <text
+      x="512"
+      y="535"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      font-family="Roboto, Arial, sans-serif"
+      font-size="410"
+      font-weight="900"
+      fill="#FFFFFF"
+    >C</text>
+  </g>
+
+</svg>
