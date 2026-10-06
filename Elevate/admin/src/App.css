@@ -1522,3 +1522,10 @@ body.modal-open {
     width: 100%;
   }
 }
+
+
+.icon-button.publish {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

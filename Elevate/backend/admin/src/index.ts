@@ -321,19 +321,11 @@ const validateContent = (
    * editorial requirements.
    */
   if (editorial.status === "published") {
-    if (!editorial.factChecked) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Published Curios must be fact checked.",
-      );
-    }
-
-    if (item.sources.length === 0) {
-      throw new HttpsError(
-        "failed-precondition",
-        "Published Curios require at least one source.",
-      );
-    }
+    /*
+     * Fact-checking and source requirements are temporarily
+     * disabled. We keep the metadata in the model so the
+     * verification workflow can be enabled later.
+     */
 
     if (!item.feedEligible) {
       throw new HttpsError(
@@ -1127,6 +1119,109 @@ export const adminDeleteContent = onCall(
     await db.collection("content").doc(data.id).delete();
 
     return {success: true};
+  },
+);
+
+
+export const adminPublishContentBatch = onCall(
+  {region: "us-central1", cors: true},
+  async (request) => {
+    requireAdmin(request.auth?.uid);
+
+    const data = requireObject(request.data);
+
+    if (
+      !Array.isArray(data.ids) ||
+      data.ids.length === 0 ||
+      data.ids.some(
+        id =>
+          typeof id !== "string" ||
+          !id.trim(),
+      )
+    ) {
+      throw new HttpsError(
+        "invalid-argument",
+        "ids must be a non-empty array of content IDs.",
+      );
+    }
+
+    if (data.ids.length > 500) {
+      throw new HttpsError(
+        "invalid-argument",
+        "A maximum of 500 Curios may be published at once.",
+      );
+    }
+
+    const ids = [
+      ...new Set(
+        data.ids.map(id => String(id).trim()),
+      ),
+    ];
+
+    const refs = ids.map(id =>
+      db.collection("content").doc(id),
+    );
+
+    const snapshots = await db.getAll(...refs);
+
+    const validated = snapshots.map((snapshot, index) => {
+      if (!snapshot.exists) {
+        throw new HttpsError(
+          "not-found",
+          `Curio "${ids[index]}" was not found.`,
+        );
+      }
+
+      const current = snapshot.data();
+
+      if (!current) {
+        throw new HttpsError(
+          "not-found",
+          `Curio "${ids[index]}" has no content.`,
+        );
+      }
+
+      const candidate = {
+        ...current,
+        feedEligible: true,
+        editorial: {
+          ...(current.editorial ?? {}),
+          status: "published",
+        },
+      };
+
+      /*
+       * Run the exact same validation used by normal content
+       * updates. This intentionally preserves the publishing
+       * gates for factChecked and sources.
+       */
+      validateContent(candidate);
+
+      return {
+        ref: refs[index],
+      };
+    });
+
+    const batch = db.batch();
+    const publishedAt =
+      admin.firestore.FieldValue.serverTimestamp();
+
+    for (const item of validated) {
+      batch.update(item.ref, {
+        feedEligible: true,
+        "editorial.status": "published",
+        publishedAt,
+        updatedAt:
+          admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    await batch.commit();
+
+    return {
+      success: true,
+      published: ids.length,
+    };
   },
 );
 

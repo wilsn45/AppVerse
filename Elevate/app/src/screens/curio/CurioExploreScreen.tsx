@@ -24,12 +24,12 @@ import {
 import Share from 'react-native-share';
 
 import {Curiosity} from '../../models/Curiosity';
-import {MockCuriosityRepository} from '../../repositories/MockCuriosityRepository';
+import {RemoteCuriosityRepository} from '../../repositories/RemoteCuriosityRepository';
 import {CurioStorage} from '../../services/CurioStorage';
 import {curioTheme} from '../../theme';
 
 const repository =
-  new MockCuriosityRepository();
+  new RemoteCuriosityRepository();
 
 const {height: SCREEN_HEIGHT} =
   Dimensions.get('window');

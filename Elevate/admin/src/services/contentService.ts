@@ -70,3 +70,15 @@ export const deleteContentBatch = async (
 
   await callable({ids});
 };
+
+
+export const publishContentBatch = async (
+  ids: string[],
+): Promise<void> => {
+  const callable = httpsCallable<
+    {ids: string[]},
+    {success: boolean; published: number}
+  >(functions, 'adminPublishContentBatch');
+
+  await callable({ids});
+};

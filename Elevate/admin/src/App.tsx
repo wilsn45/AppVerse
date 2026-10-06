@@ -30,6 +30,7 @@ import {
   deleteContentBatch,
   importContent,
   listContent,
+  publishContentBatch,
   updateContent,
   type AdminContentItem,
 } from './services/contentService';
@@ -88,6 +89,9 @@ function App() {
     useState<Set<string>>(new Set());
 
   const [bulkDeleting, setBulkDeleting] =
+    useState(false);
+
+  const [bulkPublishing, setBulkPublishing] =
     useState(false);
 
   useEffect(() => {
@@ -450,6 +454,60 @@ function App() {
     }
   };
 
+  const handlePublishContent = async (
+    ids: string[],
+  ) => {
+    if (!ids.length) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Publish ${ids.length} selected Curio${ids.length === 1 ? '' : 's'}?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setBulkPublishing(true);
+      setError('');
+
+      await publishContentBatch(ids);
+
+      const publishedIds = new Set(ids);
+      const publishedAt = new Date().toISOString();
+
+      setItems(current =>
+        current.map(item =>
+          publishedIds.has(item.id)
+            ? {
+                ...item,
+                feedEligible: true,
+                publishedAt,
+                editorial: {
+                  ...item.editorial,
+                  status: 'published',
+                },
+              }
+            : item,
+        ),
+      );
+
+      setSelectedContentIds(new Set());
+    } catch (publishError) {
+      console.error(publishError);
+
+      setError(
+        publishError instanceof Error
+          ? publishError.message
+          : 'Unable to publish selected content.',
+      );
+    } finally {
+      setBulkPublishing(false);
+    }
+  };
+
   const handleSignIn = async () => {
     try {
       setError('');
@@ -582,6 +640,8 @@ function App() {
             allMatchingIds={filteredItems.map(item => item.id)}
             onBulkDelete={handleBulkDeleteContent}
             bulkDeleting={bulkDeleting}
+            onPublish={handlePublishContent}
+            bulkPublishing={bulkPublishing}
             onReload={loadItems}
           />
         )}
@@ -661,6 +721,8 @@ interface ContentPageProps {
   allMatchingIds: string[];
   onBulkDelete: (ids: string[]) => Promise<void>;
   bulkDeleting: boolean;
+  onPublish: (ids: string[]) => Promise<void>;
+  bulkPublishing: boolean;
   onReload: () => Promise<void>;
 }
 
@@ -692,6 +754,8 @@ function ContentPage({
   allMatchingIds,
   onBulkDelete,
   bulkDeleting,
+  onPublish,
+  bulkPublishing,
   onReload,
 }: ContentPageProps) {
   const pageIds = items.map(item => item.id);
@@ -804,7 +868,7 @@ function ContentPage({
             {allMatchingIds.length > items.length && (
               <button
                 className="bulk-link-button"
-                disabled={bulkDeleting}
+                disabled={bulkDeleting || bulkPublishing}
                 onClick={selectAllMatching}>
                 {allMatchingSelected
                   ? 'Clear selection'
@@ -816,14 +880,26 @@ function ContentPage({
           <div className="bulk-action-buttons">
             <button
               className="secondary-button"
-              disabled={bulkDeleting}
+              disabled={bulkDeleting || bulkPublishing}
               onClick={() => setSelectedIds(new Set())}>
               Clear
             </button>
 
             <button
+              className="primary-button"
+              disabled={bulkDeleting || bulkPublishing}
+              onClick={() =>
+                void onPublish([...selectedIds])
+              }>
+              <CheckCircle2 size={16} />
+              {bulkPublishing
+                ? 'Publishing…'
+                : 'Publish selected'}
+            </button>
+
+            <button
               className="bulk-delete-button"
-              disabled={bulkDeleting}
+              disabled={bulkDeleting || bulkPublishing}
               onClick={() =>
                 void onBulkDelete([...selectedIds])
               }>
@@ -924,6 +1000,18 @@ function ContentPage({
 
                       <td>
                         <div className="row-actions">
+                          {item.editorial?.status !== 'published' && (
+                            <button
+                              className="icon-button publish"
+                              title="Publish content"
+                              disabled={bulkPublishing}
+                              onClick={() =>
+                                void onPublish([item.id])
+                              }>
+                              <CheckCircle2 size={17} />
+                            </button>
+                          )}
+
                           <button
                             className="icon-button edit"
                             title="Edit content"

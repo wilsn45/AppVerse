@@ -1,6 +1,62 @@
 import * as admin from "firebase-admin";
 import {CallableRequest} from "firebase-functions/v2/https";
-import type {Curiosity} from "@curio/shared";
+type CuriosityExploreNode = {
+  question: string;
+  answer: string;
+  children: CuriosityExploreNode[];
+};
+
+type Curiosity = {
+  id: string;
+  hook: string;
+  answer: string;
+  explanation: string;
+  quickFact?: string;
+  topicId: string;
+  topic: string;
+  tags: string[];
+  concepts: string[];
+  feedEligible: boolean;
+
+  visual: {
+    url: string;
+    type:
+      | "photo"
+      | "generated"
+      | "illustration"
+      | "diagram"
+      | "archival"
+      | "map"
+      | "portrait";
+    imageSource?: "none" | "external" | "uploaded";
+    storagePath?: string;
+    width?: number;
+    height?: number;
+    bytes?: number;
+    generationPrompt?: string;
+    source?: {
+      provider: string;
+      author?: string;
+      sourceUrl?: string;
+      license?: string;
+    };
+  };
+
+  explore: CuriosityExploreNode[];
+
+  sources: Array<{
+    title: string;
+    url: string;
+    publisher?: string;
+  }>;
+
+  editorial: {
+    status: "draft" | "review" | "published";
+    factChecked: boolean;
+    qualityScore?: number;
+    generatedBy?: string;
+  };
+};
 
 interface FeedRequestData {
   interests?: unknown;
@@ -45,7 +101,6 @@ const normalize = (
 
   if (
     data.editorial.status !== "published" ||
-    data.editorial.factChecked !== true ||
     data.feedEligible !== true
   ) {
     return null;

@@ -16,11 +16,11 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import {Curiosity} from '../../models/Curiosity';
-import {MockCuriosityRepository} from '../../repositories/MockCuriosityRepository';
+import {RemoteCuriosityRepository} from '../../repositories/RemoteCuriosityRepository';
 import {curioTheme} from '../../theme';
 
 const repository =
-  new MockCuriosityRepository();
+  new RemoteCuriosityRepository();
 
 type Props = {
   interests: string[];

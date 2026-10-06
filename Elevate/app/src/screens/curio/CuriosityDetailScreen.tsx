@@ -18,7 +18,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import {Curiosity} from '../../models/Curiosity';
-import {MockCuriosityRepository} from '../../repositories/MockCuriosityRepository';
+import {RemoteCuriosityRepository} from '../../repositories/RemoteCuriosityRepository';
 import {CurioStorage} from '../../services/CurioStorage';
 import {curioTheme} from '../../theme';
 
@@ -32,7 +32,7 @@ type Props = {
 };
 
 const repository =
-  new MockCuriosityRepository();
+  new RemoteCuriosityRepository();
 
 export const CuriosityDetailScreen = ({
   curiosityId,
